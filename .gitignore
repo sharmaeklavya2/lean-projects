@@ -1,6 +1,7 @@
 /.lake
 /secret
 
+*.claude
 *.zip
 *~
 *.sw[po]
