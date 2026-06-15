@@ -1,0 +1,9 @@
+/.lake
+/secret
+
+*.zip
+*~
+*.sw[po]
+*.db
+Desktop.ini
+.DS_Store
