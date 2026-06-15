@@ -1,0 +1,29 @@
+{
+  "name": "Lean Projects",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+  "mounts": [
+    "source=${localWorkspaceFolder}/.git,target=/workspace/.git,type=bind,readonly",
+    "source=lean-elan,target=/root/.elan,type=volume",
+    "source=lean-projects-lake,target=/workspace/.lake,type=volume",
+    "source=claude-auth,target=/root/.claude,type=volume"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "leanprover.lean4",
+        "anthropic.claude-code"
+      ],
+      "settings": {
+        "lean4.serverLogging.enabled": false
+      }
+    }
+  },
+  "onCreateCommand": "lake exe cache get"
+}
