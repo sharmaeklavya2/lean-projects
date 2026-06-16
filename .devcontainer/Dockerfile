@@ -17,4 +17,7 @@ ENV PATH="/root/.elan/bin:$PATH"
 # Install Claude Code CLI
 RUN npm install -g @anthropic-ai/claude-code
 
+# Disable git credential helper to prevent credential leakage into the container
+RUN git config --global credential.helper ""
+
 WORKDIR /workspace

@@ -6,6 +6,9 @@
   "features": {
     "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
   },
+  "remoteEnv": {
+    "SSH_AUTH_SOCK": ""
+  },
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
   "workspaceFolder": "/workspace",
   "mounts": [
