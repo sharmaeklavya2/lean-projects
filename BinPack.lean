@@ -116,16 +116,6 @@ theorem harmonic_k3 {n : ℕ} (s : Fin n → ℝ)
       rw [← Finset.sum_union hdisjointLM, ← Finset.sum_union hdisjoint, ← hpartition]
     linarith
   -- Step 7: combine everything
-  have hSS : (0 : ℝ) ≤ ∑ i ∈ S, s i :=
-    Finset.sum_nonneg (fun i _ => le_of_lt (hs_positive i))
   have hLcard : (L.card : ℝ) ≤ 1 := by exact_mod_cast hL
-  have hMcard : (0 : ℝ) ≤ M.card := Nat.cast_nonneg _
   rw [hsum_split, hWL, hWM, hWS]
-  nlinarith [mul_nonneg (show (0:ℝ) ≤ ∑ i ∈ L, s i - L.card / 2 by linarith)
-                        (show (0:ℝ) ≤ 3/2 by norm_num),
-             mul_nonneg (show (0:ℝ) ≤ ∑ i ∈ M, s i - M.card / 3 by linarith)
-                        (show (0:ℝ) ≤ 3/2 by norm_num),
-             mul_nonneg (show (0:ℝ) ≤ 1 - (L.card : ℝ) by linarith)
-                        (show (0:ℝ) ≤ 1/4 by norm_num),
-             mul_nonneg (show (0:ℝ) ≤ 1 - ∑ i ∈ L, s i - ∑ i ∈ M, s i - ∑ i ∈ S, s i by linarith)
-                        (show (0:ℝ) ≤ 3/2 by norm_num)]
+  linarith
