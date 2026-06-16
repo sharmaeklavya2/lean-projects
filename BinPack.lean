@@ -1,4 +1,10 @@
-import Mathlib
+import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Push
 
 /-- The w₃ weight function -/
 noncomputable def w3 (x : ℝ) : ℝ :=
