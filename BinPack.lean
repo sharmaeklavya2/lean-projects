@@ -16,7 +16,7 @@ theorem harmonic_k3 {n : ℕ} (s : Fin n → ℝ)
   let S : Finset (Fin n) := Finset.univ.filter (fun i => s i ≤ 1/3)
   have hL : L.card ≤ 1 := by
     by_contra h
-    push_neg at h
+    push Not at h
     -- h : 1 < L.card; extract two distinct elements a, b ∈ L
     rw [Finset.one_lt_card] at h
     obtain ⟨a, ha, b, hb, hab⟩ := h
