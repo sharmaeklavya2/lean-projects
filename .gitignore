@@ -1,5 +1,6 @@
 /.lake
 /secret
+Scratch.lean
 
 *.claude
 *.zip

@@ -17,3 +17,6 @@ name = "SimpleExamples"
 
 [[lean_lib]]
 name = "BinPack"
+
+[[lean_lib]]
+name = "Scratch"
