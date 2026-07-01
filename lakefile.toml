@@ -20,3 +20,6 @@ name = "BinPack"
 
 [[lean_lib]]
 name = "Scratch"
+
+[[lean_lib]]
+name = "Anki"
