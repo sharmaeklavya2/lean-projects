@@ -45,9 +45,9 @@ theorem FullBinTree.size_ub_height (tree: FullBinTree α)
     We don't need to know why they are true.
     -/
     have hl : 2 ^ (l.height + 1) ≤ 2 ^ (max l.height r.height + 1) :=
-      Nat.pow_le_pow_right (by omega) (by omega)
+      Nat.pow_le_pow_right (by decide) (by omega)
     have hr : 2 ^ (r.height + 1) ≤ 2 ^ (max l.height r.height + 1) :=
-      Nat.pow_le_pow_right (by omega) (by omega)
+      Nat.pow_le_pow_right (by decide) (by omega)
     have hpow : 2 ^ (max l.height r.height + 1 + 1) = 2 ^ (max l.height r.height + 1) * 2 :=
       Nat.pow_succ 2 (max l.height r.height + 1)
     have hposl : 1 ≤ 2 ^ (l.height + 1) := Nat.one_le_two_pow
