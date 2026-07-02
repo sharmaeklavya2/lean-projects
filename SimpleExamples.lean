@@ -1,2 +1,3 @@
 import SimpleExamples.OddTimesOddIsOdd
 import SimpleExamples.FullBinTree
+import SimpleExamples.BinTree
