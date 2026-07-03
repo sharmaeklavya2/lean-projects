@@ -80,3 +80,21 @@ example {A B X : Prop} (h : A ∨ B) (h1: A → X) (h2: B → X): X := by
   obtain hA | hB := h
   · exact h1 hA
   · exact h2 hB
+
+-- game/robo/implis ==========
+
+-- intro
+example {A: Prop} : A → True := by
+  intro hA
+  trivial
+
+-- apply
+example {A B : Prop} (hA : A) (hAB : A → B) : B := by
+  apply hAB
+  assumption
+
+-- by_cases
+example (A : Prop) : ¬A ∨ A := by
+  by_cases hA : A
+  · right ; assumption
+  · left ; assumption
