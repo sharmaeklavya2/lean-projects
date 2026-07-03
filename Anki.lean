@@ -21,6 +21,9 @@ example {A B X : Prop} (h : A ∨ B) (h1: A → X) (h2: B → X): X :=
 -- ∨-left-intro without tactics
 example {A B : Prop} (hA : A) : A ∨ B := Or.inl hA
 
+-- ∃-intro
+example {A : Type} (a : A) : ∃ x : A, x = x := ⟨a, rfl⟩
+
 -- tactics ============
 
 -- defeq, no tactic
