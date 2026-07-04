@@ -15,7 +15,7 @@ theorem BinTree.size_ub_height (tree: BinTree α)
     in `have` statements. Then omega can use them.
 
     The `have` statements are written by AI.
-    We don't need to know why they are true.
+    They are easy to prove, so we don't care how they are formalized in lean.
     -/
     have hl : 2 ^ l.height ≤ 2 ^ (max l.height r.height) :=
       Nat.pow_le_pow_right (by decide) (by omega)
