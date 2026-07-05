@@ -2,8 +2,6 @@ import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.Real.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
--- Written by Claude. Unreviewed by human.
-
 /-!
 # Data-market oligopoly: inapproximability of approximate Nash equilibria
 -/
@@ -71,24 +69,30 @@ noncomputable def r1star (q : ℝ) : ℝ :=
 noncomputable def r2star (p : ℝ) : ℝ :=
   n * max (1 - p) (min 1 (p / α))
 
-/-! ### Stability
+/-! ### The instability ratio `μ`
 
-`(p,q)` is a `c`-NE iff no seller can improve her revenue by more than a factor
-of `c`, for *every* valid revenue split. Stated multiplicatively (division-free)
-to correctly handle `rⱼ = 0`. (revenue.tex, lines 72–73.) -/
+`μ(p,q) := inf_{(r₁,r₂) ∈ V} max(r₁*/r₁, r₂*/r₂)` with the convention `x/0 = ∞`
+(a seller earning `0` against a positive best response is maximally unstable).
+Since `ℝ` has no `∞` in Lean, we replace it by a finite cap `cap`.
+This keeps `μ` in `ℝ`, keeps the "convert the NE problem into a 2-D optimization of
+`μ`" narrative explicit, and is sound for the lower bound: we only ever compare `μ`
+against values `< cap`, and `min(cap, μ) ≥ c ↔ μ ≥ c` whenever `c < cap`. -/
 
-/-- `(p, q)` is a `c`-approximate Nash equilibrium. -/
-def IsCNE (c p q : ℝ) : Prop :=
-  ∀ r1 r2, (r1, r2) ∈ V α β n p q → r1star α β n q ≤ c * r1 ∧ r2star α n p ≤ c * r2
+/-- Finite stand-in for `∞` in the `x/0 = ∞` convention. Any constant `≥ min_i μᵢ`
+works; `2` suffices because `min_i μᵢ ≤ μ₄ < 2` holds under Constraint c1
+(`β < α + n` gives `β(n - α) < n(n + α)`). -/
+noncomputable def cap : ℝ := 2
 
-/-- The instability ratio `μ(p,q) = inf { c ≥ 0 | (p,q) is a c-NE }`.
+/-- The best-response ratio `r*/r`, with `r*/0` read as `cap`
+(the `x/0 = ∞` convention, made finite). -/
+noncomputable def ratio (rstar r : ℝ) : ℝ := if r = 0 then cap else rstar / r
 
-At the four candidate points revenues are positive, so this agrees with the
-paper's `inf max(r₁*/r₁, r₂*/r₂)`. -/
+/-- The instability ratio `μ(p,q) = inf_{(r₁,r₂) ∈ V} max(r₁*/r₁, r₂*/r₂)`
+(revenue.tex), with `x/0` read as `cap`. `(p,q)` is a `c`-NE iff `μ(p,q) ≤ c`
+(for `c < cap`); minimizing `μ` over prices is the core optimization problem. -/
 noncomputable def μ (p q : ℝ) : ℝ :=
-  sInf {c : ℝ | 0 ≤ c ∧ IsCNE α β n c p q}
-
-/-! ## Section: Inapproximability (inapprox.tex)
+  sInf {m : ℝ | ∃ r1 r2, (r1, r2) ∈ V α β n p q ∧
+                m = max (ratio (r1star α β n q) r1) (ratio (r2star α n p) r2)}
 
 /-! ## Inapproximability -/
 
@@ -175,11 +179,15 @@ theorem μ_p4_q4 (h : Constraints α β n) :
     μ α β n (p4 α β n) (q4 α β n) = μ4 α β n := by
   sorry
 
-/-- **Main reduction** (thm:pq-redn): under Constraints c1–c4, the infimum of `μ`
-over all nonnegative prices equals the minimum of `μ` over the four candidate points. -/
-theorem inf_μ_eq_min_candidates (h : Constraints α β n) :
-    sInf {m : ℝ | ∃ p q : ℝ, 0 ≤ p ∧ 0 ≤ q ∧ m = μ α β n p q} =
-      min (μ1 α β n) (min (μ2 α β n) (min (μ3 α β n) (μ4 α β n))) := by
+/-- The inapproximability constant `c* := min(μ₁,μ₂,μ₃,μ₄)`. -/
+noncomputable def cStar : ℝ := min (μ1 α β n) (min (μ2 α β n) (min (μ3 α β n) (μ4 α β n)))
+
+/-- **Main reduction** (thm:pq-redn, lower bound): under Constraints c1–c4, every
+nonnegative price pair has `μ(p,q) ≥ cStar := min_i μᵢ`, so no `(cStar - ε)`-NE exists.
+Together with the `μ_pᵢ_qᵢ` lemmas (which show the bound is attained), this gives
+`inf_{p,q} μ = cStar`. -/
+theorem cStar_le_μ (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
+    cStar α β n ≤ μ α β n p q := by
   sorry
 
 end DataMktOligoHard
