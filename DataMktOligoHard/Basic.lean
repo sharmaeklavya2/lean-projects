@@ -6,57 +6,47 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Data-market oligopoly: inapproximability of approximate Nash equilibria
-
-## Conventions
-The paper defines `μ(p,q) = inf max(r₁*/r₁, r₂*/r₂)` with the convention `x/0 = ∞`
-(for `x > 0`), so that a seller earning `0` revenue against a positive best
-response is maximally unstable. To avoid `EReal` division pitfalls (where Mathlib
-sets `x/0 = 0`), we encode the `c`-NE condition **multiplicatively** and division-free:
-`(p,q)` is a `c`-NE iff every valid `(r₁,r₂)` satisfies `r₁* ≤ c·r₁` and `r₂* ≤ c·r₂`.
-See `IsCNE`. We derive a real-valued `μ p q` for stating the paper's `μᵢ` formulas.
 -/
 
 namespace DataMktOligoHard
 
 variable (α β n : ℝ)
 
-/-! ## Section: Revenue (revenue.tex)
+/-! ## Closed-form expressions for revenue
 
-The parameters `α, β` and `n` are fixed. Here `n` denotes the paper's `n_p`, the
-number of *poor* buyers (the paper's total buyer count is `n_p + 1 = n + 1`; the
-extra rich buyer never enters any formula we formalize). All quantities below are
-the closed forms from `revenue.tex`. We keep them as plain functions of `(p, q)`. -/
+The parameters `α, β` and `n` are fixed. Here `n` denotes the paper's `n_p`,
+the number of *poor* buyers (the paper's total buyer count is `n_p + 1 = n + 1`).
+We keep them as plain functions of `(p, q)`. -/
 
 /-- Seller 1's revenue when poor buyers are forced to buy seller 2's dataset first.
-`r₁⁻(p,q) = min(p,β) + n·min(p, max(0, 1-q))`. (revenue.tex, thm:r-lo-hi) -/
+`r₁⁻(p,q) = min(p,β) + n·min(p, max(0, 1-q))`. (thm:r-lo-hi) -/
 noncomputable def r1lo (p q : ℝ) : ℝ :=
   min p β + n * min p (max 0 (1 - q))
 
 /-- Seller 1's revenue when poor buyers are forced to buy her dataset first.
-`r₁⁺(p,q) = min(p,β) + n·min(p, 1)`. (revenue.tex, thm:r-lo-hi) -/
+`r₁⁺(p,q) = min(p,β) + n·min(p, 1)`. (thm:r-lo-hi) -/
 noncomputable def r1hi (p _q : ℝ) : ℝ :=
   min p β + n * min p 1
 
 /-- Seller 2's revenue when poor buyers are forced to buy seller 1's dataset first.
-`r₂⁻(p,q) = n·min(q, max(0, 1-p))`. (revenue.tex, thm:r-lo-hi) -/
+`r₂⁻(p,q) = n·min(q, max(0, 1-p))`. (thm:r-lo-hi) -/
 noncomputable def r2lo (p q : ℝ) : ℝ :=
   n * min q (max 0 (1 - p))
 
 /-- Seller 2's revenue when poor buyers are forced to buy her dataset first.
-`r₂⁺(p,q) = n·min(q, 1)`. (revenue.tex, thm:r-lo-hi) -/
+`r₂⁺(p,q) = n·min(q, 1)`. (thm:r-lo-hi) -/
 noncomputable def r2hi (_p q : ℝ) : ℝ :=
   n * min q 1
 
-/-! ### The valid-revenue set `V(p,q)`
+/-! The valid-revenue set `V(p,q)`:
 
-Per revenue.tex thm:r and inapprox.tex lines 61–62:
-* If `p + q ≤ 1`: unique point `(r₁⁻, r₂⁻)`.
-* If `p < α·q`  : unique point `(r₁⁺, r₂⁻)`.
-* If `p > α·q`  : unique point `(r₁⁻, r₂⁺)`.
+* If `p + q ≤ 1`: `{(r₁⁻, r₂⁻)}`.
+* If `p < α·q`  : `{(r₁⁺, r₂⁻)}`.
+* If `p > α·q`  : `{(r₁⁻, r₂⁺)}`.
 * If `p = α·q` and `p + q > 1`: the segment with `r₁⁻ ≤ r₁ ≤ r₁⁺`,
   `r₂⁻ ≤ r₂ ≤ r₂⁺`, and `r₁ + r₂ = min(p,β) + n`.
 
-`V` is a singleton **except** on the knife-edge `p = α·q ∧ p + q > 1`. -/
+`V` is a singleton _except_ on the knife-edge `p = α·q ∧ p + q > 1`. -/
 
 open Classical in
 /-- The set of valid seller-revenue pairs `(r₁, r₂)` at prices `(p, q)`. -/
@@ -69,7 +59,7 @@ noncomputable def V (p q : ℝ) : Set (ℝ × ℝ) :=
           r2lo n p q ≤ rr.2 ∧ rr.2 ≤ r2hi n p q ∧
           rr.1 + rr.2 = min p β + n}
 
-/-! ### Best-response envelopes (revenue.tex, thm:rstar) -/
+/-! Best-response revenues (thm:rstar) -/
 
 /-- Seller 1's best-response revenue given `q`:
 `r₁*(q) = max(β + n·max(0,1-q), min(β, α·q) + n·min(1, α·q))`. -/
@@ -100,9 +90,9 @@ noncomputable def μ (p q : ℝ) : ℝ :=
 
 /-! ## Section: Inapproximability (inapprox.tex)
 
-### Constraints on `(α, β)`. -/
+/-! ## Inapproximability -/
 
-/-- The four constraints of inapprox.tex (items c1–c4). -/
+/-- The four constraints on α, β, and n (items c1–c4). -/
 structure Constraints (α β n : ℝ) : Prop where
   /-- c1: `2 ≤ α ≤ β < α + n`. -/
   c1_lo : 2 ≤ α
@@ -115,9 +105,7 @@ structure Constraints (α β n : ℝ) : Prop where
   /-- c4: `α·(β + n)² > β·n²`. -/
   c4 : α * (β + n) ^ 2 > β * n ^ 2
 
-/-! ### The four candidate points (inapprox.tex, "Points").
-
-We give each `pᵢ, qᵢ, μᵢ` its closed form. Auxiliary `q₁` and `ĉ₁` are shared. -/
+/-! The four candidate points. Auxiliary `q₁` and `ĉ₁` are shared. -/
 
 /-- `q₁ := β / (α + n)`. -/
 noncomputable def q1 : ℝ := β / (α + n)
@@ -165,7 +153,7 @@ noncomputable def μ4 : ℝ := 1 + β * n / (n ^ 2 + n * α + α * β)
 noncomputable def candidatePoints : Finset (ℝ × ℝ) :=
   {(p1 α β n, q1 α β n), (p2 β, q2 α β n), (p3 α β n, q3 α β n), (p4 α β n, q4 α β n)}
 
-/-! ### Main reduction lemma (inapprox.tex, thm:pq-redn)
+/-! ### Main reduction lemma (thm:pq-redn)
 
 Under the constraints, the infimum of `μ` over all prices collapses to the minimum
 of `μ` over the four candidate points, and `μ(pᵢ, qᵢ) = μᵢ`. -/
