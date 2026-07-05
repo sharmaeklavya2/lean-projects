@@ -1,0 +1,80 @@
+% shorthands
+\let\eps\varepsilon
+\newcommand*{\defeq}{:=}
+\newcommand*{\Th}{^{\textrm{th}}}
+\newcommand*{\WLoG}{Without loss of generality}
+\newcommand*{\wLoG}{without loss of generality}
+
+% math symbols
+\newcommand*{\boolOne}{\mathbf{1}}  % indicator
+\newcommand*{\vecOne}{\mathbf{1}}
+\newcommand*{\vecZero}{\mathbf{0}}
+
+% functions/operators
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
+% alphabetical symbols
+\newcommand*{\Ical}{\mathcal{I}}
+\newcommand*{\chat}{\widehat{c}}
+
+% theorems, definitions, examples
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{observation}[theorem]{Observation}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+\newtheorem{remark}{Remark}
+
+% CUSTOMIZATION ================================================================
+
+% misc
+\allowdisplaybreaks
+%\defaultaddspace=0.0em  % spacing in tables
+
+% algorithms
+%\algnewcommand{\LineComment}[1]{\State \textcolor{gray}{\texttt{//} \textit{#1}}}
+%\renewcommand{\algorithmiccomment}[1]{\hfill\textcolor{gray}{\texttt{//} \textit{#1}}}
+
+% wrap URLs
+\Urlmuskip=0mu plus 0.1mu
+\makeatletter
+\g@addto@macro{\UrlBreaks}{%
+\do\/%
+\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m%
+\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z%
+\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M%
+\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z%
+\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9%
+}
+\makeatother
+
+% tighter lists
+\makeatletter
+\@ifpackageloaded{enumitem}{%
+\newenvironment*{tightemize}{\begin{itemize}[noitemsep]}{\end{itemize}}%
+\newenvironment*{tightenum}{\begin{enumerate}[noitemsep]}{\end{enumerate}}%
+}{%
+\newenvironment*{tightemize}{\begin{itemize}}{\end{itemize}}%
+\newenvironment*{tightenum}{\begin{enumerate}}{\end{enumerate}}%
+}
+\makeatother
+
+% thm recall
+%\newcommand*{\thmRecall}[1]{\texttt{#1}}
+%\newcommand*{\thmRecall}[1]{\csname #1\endcsname*}
+%\makeatletter
+%\newcommand*{\thmRecall}[1]{%
+%\ifcsname #1\endcsname
+%    \csname #1\endcsname*
+%\else
+%    \@latex@error{Undefined restatable: \noexpand#1}\@ehc
+%\fi
+%}
+%\makeatother
+
+% cleveref
+\newcommand{\creflastconjunction}{, and\nobreakspace}  % https://tex.stackexchange.com/a/161340

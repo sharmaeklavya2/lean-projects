@@ -26,3 +26,6 @@ name = "Scratch"
 
 [[lean_lib]]
 name = "Anki"
+
+[[lean_lib]]
+name = "DataMktOligoHard"

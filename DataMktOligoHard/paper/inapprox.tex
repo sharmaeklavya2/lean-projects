@@ -1,0 +1,64 @@
+\section{Inapproximability}
+
+In this section, we prove a lower bound on $\inf_{p, q} \mu(p, q)$ (as defined in \cref{sec:revenue}.)
+
+To make the analysis simpler, we impose some constraints on $(\alpha, \beta)$
+instead of searching the entire region $\mathbb{R}_{\ge 0}^2$.
+Under these constraints, we identify a set of four points $P \defeq \{(p_i, q_i)\}_{i=1}^4$
+such that $\argmin_{p,q} \mu(p, q) \in P$.
+Then, we pick $(\alpha, \beta)$ such that $\min_{i=1}^4 \mu(p_i, q_i)$ is maximized.
+
+We first simply state the constraints and the points $\{(p_i, q_i)\}_{i=1}^4$.
+After that, we explain how we came up with them and prove that $\argmin_{p,q} \mu(p, q) \in P$.
+
+\textbf{Constraints}:
+\begin{enumerate}
+\item \label{item:c1}$2 \le \alpha \le \beta < \alpha + n$.
+\item \label{item:c2}$\alpha + n < \alpha\beta$.
+\item \label{item:c3}$(\alpha + n)^3 > \beta(\alpha\beta + 2n(\alpha + n))$.
+\item \label{item:c4}$\alpha(\beta + n)^2 > \beta n^2$.
+\end{enumerate}
+
+\textbf{Points}:
+\begin{align*}
+q_1 &\defeq \frac{\beta}{\alpha + n},
+    & \chat_1 &\defeq \frac{n + \alpha q_1}{n + 1},
+    & p_1 &\defeq \frac{2}{1+\sqrt{1+4/\alpha\chat_1}},
+    & \mu_1 &\defeq \frac{\chat_1}{p_1}.
+\end{align*}
+\begin{align*}
+p_2 &\defeq \beta
+    & q_2 &\defeq \frac{n+\beta}{\sqrt{n^2+\alpha(n+\beta)}+n},
+    & \mu_2 &\defeq \frac{1}{q_2}.
+\end{align*}
+\begin{align*}
+\mu_3 &\defeq \frac{\sqrt{\left(1 - \frac{\beta-\alpha}{n}\right)^2
+    + 4\frac{\alpha\beta}{n^2}\left(1 + \frac{\alpha}{n} + \frac{\alpha\beta}{n^2}\right)}
+    - \left(1 - \frac{\beta-\alpha}{n}\right)}{2\frac{\alpha\beta}{n^2}},
+    & p_3 &\defeq \alpha q_1 \mu_3,
+    & q_3 &\defeq q_1.
+\end{align*}
+\begin{align*}
+q_4 &\defeq q_1,
+    & p_4 &\defeq \alpha q_1,
+    & \mu_4 &\defeq 1 + \frac{\beta n}{n^2 + n\alpha + \alpha\beta}.
+\end{align*}
+
+Our main claim is that it suffices to only care about the points $\{(p_i, q_i)\}_{i=1}^4$.
+
+\begin{lemma}
+\label{thm:pq-redn}
+If $(\alpha, \beta)$ satisfies Constraints \ref{item:c1} to \ref{item:c4}, then
+\[ \inf_{p,q \in \mathbb{R}_{\ge 0}} \mu(p, q) = \min_{i=1}^4 \mu(p_i, q_i). \]
+Moreover, $\mu(p_i, q_i) = \mu_i$ for all $i \in [4]$.
+\end{lemma}
+
+To prove as strong an inapproximability as possible,
+we must pick $(\alpha, \beta)$ such that $c \defeq \min(\mu_1, \mu_2, \mu_3, \mu_4)$ is maximized.
+For $\alpha = 0.7331568565 \cdot n$, $\beta = 0.8603994358 \cdot n$, and $n \to \infty$,
+we get $c \approx 1.3639646021$.
+
+When $p = \alpha q$ and $p + q > 1$, only then $V(p, q)$ is not a singleton.
+Otherwise $|V(p, q)| = 1$, and we denote its unique point by $(r_1(p, q), r_2(p, q))$.
+
+% TODO: finish the proof of \cref{thm:pq-redn}.

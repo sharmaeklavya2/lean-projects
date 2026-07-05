@@ -1,0 +1,35 @@
+\section{Introduction}
+\label{sec:intro}
+
+There are two sellers, and each owns a single dataset.
+%
+There are $n \ge 1$ poor buyers and a single rich buyer.
+Let $1 \le \alpha \le \beta$.
+\begin{enumerate}
+\item Each poor buyer has a budget of $b_1 = 1$,
+    and values the two datasets at $v_{1,1} = \alpha$ and $v_{1,2} = 1$, respectively.
+\item The rich buyer has a budget of $b_2 = \beta$.
+    She values the two datasets at $v_{2,1} = \beta$ and $v_{2,2} = 0$.
+\end{enumerate}
+
+The sellers set prices $p$ and $q$ for their datasets.
+The buyers are allowed to purchase fractional amounts of the datasets.
+The rich buyer only purchases dataset 1, so she spends of her budget,
+and that's how much revenue seller 1 earns from her.
+
+Each poor buyer \emph{prefers} dataset 1 if $v_{1,1}/p > v_{1,2}/q$ (i.e., $p < \alpha q$),
+prefers dataset 2 if $v_{1,1}/p < v_{1,2}/q$ (i.e., $p > \alpha q$),
+and prefers both datasets equally if $v_{1,1}/p < v_{1,2}/q$ (i.e., $p = \alpha q$).
+If she prefers both datasets equally, she would either fully purchase both,
+or spend her entire budget on purchasing both datasets, but she may split
+her budget across the datasets arbitrarily.
+Otherwise, she spends as much money on her preferred dataset as possible,
+and then as much money on the other dataset as possible.
+Assume all poor buyers behave identically.
+
+The sellers are, therefore, in a pricing game with each other.
+Does an (approximately) stable solution exist? We show that the answer is `no'.
+Formally, a pair $(p, q)$ of pricing strategies is a $c$-approximate Nash equilibrium ($c$-NE)
+if no player can unilaterally deviate to a different pricing strategy
+to increase her revenue by more than a factor of $c$.
+We show that a $c$-NE doesn't exist for a large enough $c$.

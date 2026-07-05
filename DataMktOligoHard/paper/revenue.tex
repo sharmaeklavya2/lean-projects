@@ -1,0 +1,82 @@
+\section{Revenue}
+\label{sec:revenue}
+
+Let us first understand how the sellers' revenues depend on the prices $(p, q)$.
+
+For $j \in \{1, 2\}$, let $r^-_j(p, q)$ be seller $j$'s revenue if the poor buyers
+are forced to first buy as much of the other seller's dataset as possible,
+and $r^+_j(p, q)$ be her revenue when the poor buyers are forced to buy
+as much of seller $j$'s dataset as possible before buying from the other seller.
+
+\begin{observation}
+\label{thm:r-lo-hi}
+For any $p, q \in \mathbb{R}_{\ge 0}$, we have
+\begin{align*}
+r^-_1(p, q) &= \min(p, \beta) + n \cdot \min(p, \max(0, 1-q))
+& r^+_1(p, q) &= \min(p, \beta) + n \cdot \min(p, 1)
+\\ r^-_2(p, q) &= n \cdot \min(q, \max(0, 1-p))
+& r^+_2(p, q) &= n \cdot \min(q, 1)
+\end{align*}
+\end{observation}
+
+\begin{observation}
+For any $p, q \in \mathbb{R}_{\ge 0}$, we have
+\begin{enumerate}
+\item If $p + q \le 1$, then $r^-_j(p, q) = r^+_j(p, q)$ for all $j \in \{1, 2\}$.
+\item If $p + q \ge 1$, then $r^-_1(p, q) + r^+_2(p, q) = r^+_1(p, q) + r^-_2(p, q) = \min(p, \beta) + n$.
+\end{enumerate}
+\end{observation}
+
+Let $V(p, q) \subseteq \mathbb{R}_{\ge 0}^2$ be the set of \emph{valid} revenues of the sellers
+when the datasets are priced at $p$ and $q$, respectively.
+These are revenues obtainable when buyers behave as described in \cref{sec:intro}
+(instead of being forced to purchase in a certain way.)
+
+\begin{observation}
+\label{thm:r}
+For any $p, q \in \mathbb{R}_{\ge 0}$, if $(r_1, r_2) \in V(p, q)$, then
+\begin{tightenum}
+\item If $p + q \le 1$, then $r_j = r^-_j(p, q)$ for all $j \in \{1, 2\}$.
+\item If $p < \alpha q$, then $r_1 = r^+_1(p, q)$ and $r_2 = r^-_2(p, q)$.
+\item If $p > \alpha q$, then $r_1 = r^-_1(p, q)$ and $r_2 = r^+_2(p, q)$.
+\item If $p = \alpha q$ and $p + q > 1$, then $r^-_1(p, q) \le r_1 \le r^+_1(p, q)$,
+    $r^-(p, q) \le r_2 \le r^+_2(p, q)$, and $r_1 + r_2 = \min(p, \beta) + n$.
+\end{tightenum}
+\end{observation}
+
+We now look at the maximum revenue a seller can obtain by setting a price strategically
+given the other seller's price. Formally,
+\begin{align*}
+r_1^*(q) &\defeq \sup\{r_1: p \in \mathbb{R}_{\ge 0} \text{ and } (r_1, r_2) \in V(p, q)\}
+\\ r_2^*(p) &\defeq \sup\{r_2: q \in \mathbb{R}_{\ge 0} \text{ and } (r_1, r_2) \in V(p, q)\}
+\end{align*}
+
+\begin{lemma}
+\label{thm:rstar}
+For any $p, q \in \mathbb{R}_{\ge 0}^2$,
+\begin{align*}
+r_1^*(q) &= \max\left(
+    \beta + n\max(0, 1-q),
+    \min(\beta, \alpha q) + n\min(1, \alpha q)
+    \right),
+\\ r_2^*(p) &= n\max(1-p, \min(1, p/\alpha)).
+\end{align*}
+\end{lemma}
+\begin{proof}[Proof sketch]
+Seller 1's revenue is maximized by either setting the price to $\beta$,
+or undercutting seller 2 by an infinitesimally small amount.
+Seller 2's revenue is maximized by either setting the price to $1$,
+or undercutting seller 1 by an infinitesimally small amount.
+\end{proof}
+
+The pair $(p, q)$ is a $c$-NE if for any $(r_1, r_2) \in V(p, q)$, we have
+$r^*_1(q) \le c \cdot r_1$ and $r^*_2(p) \le c \cdot r_2$.
+Note that $r^*_1(q) \ge \beta \ge 1$ and $r^*_2(p) > 0$.
+We follow the convention that $x/y = \infty$ if $x > 0$ and $y = 0$.
+Thus, $(p, q)$ is a $c$-NE iff
+\[ \mu(p, q) \defeq \inf_{(r_1, r_2) \in V(p, q)} \max\left(\frac{r_1^*(q)}{r_1}, \frac{r_2^*(p)}{r_2}\right) \le c. \]
+Thus, the stablest prices $(p, q)$ are those that minimize $\mu(p, q)$.
+
+Our goal is to show instability, i.e., finding a sufficiently-large constant $c$
+such that $\mu(p, q) \ge c$ for all $p, q \in \mathbb{R}_{\ge 0}^2$.
+This would prove that for all $\eps > 0$, no $(c-\eps)$-NE exists.
