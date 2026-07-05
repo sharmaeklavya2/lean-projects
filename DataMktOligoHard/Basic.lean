@@ -109,6 +109,12 @@ structure Constraints (α β n : ℝ) : Prop where
   /-- c4: `α·(β + n)² > β·n²`. -/
   c4 : α * (β + n) ^ 2 > β * n ^ 2
 
+/-- `L₁ := α + n - β`. Positive by Constraint c1 (`β < α + n`). -/
+noncomputable def L1 : ℝ := α + n - β
+
+/-- `L₂ := n² + αn + αβ`. Positive (all terms are, since `n > 0`). -/
+noncomputable def L2 : ℝ := n ^ 2 + α * n + α * β
+
 /-! The four candidate points. Auxiliary `q₁` and `ĉ₁` are shared. -/
 
 /-- `q₁ := β / (α + n)`. -/
@@ -126,17 +132,15 @@ noncomputable def μ1 : ℝ := chat1 α β n / p1 α β n
 /-- `p₂ := β`. -/
 noncomputable def p2 : ℝ := β
 
-/-- `q₂ := (n + β) / (√(n² + α·(n + β)) + n)`. -/
-noncomputable def q2 : ℝ := (n + β) / (Real.sqrt (n ^ 2 + α * (n + β)) + n)
+/-- `q₂ := (n + β) / (n + √L₂)`. -/
+noncomputable def q2 : ℝ := (n + β) / (n + Real.sqrt (L2 α β n))
 
 /-- `μ₂ := 1 / q₂`. -/
 noncomputable def μ2 : ℝ := 1 / q2 α β n
 
-/-- `μ₃ := (√((1 - (β-α)/n)² + 4(αβ/n²)(1 + α/n + αβ/n²)) - (1 - (β-α)/n)) / (2αβ/n²)`. -/
+/-- `μ₃ := (√(n²L₁² + 4αβL₂) - L₁n) / (2αβ)`. -/
 noncomputable def μ3 : ℝ :=
-  let A := 1 - (β - α) / n
-  let B := α * β / n ^ 2
-  (Real.sqrt (A ^ 2 + 4 * B * (1 + α / n + B)) - A) / (2 * B)
+  (Real.sqrt (n ^ 2 * (L1 α β n) ^ 2 + 4 * α * β * L2 α β n) - L1 α β n * n) / (2 * α * β)
 
 /-- `p₃ := α·q₁·μ₃`. -/
 noncomputable def p3 : ℝ := α * q1 α β n * μ3 α β n
@@ -150,8 +154,8 @@ noncomputable def q4 : ℝ := q1 α β n
 /-- `p₄ := α·q₁`. -/
 noncomputable def p4 : ℝ := α * q1 α β n
 
-/-- `μ₄ := 1 + βn / (n² + nα + αβ)`. -/
-noncomputable def μ4 : ℝ := 1 + β * n / (n ^ 2 + n * α + α * β)
+/-- `μ₄ := 1 + βn / L₂`. -/
+noncomputable def μ4 : ℝ := 1 + β * n / L2 α β n
 
 /-- The set of four candidate points `P = {(pᵢ, qᵢ)}`. -/
 noncomputable def candidatePoints : Finset (ℝ × ℝ) :=

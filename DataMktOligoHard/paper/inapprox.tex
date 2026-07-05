@@ -19,6 +19,9 @@ After that, we explain how we came up with them and prove that $\argmin_{p,q} \m
 \item \label{item:c4}$\alpha(\beta + n_p)^2 > \beta n_p^2$.
 \end{enumerate}
 
+Let $L_1 \defeq \alpha + n_p - \beta$ and $L_2 \defeq n_p^2 + \alpha n_p + \alpha\beta$.
+Then $L_1 > 0$ by Constraint \ref{item:c1}.
+
 \textbf{Points}:
 \begin{align*}
 q_1 &\defeq \frac{\beta}{\alpha + n_p},
@@ -28,20 +31,18 @@ q_1 &\defeq \frac{\beta}{\alpha + n_p},
 \end{align*}
 \begin{align*}
 p_2 &\defeq \beta
-    & q_2 &\defeq \frac{n_p+\beta}{\sqrt{n_p^2+\alpha(n_p+\beta)}+n_p},
+    & q_2 &\defeq \frac{n_p+\beta}{n_p + \sqrt{L_2}},
     & \mu_2 &\defeq \frac{1}{q_2}.
 \end{align*}
 \begin{align*}
-\mu_3 &\defeq \frac{\sqrt{\left(1 - \frac{\beta-\alpha}{n_p}\right)^2
-    + 4\frac{\alpha\beta}{n_p^2}\left(1 + \frac{\alpha}{n_p} + \frac{\alpha\beta}{n_p^2}\right)}
-    - \left(1 - \frac{\beta-\alpha}{n_p}\right)}{2\frac{\alpha\beta}{n_p^2}},
+\mu_3 &\defeq \frac{\sqrt{n_p^2L_1^2 + 4\alpha\beta L_2} - L_1n_p}{2\alpha\beta},
     & p_3 &\defeq \alpha q_1 \mu_3,
     & q_3 &\defeq q_1.
 \end{align*}
 \begin{align*}
 q_4 &\defeq q_1,
     & p_4 &\defeq \alpha q_1,
-    & \mu_4 &\defeq 1 + \frac{\beta n_p}{n_p^2 + n_p\alpha + \alpha\beta}.
+    & \mu_4 &\defeq 1 + \frac{\beta n_p}{L_2}.
 \end{align*}
 
 Our main claim is that it suffices to only care about the points $\{(p_i, q_i)\}_{i=1}^4$.
