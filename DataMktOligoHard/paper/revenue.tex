@@ -8,14 +8,16 @@ are forced to first buy as much of the other seller's dataset as possible,
 and $r^+_j(p, q)$ be her revenue when the poor buyers are forced to buy
 as much of seller $j$'s dataset as possible before buying from the other seller.
 
+For notational convenience, denote the number of poor buyers by $n_p \defeq n-1$.
+
 \begin{observation}
 \label{thm:r-lo-hi}
 For any $p, q \in \mathbb{R}_{\ge 0}$, we have
 \begin{align*}
-r^-_1(p, q) &= \min(p, \beta) + n \cdot \min(p, \max(0, 1-q))
-& r^+_1(p, q) &= \min(p, \beta) + n \cdot \min(p, 1)
-\\ r^-_2(p, q) &= n \cdot \min(q, \max(0, 1-p))
-& r^+_2(p, q) &= n \cdot \min(q, 1)
+r^-_1(p, q) &= \min(p, \beta) + n_p \cdot \min(p, \max(0, 1-q))
+& r^+_1(p, q) &= \min(p, \beta) + n_p \cdot \min(p, 1)
+\\ r^-_2(p, q) &= n_p \cdot \min(q, \max(0, 1-p))
+& r^+_2(p, q) &= n_p \cdot \min(q, 1)
 \end{align*}
 \end{observation}
 
@@ -23,7 +25,7 @@ r^-_1(p, q) &= \min(p, \beta) + n \cdot \min(p, \max(0, 1-q))
 For any $p, q \in \mathbb{R}_{\ge 0}$, we have
 \begin{enumerate}
 \item If $p + q \le 1$, then $r^-_j(p, q) = r^+_j(p, q)$ for all $j \in \{1, 2\}$.
-\item If $p + q \ge 1$, then $r^-_1(p, q) + r^+_2(p, q) = r^+_1(p, q) + r^-_2(p, q) = \min(p, \beta) + n$.
+\item If $p + q \ge 1$, then $r^-_1(p, q) + r^+_2(p, q) = r^+_1(p, q) + r^-_2(p, q) = \min(p, \beta) + n_p$.
 \end{enumerate}
 \end{observation}
 
@@ -40,7 +42,7 @@ For any $p, q \in \mathbb{R}_{\ge 0}$, if $(r_1, r_2) \in V(p, q)$, then
 \item If $p < \alpha q$, then $r_1 = r^+_1(p, q)$ and $r_2 = r^-_2(p, q)$.
 \item If $p > \alpha q$, then $r_1 = r^-_1(p, q)$ and $r_2 = r^+_2(p, q)$.
 \item If $p = \alpha q$ and $p + q > 1$, then $r^-_1(p, q) \le r_1 \le r^+_1(p, q)$,
-    $r^-(p, q) \le r_2 \le r^+_2(p, q)$, and $r_1 + r_2 = \min(p, \beta) + n$.
+    $r^-(p, q) \le r_2 \le r^+_2(p, q)$, and $r_1 + r_2 = \min(p, \beta) + n_p$.
 \end{tightenum}
 \end{observation}
 
@@ -56,10 +58,10 @@ r_1^*(q) &\defeq \sup\{r_1: p \in \mathbb{R}_{\ge 0} \text{ and } (r_1, r_2) \in
 For any $p, q \in \mathbb{R}_{\ge 0}^2$,
 \begin{align*}
 r_1^*(q) &= \max\left(
-    \beta + n\max(0, 1-q),
-    \min(\beta, \alpha q) + n\min(1, \alpha q)
+    \beta + n_p\max(0, 1-q),
+    \min(\beta, \alpha q) + n_p\min(1, \alpha q)
     \right),
-\\ r_2^*(p) &= n\max(1-p, \min(1, p/\alpha)).
+\\ r_2^*(p) &= n_p\max(1-p, \min(1, p/\alpha)).
 \end{align*}
 \end{lemma}
 \begin{proof}[Proof sketch]

@@ -7,14 +7,6 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 /-!
 # Data-market oligopoly: inapproximability of approximate Nash equilibria
 
-This file formalizes the `Inapproximability` section of the paper (`inapprox.tex`).
-
-Following the paper's `revenue.tex`, we do **not** model buyers/sellers directly.
-Instead we *define* the revenue quantities `r₁⁻, r₁⁺, r₂⁻, r₂⁺`, the best-response
-envelopes `r₁*, r₂*`, the valid-revenue set `V`, and the stability predicate by
-their closed forms. The key claim `thm:pq-redn` then becomes a purely algebraic
-statement about real numbers, with no mention of markets.
-
 ## Conventions
 The paper defines `μ(p,q) = inf max(r₁*/r₁, r₂*/r₂)` with the convention `x/0 = ∞`
 (for `x > 0`), so that a seller earning `0` revenue against a positive best
@@ -30,8 +22,10 @@ variable (α β n : ℝ)
 
 /-! ## Section: Revenue (revenue.tex)
 
-The parameters `α, β` and buyer count `n` are fixed. All quantities below are the
-closed forms from `revenue.tex`. We keep them as plain functions of `(p, q)`. -/
+The parameters `α, β` and `n` are fixed. Here `n` denotes the paper's `n_p`, the
+number of *poor* buyers (the paper's total buyer count is `n_p + 1 = n + 1`; the
+extra rich buyer never enters any formula we formalize). All quantities below are
+the closed forms from `revenue.tex`. We keep them as plain functions of `(p, q)`. -/
 
 /-- Seller 1's revenue when poor buyers are forced to buy seller 2's dataset first.
 `r₁⁻(p,q) = min(p,β) + n·min(p, max(0, 1-q))`. (revenue.tex, thm:r-lo-hi) -/
