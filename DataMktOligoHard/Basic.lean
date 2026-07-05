@@ -13,7 +13,7 @@ The paper defines `μ(p,q) = inf max(r₁*/r₁, r₂*/r₂)` with the conventio
 response is maximally unstable. To avoid `EReal` division pitfalls (where Mathlib
 sets `x/0 = 0`), we encode the `c`-NE condition **multiplicatively** and division-free:
 `(p,q)` is a `c`-NE iff every valid `(r₁,r₂)` satisfies `r₁* ≤ c·r₁` and `r₂* ≤ c·r₂`.
-See `IsCNE`. We derive a real-valued `mu p q` for stating the paper's `μᵢ` formulas.
+See `IsCNE`. We derive a real-valued `μ p q` for stating the paper's `μᵢ` formulas.
 -/
 
 namespace DataMktOligoHard
@@ -95,7 +95,7 @@ def IsCNE (c p q : ℝ) : Prop :=
 
 At the four candidate points revenues are positive, so this agrees with the
 paper's `inf max(r₁*/r₁, r₂*/r₂)`. -/
-noncomputable def mu (p q : ℝ) : ℝ :=
+noncomputable def μ (p q : ℝ) : ℝ :=
   sInf {c : ℝ | 0 ≤ c ∧ IsCNE α β n c p q}
 
 /-! ## Section: Inapproximability (inapprox.tex)
@@ -129,7 +129,7 @@ noncomputable def chat1 : ℝ := (n + α * q1 α β n) / (n + 1)
 noncomputable def p1 : ℝ := 2 / (1 + Real.sqrt (1 + 4 / (α * chat1 α β n)))
 
 /-- `μ₁ := ĉ₁ / p₁`. -/
-noncomputable def mu1 : ℝ := chat1 α β n / p1 α β n
+noncomputable def μ1 : ℝ := chat1 α β n / p1 α β n
 
 /-- `p₂ := β`. -/
 noncomputable def p2 : ℝ := β
@@ -138,16 +138,16 @@ noncomputable def p2 : ℝ := β
 noncomputable def q2 : ℝ := (n + β) / (Real.sqrt (n ^ 2 + α * (n + β)) + n)
 
 /-- `μ₂ := 1 / q₂`. -/
-noncomputable def mu2 : ℝ := 1 / q2 α β n
+noncomputable def μ2 : ℝ := 1 / q2 α β n
 
 /-- `μ₃ := (√((1 - (β-α)/n)² + 4(αβ/n²)(1 + α/n + αβ/n²)) - (1 - (β-α)/n)) / (2αβ/n²)`. -/
-noncomputable def mu3 : ℝ :=
+noncomputable def μ3 : ℝ :=
   let A := 1 - (β - α) / n
   let B := α * β / n ^ 2
   (Real.sqrt (A ^ 2 + 4 * B * (1 + α / n + B)) - A) / (2 * B)
 
 /-- `p₃ := α·q₁·μ₃`. -/
-noncomputable def p3 : ℝ := α * q1 α β n * mu3 α β n
+noncomputable def p3 : ℝ := α * q1 α β n * μ3 α β n
 
 /-- `q₃ := q₁`. -/
 noncomputable def q3 : ℝ := q1 α β n
@@ -159,7 +159,7 @@ noncomputable def q4 : ℝ := q1 α β n
 noncomputable def p4 : ℝ := α * q1 α β n
 
 /-- `μ₄ := 1 + βn / (n² + nα + αβ)`. -/
-noncomputable def mu4 : ℝ := 1 + β * n / (n ^ 2 + n * α + α * β)
+noncomputable def μ4 : ℝ := 1 + β * n / (n ^ 2 + n * α + α * β)
 
 /-- The set of four candidate points `P = {(pᵢ, qᵢ)}`. -/
 noncomputable def candidatePoints : Finset (ℝ × ℝ) :=
@@ -171,27 +171,27 @@ Under the constraints, the infimum of `μ` over all prices collapses to the mini
 of `μ` over the four candidate points, and `μ(pᵢ, qᵢ) = μᵢ`. -/
 
 /-- `μ(pᵢ, qᵢ) = μᵢ` for the four candidate points. -/
-theorem mu_p1_q1 (h : Constraints α β n) :
-    mu α β n (p1 α β n) (q1 α β n) = mu1 α β n := by
+theorem μ_p1_q1 (h : Constraints α β n) :
+    μ α β n (p1 α β n) (q1 α β n) = μ1 α β n := by
   sorry
 
-theorem mu_p2_q2 (h : Constraints α β n) :
-    mu α β n (p2 β) (q2 α β n) = mu2 α β n := by
+theorem μ_p2_q2 (h : Constraints α β n) :
+    μ α β n (p2 β) (q2 α β n) = μ2 α β n := by
   sorry
 
-theorem mu_p3_q3 (h : Constraints α β n) :
-    mu α β n (p3 α β n) (q3 α β n) = mu3 α β n := by
+theorem μ_p3_q3 (h : Constraints α β n) :
+    μ α β n (p3 α β n) (q3 α β n) = μ3 α β n := by
   sorry
 
-theorem mu_p4_q4 (h : Constraints α β n) :
-    mu α β n (p4 α β n) (q4 α β n) = mu4 α β n := by
+theorem μ_p4_q4 (h : Constraints α β n) :
+    μ α β n (p4 α β n) (q4 α β n) = μ4 α β n := by
   sorry
 
 /-- **Main reduction** (thm:pq-redn): under Constraints c1–c4, the infimum of `μ`
 over all nonnegative prices equals the minimum of `μ` over the four candidate points. -/
-theorem inf_mu_eq_min_candidates (h : Constraints α β n) :
-    sInf {m : ℝ | ∃ p q : ℝ, 0 ≤ p ∧ 0 ≤ q ∧ m = mu α β n p q} =
-      min (mu1 α β n) (min (mu2 α β n) (min (mu3 α β n) (mu4 α β n))) := by
+theorem inf_μ_eq_min_candidates (h : Constraints α β n) :
+    sInf {m : ℝ | ∃ p q : ℝ, 0 ≤ p ∧ 0 ≤ q ∧ m = μ α β n p q} =
+      min (μ1 α β n) (min (μ2 α β n) (min (μ3 α β n) (μ4 α β n))) := by
   sorry
 
 end DataMktOligoHard
