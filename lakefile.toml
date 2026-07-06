@@ -13,19 +13,22 @@ scope = "leanprover-community"
 rev = "v4.30.0"
 
 [[lean_lib]]
-name = "BinTree"
-
-[[lean_lib]]
 name = "SimpleExamples"
-
-[[lean_lib]]
-name = "BinPack"
 
 [[lean_lib]]
 name = "Scratch"
 
 [[lean_lib]]
+name = "AiScratch"
+
+[[lean_lib]]
 name = "Anki"
+
+[[lean_lib]]
+name = "BinTree"
+
+[[lean_lib]]
+name = "BinPack"
 
 [[lean_lib]]
 name = "DataMktOligoHard"

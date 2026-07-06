@@ -1,6 +1,7 @@
 /.lake
 /secret
 Scratch.lean
+AiScratch.lean
 
 *.claude
 *.zip
