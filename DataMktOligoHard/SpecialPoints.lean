@@ -1,4 +1,5 @@
 import DataMktOligoHard.Basic
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Properties of the special points (sp-props.tex)
@@ -315,11 +316,187 @@ theorem thm_p1 (h : Constraints α β n) :
     μ α β n (p1 α β n) (q1 α β n) = μ1 α β n :=
   ⟨⟨p1_gt_ratio h, p1_lt_one h⟩, chat1_gt_one h, μ_p1_q1 h⟩
 
+/-! ## Properties of `q₂` (thm:q2) -/
+
+/-- `0 < L₂ = n² + αn + αβ`. -/
+theorem L2_pos (h : Constraints α β n) : 0 < L2 α β n := by
+  have hα := alpha_pos h
+  have hn := n_pos h
+  have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
+  simp only [L2]
+  nlinarith [mul_pos hα hn, mul_pos hα hβ, sq_nonneg n]
+
+/-- `0 < q₂`. -/
+theorem q2_pos (h : Constraints α β n) : 0 < q2 α β n := by
+  have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
+  have hn := n_pos h
+  simp only [q2]
+  apply div_pos (by linarith)
+  linarith [Real.sqrt_nonneg (L2 α β n)]
+
+/-- `α·q₂ = √L₂ - n` (the convenient closed form for `q₂`, since
+`α(n+β) = (√L₂-n)(√L₂+n) = L₂ - n²`). -/
+theorem alpha_mul_q2 (h : Constraints α β n) :
+    α * q2 α β n = Real.sqrt (L2 α β n) - n := by
+  have hn := n_pos h
+  have hs_pos : 0 ≤ Real.sqrt (L2 α β n) := Real.sqrt_nonneg _
+  have hs2 : Real.sqrt (L2 α β n) ^ 2 = L2 α β n := Real.sq_sqrt (L2_pos h).le
+  simp only [q2]
+  set s := Real.sqrt (L2 α β n)
+  have hden : (n + s) ≠ 0 := ne_of_gt (by linarith)
+  rw [mul_div_assoc', div_eq_iff hden]
+  simp only [L2] at hs2
+  linear_combination -hs2  -- α·(n+β) = (s-n)(n+s) = s² - n², using s² = L₂
+
+/-- The defining quadratic `α·q₂² + 2n·q₂ = n + β` (thm:q2): `q₂` solves
+`(αx+n)/(β+n(1-x)) = 1/x`. Derived from `α·q₂ + n = √L₂` (`alpha_mul_q2`). -/
+theorem q2_quadratic (h : Constraints α β n) :
+    α * q2 α β n ^ 2 + 2 * n * q2 α β n = n + β := by
+  have hα := alpha_pos h
+  have hαne : α ≠ 0 := ne_of_gt hα
+  have hq2 : α * q2 α β n = Real.sqrt (L2 α β n) - n := alpha_mul_q2 h
+  -- `(α·q₂ + n)² = (√L₂)² = L₂`.
+  have hsq : (α * q2 α β n + n) ^ 2 = L2 α β n := by
+    have he : α * q2 α β n + n = Real.sqrt (L2 α β n) := by rw [hq2]; ring
+    rw [he]; exact Real.sq_sqrt (L2_pos h).le
+  have hL2 : L2 α β n = n ^ 2 + α * n + α * β := by simp only [L2]
+  -- `α·(α·q₂² + 2n·q₂) = (α·q₂+n)² - n² = αn + αβ = α·(n+β)`; cancel `α`.
+  have hcancel : α * (α * q2 α β n ^ 2 + 2 * n * q2 α β n) = α * (n + β) := by
+    linear_combination hsq + hL2
+  exact mul_left_cancel₀ hαne hcancel
+
+/-- `q₂ < 1` (thm:q2). Root-sign: `f(1) = α + n - β > 0` for the upward parabola
+`f(x) = αx² + 2nx - (n+β)` with `f(q₂) = 0`. -/
+theorem q2_lt_one (h : Constraints α β n) : q2 α β n < 1 := by
+  nlinarith [q2_quadratic h, h.c1_hi, alpha_pos h, n_pos h, q2_pos h,
+    mul_pos (alpha_pos h) (q2_pos h)]
+
+/-- `1 < α·q₂`, i.e. `q₂ > 1/α` (thm:q2). Uses `α·q₂ = √L₂ - n` and `(n+1)² < L₂`
+(equivalently `2n + 1 < α(n+β)`, from `α ≥ 2 ≤ β`). -/
+theorem one_lt_alpha_mul_q2 (h : Constraints α β n) : 1 < α * q2 α β n := by
+  have hn := n_pos h
+  rw [alpha_mul_q2 h]
+  have h1 : ((n + 1 : ℝ)) ^ 2 < L2 α β n := by
+    simp only [L2]
+    nlinarith [mul_nonneg (show (0:ℝ) ≤ α - 2 by linarith [h.c1_lo]) hn.le,
+      mul_nonneg (show (0:ℝ) ≤ α - 2 by linarith [h.c1_lo])
+        (show (0:ℝ) ≤ β by linarith [h.c1_lo, h.c1_mid]), h.c1_lo, h.c1_mid]
+  have h2 := Real.sqrt_lt_sqrt (sq_nonneg (n + 1)) h1
+  rw [Real.sqrt_sq (by linarith : (0:ℝ) ≤ n + 1)] at h2
+  linarith
+
+/-- `1/α < q₂`, the lower end of `q₂ ∈ (1/α, 1)`. -/
+theorem one_div_alpha_lt_q2 (h : Constraints α β n) : 1 / α < q2 α β n := by
+  rw [div_lt_iff₀ (alpha_pos h)]
+  nlinarith [one_lt_alpha_mul_q2 h]
+
+/-- `α·q₂ < β` (thm:q2 line 101), since `α·q₂ < α ≤ β` (uses `q₂ < 1`). -/
+theorem alpha_mul_q2_lt_beta (h : Constraints α β n) : α * q2 α β n < β := by
+  have h1 : α * q2 α β n < α * 1 := mul_lt_mul_of_pos_left (q2_lt_one h) (alpha_pos h)
+  rw [mul_one] at h1
+  linarith [h.c1_mid]
+
+/-- The `r₁⁻` component of `V` at `(β,q₂)`: `r₁⁻ = β + n·(1-q₂)`. -/
+theorem r1lo_β_q2 (h : Constraints α β n) :
+    r1lo β n β (q2 α β n) = β + n * (1 - q2 α β n) := by
+  have h1q : (0:ℝ) ≤ 1 - q2 α β n := by linarith [q2_lt_one h]
+  have h1q_le_β : 1 - q2 α β n ≤ β := by linarith [q2_pos h, h.c1_lo, h.c1_mid]
+  simp only [r1lo]
+  rw [min_self, max_eq_right h1q, min_eq_right h1q_le_β]
+
+/-- The `r₂⁺` component of `V` at `(β,q₂)`: `r₂⁺ = n·q₂`. -/
+theorem r2hi_β_q2 (h : Constraints α β n) :
+    r2hi n β (q2 α β n) = n * q2 α β n := by
+  simp only [r2hi]
+  rw [min_eq_left (le_of_lt (q2_lt_one h))]
+
+/-- `r₁*(q₂) = max(β + n(1-q₂), α·q₂ + n)` (uses `1 < α·q₂ < β` and `q₂ < 1`). -/
+theorem r1star_q2 (h : Constraints α β n) :
+    r1star α β n (q2 α β n) = max (β + n * (1 - q2 α β n)) (α * q2 α β n + n) := by
+  have h1q : (0:ℝ) ≤ 1 - q2 α β n := by linarith [q2_lt_one h]
+  simp only [r1star]
+  rw [max_eq_right h1q, min_eq_right (le_of_lt (alpha_mul_q2_lt_beta h)),
+      min_eq_left (le_of_lt (one_lt_alpha_mul_q2 h)), mul_one]
+
+/-- `r₂*(β) = n` (uses `1 - β ≤ 1 ≤ β/α`). -/
+theorem r2star_β (h : Constraints α β n) : r2star α n β = n := by
+  have hα := alpha_pos h
+  have hβα : (1:ℝ) ≤ β / α := by rw [le_div_iff₀ hα, one_mul]; exact h.c1_mid
+  have h1β : 1 - β ≤ 1 := by linarith [h.c1_lo, h.c1_mid]
+  simp only [r2star]
+  rw [min_eq_left hβα, max_eq_right h1β]
+  ring
+
+/-- Seller 2's ratio at `(β,q₂)` equals `μ₂`: `n/(n·q₂) = 1/q₂`. -/
+theorem ratio2_β_q2 (h : Constraints α β n) :
+    ratio (r2star α n β) (r2hi n β (q2 α β n)) = μ2 α β n := by
+  have hn := n_pos h
+  have hq2 := q2_pos h
+  have hden : n * q2 α β n ≠ 0 := mul_ne_zero (ne_of_gt hn) (ne_of_gt hq2)
+  rw [r2star_β h, r2hi_β_q2 h, ratio, if_neg hden]
+  simp only [μ2]
+  rw [div_eq_div_iff hden (ne_of_gt hq2)]
+  ring
+
+/-- Seller 1's ratio at `(β,q₂)` equals `μ₂`: with `A = β+n(1-q₂)`, `B = α·q₂+n`,
+the quadratic gives `B·q₂ = A`, so `max(A,B) = B` (as `q₂ < 1`) and `B/A = 1/q₂`. -/
+theorem ratio1_β_q2 (h : Constraints α β n) :
+    ratio (r1star α β n (q2 α β n)) (r1lo β n β (q2 α β n)) = μ2 α β n := by
+  have hn := n_pos h
+  have hq2 := q2_pos h
+  have hq2lt := q2_lt_one h
+  have hα := alpha_pos h
+  have hA_pos : 0 < β + n * (1 - q2 α β n) := by
+    have := mul_pos hn (show (0:ℝ) < 1 - q2 α β n by linarith)
+    linarith [h.c1_lo, h.c1_mid]
+  have hB_pos : 0 < α * q2 α β n + n := by
+    have := mul_pos hα hq2; linarith
+  have hBA : (α * q2 α β n + n) * q2 α β n = β + n * (1 - q2 α β n) := by
+    linear_combination q2_quadratic h
+  have hAB : β + n * (1 - q2 α β n) ≤ α * q2 α β n + n := by
+    nlinarith [hBA, hB_pos, hq2lt]
+  rw [r1star_q2 h, r1lo_β_q2 h, max_eq_right hAB, ratio, if_neg (ne_of_gt hA_pos)]
+  simp only [μ2]
+  rw [div_eq_div_iff (ne_of_gt hA_pos) (ne_of_gt hq2)]
+  linear_combination q2_quadratic h
+
 /-- `μ(p₂, q₂) = μ₂` (thm:q2), where `p₂ = β`. Here `p₂ > α·q₂`, so `V` is the
 singleton `{(r₁⁻, r₂⁺)}` and both best-response ratios equal `μ₂`. -/
 theorem μ_p2_q2 (h : Constraints α β n) :
     μ α β n (p2 β) (q2 α β n) = μ2 α β n := by
-  sorry
+  simp only [p2]
+  -- `V` is the singleton `{(r₁⁻, r₂⁺)}` (branch `p > α·q`, since `β > α·q₂`).
+  have hV : V α β n β (q2 α β n)
+          = {(r1lo β n β (q2 α β n), r2hi n β (q2 α β n))} := by
+    unfold V
+    rw [if_neg (not_le.mpr
+          (by linarith [q2_pos h, h.c1_lo, h.c1_mid] : (1:ℝ) < β + q2 α β n)),
+        if_neg (not_lt.mpr (le_of_lt (alpha_mul_q2_lt_beta h))),
+        if_pos (alpha_mul_q2_lt_beta h)]
+  have hset : {m : ℝ | ∃ r1 r2, (r1, r2) ∈ V α β n β (q2 α β n) ∧
+                m = max (ratio (r1star α β n (q2 α β n)) r1) (ratio (r2star α n β) r2)}
+            = {μ2 α β n} := by
+    rw [hV]
+    ext m
+    simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, Prod.mk.injEq]
+    constructor
+    · rintro ⟨r1, r2, ⟨rfl, rfl⟩, rfl⟩
+      rw [ratio1_β_q2 h, ratio2_β_q2 h, max_self]
+    · rintro rfl
+      exact ⟨_, _, ⟨rfl, rfl⟩, by rw [ratio1_β_q2 h, ratio2_β_q2 h, max_self]⟩
+  unfold μ
+  rw [hset, csInf_singleton]
+
+/-! ### Paper-facing statement of thm:q2 -/
+
+/-- **thm:q2** (paper): `q₂ ∈ (1/α, 1)` and `μ(β, q₂) = μ₂`. The paper's ratio
+equalities `r₁*(q₂)/r₁ = r₂*(β)/r₂ = μ₂` are `ratio1_β_q2` and `ratio2_β_q2`, from
+which `μ(β, q₂) = μ₂` follows. Not formalized: that `q₂` is the *unique* positive
+root of `(αx+n)/(β+n(1-x)) = 1/x`. -/
+theorem thm_q2 (h : Constraints α β n) :
+    q2 α β n ∈ Set.Ioo (1 / α) 1 ∧
+    μ α β n (p2 β) (q2 α β n) = μ2 α β n :=
+  ⟨⟨one_div_alpha_lt_q2 h, q2_lt_one h⟩, μ_p2_q2 h⟩
 
 /-- `μ(p₃, q₃) = μ₃` (thm:p3). Here `p₃ > α·q₃`, so `V` is the singleton
 `{(r₁⁻, r₂⁺)}` and both best-response ratios equal `μ₃`. -/
@@ -328,3 +505,4 @@ theorem μ_p3_q3 (h : Constraints α β n) :
   sorry
 
 end DataMktOligoHard
+
