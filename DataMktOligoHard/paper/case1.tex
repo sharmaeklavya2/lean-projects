@@ -3,4 +3,110 @@
     and \texorpdfstring{$p + q \ge 1$}{p + q >= 1}}
 \label{sec:case1}
 
-% Omitted to save tokens. Ask for it if needed.
+Recall \cref{thm:r,thm:rstar}.
+Since $p > \alpha q$ and $p + q \ge 1$, we get
+\begin{align*}
+r_1^*(q) &= \max\left(\beta + (n-1)\max(0, 1-q),
+    \min(\beta, \alpha q) + (n-1)\min(1, \alpha q)\right),
+    \tag{by \cref{thm:rstar}}
+\\ r_1(p, q) &= \min(\beta, p) + (n-1)\max(0, 1-q),
+    \tag{by \cref{thm:r}, $p + q \ge 1$}
+\\ r_2^*(p) &= (n-1)\min(1, p/\alpha),
+    \tag{by \cref{thm:rstar}, $1-p \le q < p/\alpha$}
+\\ r_2(p, q) &= (n-1)\min(q, 1).
+    \tag{by \cref{thm:r}}
+\end{align*}
+
+\begin{lemma}
+\label{thm:1.1}
+Let $p + q \ge 1$ and $p > \alpha q$.
+If $p \ge \alpha$, then $\mu(p, q) \ge \mu_2$.
+\end{lemma}
+\begin{proof}
+By \cref{thm:q2}, $q_2 \in (1/\alpha, 1)$.
+
+\textbf{Case 1}: $q \le q_2$. Since $p \ge \alpha$, we get
+\[ \mu(p, q) \ge \frac{r_2^*(p)}{r_2(p, q)} = \frac{1}{q} \ge \frac{1}{q_2} = \mu_2. \]
+
+\textbf{Case 2}: $q \ge q_2$. Then $\alpha q \ge \alpha q_2 > 1$. So,
+\begin{align*}
+\mu(p, q) &\ge \frac{r_1^*(q)}{r_1(p, q)}
+    \ge \frac{\min(\beta, \alpha q) + n-1}{\min(\beta, p) + (n-1)\max(0, 1-q)}
+\\ &\ge \frac{\alpha q_2 + n-1}{\beta + (n-1)(1-q_2)}
+        \tag{expression was non-decreasing in $q$, and $\beta \ge \alpha > \alpha q_2$}
+\\ &= \frac{1}{q_2} = \mu_2.
+        \tag{by \cref{thm:q2}}
+\end{align*}
+
+Thus, $\mu(p, q) \ge \mu_2$.
+\end{proof}
+
+\begin{lemma}
+\label{thm:mu3-2}
+$\mu_3 < 1 + \beta/(n-1)$.
+\end{lemma}
+\begin{proof}
+By \cref{thm:mu3}, $\mu_3$ is the only positive solution to the equation $f(x) = 0$,
+where $f(x) \defeq \alpha\beta x^2 + (n-1)(n-1+\alpha-\beta)x - ((n-1)^2 + (n-1)\alpha + \alpha\beta)$.
+
+Let $\nu$ be the other (negative) root of $f(x) = 0$.
+Since $f$ is a quadratic function, where the quadratic term's coefficient is positive,
+we get that $f(x) \le 0 \iff x \in [\nu, \mu_3]$.
+Thus, to prove that $\mu_3 < 1 + \beta/(n-1)$,
+we must show that $f(1 + \beta/(n-1)) > 0$.
+One can verify that $f(1 + \beta/(n-1)) > 0$ is equivalent to Constraint \ref{item:c4}.
+Thus, $\mu_3 < 1 + \beta/(n-1)$.
+\end{proof}
+
+\begin{lemma}
+\label{thm:1.2}
+Let $p + q \ge 1$ and $p > \alpha q$.
+If $p \le \alpha$, then $\mu(p, q) \ge \mu_3$.
+\end{lemma}
+\begin{proof}
+Since $\alpha q < p \le \alpha$, we get $q < 1$. Since $p + q \ge 1$, we have $p > 0$.
+If $q = 0$, then $r_2(p, q) = 0$, and then $\mu(p, q) = \infty$. So let $q > 0$.
+Since $p \le \alpha$, we get $r_2^*(p)/r_2(p, q) = p/(\alpha q)$.
+If $p \ge \alpha q \mu_3$, then $\mu(p, q) \ge p/(\alpha q) \ge \mu_3$, and we are done.
+So now assume $p < \alpha \mu_3 q$.
+
+Recall that $q_1 = \beta/(\alpha+n-1)$. Assume $\mu(p, q) < \mu_3$.
+
+\textbf{Case 1}: $q \le q_1$. Then
+\begin{align*}
+& \mu_3 > \mu(p, q) \ge \frac{r_1^*(q)}{r_1(p, q)} \ge \frac{\beta + (n-1)(1-q)}{\alpha q \mu_3 + (n-1)(1-q)}
+\\ &\implies \mu_3(\alpha q \mu_3 + (n-1)(1-q)) > \beta + (n-1)(1-q)
+\\ &\implies (\alpha\mu_3^2 - (n-1)\mu_3 + (n-1))q > \beta + n-1 - (n-1)\mu_3
+\\ &\implies (\alpha\mu_3^2 - (n-1)\mu_3 + (n-1))(q - q_1)
+    \\ &\qquad\qquad> (\beta + n-1) - (n-1)\mu_3 - (\alpha\mu_3^2 - (n-1)\mu_3 + (n-1))q_1
+    \\ &\qquad\qquad= -(\alpha\beta\mu_3^2 + (n-1)(\alpha+n-1-\beta)\mu_3 - (\alpha\beta + (n-1)\alpha + (n-1)^2))
+    \\ &\qquad\qquad= 0.
+        \tag{by \cref{thm:mu3}}
+\end{align*}
+Thus, we have $(\alpha\mu_3^2 - (n-1)\mu_3 + (n-1))(q - q_1) > 0$.
+Moreover, since $\mu_3 > 1 + \beta/(n-1)$ by \cref{thm:mu3-2}, we get
+$\alpha\mu_3^2 - (n-1)\mu_3 + (n-1) = ((\beta + n-1) - (n-1)\mu_3)/q_1 > 0$.
+Hence, $q > q_1$, which is a contradiction.
+
+\textbf{Case 2}: $q \ge q_1$.
+\\ Since $q_1 \in (1/\alpha, 1)$ and $q < 1$, we get $1 < \alpha q < \alpha \le \beta$.
+Thus,
+\begin{align*}
+& \mu_3 > \mu(p, q) \ge \frac{r_1^*(q)}{r_1(p, q)} \ge \frac{\alpha q + n-1}{\alpha q \mu_3 + (n-1)(1-q)}
+\\ &\implies \mu_3(\alpha q \mu_3 + (n-1)(1-q)) > \alpha q + n-1
+\\ &\implies (n-1)(\mu_3 - 1) > (\alpha + (n-1)\mu_3 - \alpha\mu_3^2)q
+\\ &\implies (\alpha + (n-1)\mu_3 - \alpha\mu_3^2)(q_1-q)
+    \\ &\qquad\qquad> (\alpha + (n-1)\mu_3 - \alpha\mu_3^2)q_1 - (n-1)(\mu_3 - 1)
+    \\ &\qquad\qquad= (\alpha + (n-1)\mu_3 - \alpha\mu_3^2)q_1 - (n-1)(\mu_3 - 1)
+    \\ &\qquad\qquad= -(\alpha\beta\mu_3^2 + (n-1)(\alpha+n-1-\beta)\mu_3 - ((n-1)^2 + \alpha(n-1) + \alpha\beta))
+    \\ &\qquad\qquad= 0.
+        \tag{by \cref{thm:mu3}}
+\end{align*}
+Thus, we have $(\alpha + (n-1)\mu_3 - \alpha\mu_3^2)(q_1-q) > 0$.
+Moreover, since $\mu_3 > 1$ by \cref{thm:mu3},
+we have $\alpha + (n-1)\mu_3 - \alpha\mu_3^2 = (n-1)(\mu_3 - 1)/q_1 > 0$.
+Thus, $q < q_1$, which is a contradiction
+
+Thus, our assumption that $\mu(p, q) < \mu_3$ was incorrect,
+and we have $\mu(p, q) \ge \mu_3$.
+\end{proof}
