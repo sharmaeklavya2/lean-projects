@@ -509,10 +509,248 @@ theorem thm_q2 (h : Constraints α β n) :
     α * (q2 α β n) ^ 2 + 2 * n * (q2 α β n) = n + β :=
   ⟨⟨one_div_alpha_lt_q2 h, q2_lt_one h⟩, μ_p2_q2 h, q2_quadratic h⟩
 
+/-! ## Properties of `μ₃` (thm:mu3)
+
+`μ₃` is the positive root of the quadratic `αβx² + n·L₁·x - L₂ = 0`
+(paper: `αβx² + (n-1)(n-1+α-β)x - ((n-1)²+(n-1)α+αβ) = 0`). -/
+
+/-- `0 < q₁ = β/(α+n)`. -/
+theorem q1_pos (h : Constraints α β n) : 0 < q1 α β n :=
+  div_pos (by linarith [h.c1_lo, h.c1_mid]) (alpha_add_n_pos h)
+
+/-- `0 < L₁ = α + n - β`, from Constraint c1 (`β < α + n`). -/
+theorem L1_pos (h : Constraints α β n) : 0 < L1 α β n := by
+  simp only [L1]; linarith [h.c1_hi]
+
+/-- The discriminant `D := n²L₁² + 4αβL₂ ≥ 0` under `D`'s square root in `μ₃`. -/
+theorem mu3_disc_nonneg (h : Constraints α β n) :
+    0 ≤ n ^ 2 * (L1 α β n) ^ 2 + 4 * α * β * L2 α β n := by
+  have hα := alpha_pos h
+  have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
+  have hL2 := L2_pos h
+  nlinarith [sq_nonneg (n * L1 α β n), mul_pos (mul_pos hα hβ) hL2]
+
+/-- `μ₃` satisfies its defining quadratic `αβ·μ₃² + n·L₁·μ₃ - L₂ = 0` (thm:mu3).
+Proof: `2αβ·μ₃ + L₁·n = √D`; squaring kills the root and, after clearing `4αβ`,
+leaves the quadratic. -/
+theorem mu3_quadratic (h : Constraints α β n) :
+    α * β * (μ3 α β n) ^ 2 + n * L1 α β n * μ3 α β n - L2 α β n = 0 := by
+  have hα := alpha_pos h
+  have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
+  have hab : (2 * α * β : ℝ) ≠ 0 := ne_of_gt (by nlinarith [mul_pos hα hβ])
+  set D := n ^ 2 * (L1 α β n) ^ 2 + 4 * α * β * L2 α β n with hDdef
+  have hD : 0 ≤ D := hDdef ▸ mu3_disc_nonneg h
+  have hs2 : Real.sqrt D ^ 2 = D := Real.sq_sqrt hD
+  have hval : 2 * α * β * μ3 α β n + L1 α β n * n = Real.sqrt D := by
+    rw [μ3, ← hDdef]; field_simp; ring
+  have hsq : (2 * α * β * μ3 α β n + L1 α β n * n) ^ 2 = D := by rw [hval]; exact hs2
+  have key : 4 * α * β * (α * β * (μ3 α β n) ^ 2 + n * L1 α β n * μ3 α β n - L2 α β n) = 0 := by
+    rw [hDdef] at hsq; linear_combination hsq
+  have h4ne : (4 * α * β : ℝ) ≠ 0 := ne_of_gt (by nlinarith [mul_pos hα hβ])
+  exact (mul_eq_zero.mp key).resolve_left h4ne
+
+/-- `0 < μ₃` (thm:mu3): the numerator `√D - L₁n > 0` since `D > (L₁n)²`. -/
+theorem mu3_pos (h : Constraints α β n) : 0 < μ3 α β n := by
+  have hα := alpha_pos h
+  have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
+  have hn := n_pos h
+  have hL1 := L1_pos h
+  have hL2 := L2_pos h
+  have hLn_nonneg : 0 ≤ L1 α β n * n := mul_nonneg hL1.le hn.le
+  have hlt : (L1 α β n * n) ^ 2 < n ^ 2 * (L1 α β n) ^ 2 + 4 * α * β * L2 α β n := by
+    nlinarith [mul_pos (mul_pos hα hβ) hL2]
+  have h2 : Real.sqrt ((L1 α β n * n) ^ 2)
+          < Real.sqrt (n ^ 2 * (L1 α β n) ^ 2 + 4 * α * β * L2 α β n) :=
+    Real.sqrt_lt_sqrt (by positivity) hlt
+  rw [Real.sqrt_sq hLn_nonneg] at h2
+  simp only [μ3]
+  apply div_pos (by linarith [h2]) (by nlinarith [mul_pos hα hβ])
+
+/-- `1 < μ₃` (thm:mu3): `f(1) = -βn < 0` for the upward parabola `f`, so its
+positive root `μ₃` exceeds `1`. Concretely `(μ₃-1)(αβ(μ₃+1)+nL₁) = βn > 0`. -/
+theorem one_lt_mu3 (h : Constraints α β n) : 1 < μ3 α β n := by
+  have hα := alpha_pos h
+  have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
+  have hn := n_pos h
+  have hL1 := L1_pos h
+  have hpos := mu3_pos h
+  have hquad := mu3_quadratic h
+  have hbr : 0 < α * β * (μ3 α β n + 1) + n * L1 α β n := by
+    nlinarith [mul_pos hα hβ, mul_pos (mul_pos hα hβ) hpos, mul_pos hn hL1]
+  have hfact : (μ3 α β n - 1) * (α * β * (μ3 α β n + 1) + n * L1 α β n) = β * n := by
+    simp only [L1, L2] at hquad ⊢; linear_combination hquad
+  nlinarith [hfact, hbr, mul_pos hβ hn]
+
+/-- `β·μ₃ < α + n` (thm:mu3, the bound `μ₃ < 1/q₁`): `f(1/q₁) > 0` is Constraint c3,
+so the positive root `μ₃` is below `1/q₁`, i.e. `β·μ₃ < α+n`. -/
+theorem beta_mul_mu3_lt (h : Constraints α β n) : β * μ3 α β n < α + n := by
+  have hα := alpha_pos h
+  have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
+  have hn := n_pos h
+  have hL1 := L1_pos h
+  have hpos := mu3_pos h
+  have hA := alpha_add_n_pos h
+  have hquad := mu3_quadratic h
+  have hbr : 0 < α * ((α + n) + β * μ3 α β n) + n * L1 α β n := by
+    nlinarith [mul_pos hα hA, mul_pos (mul_pos hα hβ) hpos, mul_pos hn hL1]
+  have hfact : ((α + n) - β * μ3 α β n) * (α * ((α + n) + β * μ3 α β n) + n * L1 α β n)
+             = (α + n) ^ 3 - β * (α * β + 2 * n * (α + n)) := by
+    simp only [L1, L2] at hquad ⊢; linear_combination (-β) * hquad
+  have hHA : 0 < (α + n) ^ 3 - β * (α * β + 2 * n * (α + n)) := by linarith [h.c3]
+  nlinarith [hfact, hbr, hHA]
+
+/-- `q₁·μ₃ < 1` (thm:mu3), equivalent to `β·μ₃ < α+n`; used to place `p₃ < α`. -/
+theorem q1_mul_mu3_lt_one (h : Constraints α β n) : q1 α β n * μ3 α β n < 1 := by
+  have hA := alpha_add_n_pos h
+  simp only [q1]
+  rw [div_mul_eq_mul_div, div_lt_one hA]
+  linarith [beta_mul_mu3_lt h]
+
+/-- `μ₃ < 1/q₁` (thm:mu3), the upper end of `μ₃ ∈ (1, 1/q₁)`. -/
+theorem mu3_lt_one_div_q1 (h : Constraints α β n) : μ3 α β n < 1 / q1 α β n := by
+  rw [lt_div_iff₀ (q1_pos h), mul_comm]
+  exact q1_mul_mu3_lt_one h
+
+/-! ### Paper-facing statement of thm:mu3 -/
+
+/-- **thm:mu3**:
+1.  `1 < μ₃ < 1/q₁`,
+2.  `μ₃` solves the quadratic `αβx² + n(n+α-β)x - (n²+nα+αβ) = 0`
+    (paper's `n-1` is our `n`; `n+α-β = L₁`, `n²+nα+αβ = L₂`).
+Not formalized: that `μ₃` is the *unique* positive root. -/
+theorem thm_mu3 (h : Constraints α β n) :
+    1 < μ3 α β n ∧ μ3 α β n < 1 / q1 α β n ∧
+    α * β * (μ3 α β n) ^ 2 + n * (n + α - β) * (μ3 α β n) - (n ^ 2 + n * α + α * β) = 0 := by
+  refine ⟨one_lt_mu3 h, mu3_lt_one_div_q1 h, ?_⟩
+  have := mu3_quadratic h
+  simp only [L1, L2] at this
+  linear_combination this
+
+/-! ## Properties of `p₃` (thm:p3)
+
+`q₃ = q₁` and `p₃ = α·q₁·μ₃`. Since `μ₃ ∈ (1, 1/q₁)`, we get `p₃ ∈ (α·q₁, α)`,
+so `p₃ > α·q₃`: `V` is the singleton `{(r₁⁻, r₂⁺)}` and both ratios equal `μ₃`.
+We state helpers in terms of `q₁` (which is `q₃` by definition). -/
+
+/-- `α·q₁ < p₃` (lower end of `p₃ ∈ (α·q₁, α)`): since `μ₃ > 1` and `α·q₁ > 0`. -/
+theorem p3_gt_alpha_q1 (h : Constraints α β n) : α * q1 α β n < p3 α β n := by
+  have hpos : 0 < α * q1 α β n := mul_pos (alpha_pos h) (q1_pos h)
+  simp only [p3]
+  nlinarith [mul_pos hpos (sub_pos.mpr (one_lt_mu3 h))]
+
+/-- `p₃ < α` (upper end of `p₃ ∈ (α·q₁, α)`): since `q₁·μ₃ < 1`. -/
+theorem p3_lt_alpha (h : Constraints α β n) : p3 α β n < α := by
+  have hα := alpha_pos h
+  simp only [p3]
+  nlinarith [mul_pos hα (sub_pos.mpr (q1_mul_mu3_lt_one h))]
+
+/-- `1 < p₃`: since `1 < α·q₁ < p₃`. -/
+theorem p3_gt_one (h : Constraints α β n) : 1 < p3 α β n :=
+  lt_trans (one_lt_alpha_mul_q1 h) (p3_gt_alpha_q1 h)
+
+/-- `p₃ < β`: since `p₃ < α ≤ β`. -/
+theorem p3_lt_beta (h : Constraints α β n) : p3 α β n < β :=
+  lt_of_lt_of_le (p3_lt_alpha h) h.c1_mid
+
+/-- The `r₁⁻` component of `V` at `(p₃,q₁)`: `r₁⁻ = p₃ + n·(1-q₁)`
+(uses `p₃ < β` and `1-q₁ < 1 < p₃`). -/
+theorem r1lo_p3_q1 (h : Constraints α β n) :
+    r1lo β n (p3 α β n) (q1 α β n) = p3 α β n + n * (1 - q1 α β n) := by
+  have hq1 := q1_lt_one h
+  have hq1p := q1_pos h
+  have hp3 := p3_gt_one h
+  simp only [r1lo]
+  rw [min_eq_left (le_of_lt (p3_lt_beta h)),
+      max_eq_right (by linarith : (0:ℝ) ≤ 1 - q1 α β n),
+      min_eq_right (by linarith : 1 - q1 α β n ≤ p3 α β n)]
+
+/-- The `r₂⁺` component of `V` at `(p₃,q₁)`: `r₂⁺ = n·q₁` (uses `q₁ < 1`). -/
+theorem r2hi_p3_q1 (h : Constraints α β n) :
+    r2hi n (p3 α β n) (q1 α β n) = n * q1 α β n := by
+  simp only [r2hi]
+  rw [min_eq_left (le_of_lt (q1_lt_one h))]
+
+/-- `r₂*(p₃) = n·(q₁·μ₃)` (uses `1-p₃ ≤ p₃/α ≤ 1` and `p₃/α = q₁·μ₃`). -/
+theorem r2star_p3 (h : Constraints α β n) :
+    r2star α n (p3 α β n) = n * (q1 α β n * μ3 α β n) := by
+  have hα := alpha_pos h
+  have hp3_1 := p3_gt_one h
+  have hp3α : p3 α β n / α = q1 α β n * μ3 α β n := by
+    simp only [p3]; field_simp
+  have hle1 : p3 α β n / α ≤ 1 := by rw [hp3α]; linarith [q1_mul_mu3_lt_one h]
+  have hle2 : 1 - p3 α β n ≤ p3 α β n / α := by
+    have : 0 < p3 α β n / α := div_pos (by linarith) hα
+    linarith
+  simp only [r2star]
+  rw [min_eq_right hle1, max_eq_right hle2, hp3α]
+
+/-- Seller 2's ratio at `(p₃,q₃)` equals `μ₃`: `n·(q₁·μ₃)/(n·q₁) = μ₃`. -/
+theorem ratio2_p3_q1 (h : Constraints α β n) :
+    ratio (r2star α n (p3 α β n)) (r2hi n (p3 α β n) (q1 α β n)) = μ3 α β n := by
+  have hn := n_pos h
+  have hq1 := q1_pos h
+  have hnne : (n : ℝ) ≠ 0 := ne_of_gt hn
+  have hq1ne : q1 α β n ≠ 0 := ne_of_gt hq1
+  have hden : n * q1 α β n ≠ 0 := mul_ne_zero hnne hq1ne
+  rw [r2star_p3 h, r2hi_p3_q1 h, ratio, if_neg hden]
+  field_simp
+
+/-- Seller 1's ratio at `(p₃,q₃)` equals `μ₃`: `(n+α·q₁)/(p₃+n(1-q₁)) = μ₃`.
+Multiplying out `q₁ = β/(α+n)` reduces to `L₂ = μ₃(αβμ₃+nL₁)`, i.e. the quadratic. -/
+theorem ratio1_p3_q1 (h : Constraints α β n) :
+    ratio (r1star α β n (q1 α β n)) (r1lo β n (p3 α β n) (q1 α β n)) = μ3 α β n := by
+  have hn := n_pos h
+  have hq1lt := q1_lt_one h
+  have hp3 := p3_gt_one h
+  have hAnne : (α + n : ℝ) ≠ 0 := ne_of_gt (alpha_add_n_pos h)
+  have hquad := mu3_quadratic h
+  have hden_pos : 0 < p3 α β n + n * (1 - q1 α β n) := by
+    have : 0 ≤ n * (1 - q1 α β n) := mul_nonneg hn.le (by linarith)
+    linarith
+  rw [r1star_q1 h, r1lo_p3_q1 h, ratio, if_neg (ne_of_gt hden_pos),
+      div_eq_iff (ne_of_gt hden_pos)]
+  simp only [p3, q1, L1, L2] at hquad ⊢
+  field_simp at hquad ⊢
+  linear_combination -hquad
+
 /-- `μ(p₃, q₃) = μ₃` (thm:p3). Here `p₃ > α·q₃`, so `V` is the singleton
 `{(r₁⁻, r₂⁺)}` and both best-response ratios equal `μ₃`. -/
 theorem μ_p3_q3 (h : Constraints α β n) :
     μ α β n (p3 α β n) (q3 α β n) = μ3 α β n := by
-  sorry
+  simp only [q3]
+  -- `V` is the singleton `{(r₁⁻, r₂⁺)}` (branch `p > α·q`, since `p₃ > α·q₁ > 1`).
+  have hV : V α β n (p3 α β n) (q1 α β n)
+          = {(r1lo β n (p3 α β n) (q1 α β n), r2hi n (p3 α β n) (q1 α β n))} := by
+    unfold V
+    rw [if_neg (not_le.mpr (by linarith [p3_gt_one h, q1_pos h] :
+          (1:ℝ) < p3 α β n + q1 α β n)),
+        if_neg (not_lt.mpr (le_of_lt (p3_gt_alpha_q1 h))),
+        if_pos (p3_gt_alpha_q1 h)]
+  have hset : {m : ℝ | ∃ r1 r2, (r1, r2) ∈ V α β n (p3 α β n) (q1 α β n) ∧
+                m = max (ratio (r1star α β n (q1 α β n)) r1)
+                        (ratio (r2star α n (p3 α β n)) r2)}
+            = {μ3 α β n} := by
+    rw [hV]
+    ext m
+    simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, Prod.mk.injEq]
+    constructor
+    · rintro ⟨r1, r2, ⟨rfl, rfl⟩, rfl⟩
+      rw [ratio1_p3_q1 h, ratio2_p3_q1 h, max_self]
+    · rintro rfl
+      exact ⟨_, _, ⟨rfl, rfl⟩, by rw [ratio1_p3_q1 h, ratio2_p3_q1 h, max_self]⟩
+  unfold μ
+  rw [hset, csInf_singleton]
+
+/-! ### Paper-facing statement of thm:p3 -/
+
+/-- **thm:p3**:
+1.  `p₃ ∈ (α·q₃, α)`,
+2.  `μ(p₃, q₃) = μ₃`.
+The paper's ratio equalities `r₁*(q₃)/r₁ = r₂*(p₃)/r₂ = μ₃` are `ratio1_p3_q1` and
+`ratio2_p3_q1` (using `q₃ = q₁`), from which `μ(p₃, q₃) = μ₃` follows. -/
+theorem thm_p3 (h : Constraints α β n) :
+    p3 α β n ∈ Set.Ioo (α * q3 α β n) α ∧
+    μ α β n (p3 α β n) (q3 α β n) = μ3 α β n :=
+  ⟨⟨p3_gt_alpha_q1 h, p3_lt_alpha h⟩, μ_p3_q3 h⟩
 
 end DataMktOligoHard
