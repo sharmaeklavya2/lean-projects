@@ -125,9 +125,12 @@ The theorem below transcribes thm:q1 verbatim; its proof only assembles the help
 lemmas above. A verifier checks *this statement* against the paper, and
 `#print axioms thm_q1` to confirm it rests on no `sorry`. -/
 
-/-- **thm:q1** (paper): `q₁ ∈ (1/α, 1)`, `r₁*(q₁) = n·ĉ₁`, and `r₁*(q) ≥ n·ĉ₁` for
-all `q ≥ 0`. Here the paper's `n·ĉ₁` is our `(n + 1)·chat1` (paper's total-buyer
-count `n` is our `n + 1`); we prove the last part for *all* `q`, not just `q ≥ 0`. -/
+/-- **thm:q1**:
+1.  `q₁ ∈ (1/α, 1)`,
+2.  `r₁*(q₁) = n·ĉ₁`,
+3.  `r₁*(q) ≥ n·ĉ₁` for all `q ≥ 0`.
+Here the paper's `n·ĉ₁` is our `(n + 1)·chat1` (paper's total-buyer count `n` is our `n + 1`);
+we prove the last part for *all* `q`, not just `q ≥ 0`. -/
 theorem thm_q1 (h : Constraints α β n) :
     q1 α β n ∈ Set.Ioo (1 / α) 1 ∧
     r1star α β n (q1 α β n) = (n + 1) * chat1 α β n ∧
@@ -305,16 +308,20 @@ theorem μ_p1_q1 (h : Constraints α β n) :
 
 /-! ### Paper-facing statement of thm:p1 -/
 
-/-- **thm:p1** (paper): `p₁ ∈ (α/(α+1), 1)`, `ĉ₁ > 1`, and `μ(p₁, q₁) = μ₁`.
-The paper's ratio equalities `r₁*(q₁)/r₁ = r₂*(p₁)/r₂ = μ₁` are `ratio1_p1_q1` and
-`ratio2_p1_q1`, from which `μ(p₁, q₁) = μ₁` follows. Not formalized: that `p₁` is the
-*unique* positive root of `ĉ₁/x = x/(α(1-x))` (only existence, `p1_quadratic`, is
-needed downstream). -/
+/-- **thm:p1**:
+1.  `p₁ ∈ (α/(α+1), 1)`,
+2.  `ĉ₁ > 1`,
+3.  `p₁` solves its defining equation `ĉ₁/p₁ = p₁/(α(1-p₁))`
+    (stated as the quadratic `p₁² = α·ĉ₁·(1-p₁)`),
+4.  `μ(p₁, q₁) = μ₁`.
+The paper's ratio equalities `r₁*(q₁)/r₁ = r₂*(p₁)/r₂ = μ₁` are `ratio1_p1_q1`/`ratio2_p1_q1`.
+Not formalized: *uniqueness* of that positive root. -/
 theorem thm_p1 (h : Constraints α β n) :
     p1 α β n ∈ Set.Ioo (α / (α + 1)) 1 ∧
     1 < chat1 α β n ∧
+    (p1 α β n) ^ 2 = α * chat1 α β n * (1 - p1 α β n) ∧
     μ α β n (p1 α β n) (q1 α β n) = μ1 α β n :=
-  ⟨⟨p1_gt_ratio h, p1_lt_one h⟩, chat1_gt_one h, μ_p1_q1 h⟩
+  ⟨⟨p1_gt_ratio h, p1_lt_one h⟩, chat1_gt_one h, p1_quadratic h, μ_p1_q1 h⟩
 
 /-! ## Properties of `q₂` (thm:q2) -/
 
@@ -351,7 +358,7 @@ theorem alpha_mul_q2 (h : Constraints α β n) :
 /-- The defining quadratic `α·q₂² + 2n·q₂ = n + β` (thm:q2): `q₂` solves
 `(αx+n)/(β+n(1-x)) = 1/x`. Derived from `α·q₂ + n = √L₂` (`alpha_mul_q2`). -/
 theorem q2_quadratic (h : Constraints α β n) :
-    α * q2 α β n ^ 2 + 2 * n * q2 α β n = n + β := by
+    α * (q2 α β n) ^ 2 + 2 * n * (q2 α β n) = n + β := by
   have hα := alpha_pos h
   have hαne : α ≠ 0 := ne_of_gt hα
   have hq2 : α * q2 α β n = Real.sqrt (L2 α β n) - n := alpha_mul_q2 h
@@ -489,14 +496,18 @@ theorem μ_p2_q2 (h : Constraints α β n) :
 
 /-! ### Paper-facing statement of thm:q2 -/
 
-/-- **thm:q2** (paper): `q₂ ∈ (1/α, 1)` and `μ(β, q₂) = μ₂`. The paper's ratio
-equalities `r₁*(q₂)/r₁ = r₂*(β)/r₂ = μ₂` are `ratio1_β_q2` and `ratio2_β_q2`, from
-which `μ(β, q₂) = μ₂` follows. Not formalized: that `q₂` is the *unique* positive
-root of `(αx+n)/(β+n(1-x)) = 1/x`. -/
+/-- **thm:q2**:
+1.  `q₂ ∈ (1/α, 1)`
+2.  `μ(β, q₂) = μ₂`.
+3.  `q₂` solves `α·x² + 2n·x = n + β`, derived from `(αx+n)/(β+n(1-x)) = 1/x`.
+The paper's ratio equalities `r₁*(q₂)/r₁ = r₂*(β)/r₂ = μ₂` are `ratio1_β_q2` and `ratio2_β_q2`,
+from which `μ(β, q₂) = μ₂` follows.
+Not formalized: that `q₂` is the *unique* positive root of `(αx+n)/(β+n(1-x)) = 1/x`. -/
 theorem thm_q2 (h : Constraints α β n) :
     q2 α β n ∈ Set.Ioo (1 / α) 1 ∧
-    μ α β n (p2 β) (q2 α β n) = μ2 α β n :=
-  ⟨⟨one_div_alpha_lt_q2 h, q2_lt_one h⟩, μ_p2_q2 h⟩
+    μ α β n (p2 β) (q2 α β n) = μ2 α β n ∧
+    α * (q2 α β n) ^ 2 + 2 * n * (q2 α β n) = n + β :=
+  ⟨⟨one_div_alpha_lt_q2 h, q2_lt_one h⟩, μ_p2_q2 h, q2_quadratic h⟩
 
 /-- `μ(p₃, q₃) = μ₃` (thm:p3). Here `p₃ > α·q₃`, so `V` is the singleton
 `{(r₁⁻, r₂⁺)}` and both best-response ratios equal `μ₃`. -/
@@ -505,4 +516,3 @@ theorem μ_p3_q3 (h : Constraints α β n) :
   sorry
 
 end DataMktOligoHard
-
