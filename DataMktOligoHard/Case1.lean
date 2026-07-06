@@ -6,9 +6,6 @@ import DataMktOligoHard.SpecialPoints
 This file corresponds to the "Case 1: `p > α·q` and `p + q ≥ 1`" subsection.
 In this region `V(p,q)` is the singleton `{(r₁⁻, r₂⁺)}`, so
 `μ(p,q) = max(r₁*(q)/r₁⁻, r₂*(p)/r₂⁺)`.
-
-So far we formalize the first lemma (thm:1.1): the sub-case `p ≥ α`, where
-`μ(p,q) ≥ μ₂`.
 -/
 
 namespace DataMktOligoHard
@@ -87,7 +84,9 @@ theorem μ_eq_max_case1 (h : Constraints α β n) {p q : ℝ}
 
 /-! ### thm:1.1 -/
 
-/-- **thm:1.1**: if `p > α·q` and `p ≥ α`, then `μ(p,q) ≥ μ₂`.
+/-- **thm:1.1**: if `p > α·q` and `p ≥ α`, then `μ(p,q) ≥ min cap μ₂` (the paper's
+`μ(p,q) ≥ μ₂`; the `min cap` works around Lean's `x/0` convention at `0`-revenue corners,
+where `μ = cap`. Downstream `cStar ≤ cap` recovers `cStar ≤ μ`).
 
 The paper also lists `p + q ≥ 1` (it defines the whole Case-1 region), but here that
 hypothesis is redundant: with the standing price assumption `0 ≤ q` and `p ≥ α ≥ 2`
@@ -98,7 +97,8 @@ corner handled by `μ₂ < cap`). For `q ≥ q₂` seller 1's ratio dominates: t
 chain `r₁⁻ ≤ β + n(1-q₂) = q₂(αq₂+n) ≤ q₂·r₁*(q)` gives `r₁*(q)/r₁⁻ ≥ 1/q₂ = μ₂`. -/
 theorem thm_1_1 (h : Constraints α β n) {p q : ℝ}
     (hq : 0 ≤ q) (hpaq : α * q < p) (hpα : α ≤ p) :
-    μ2 α β n ≤ μ α β n p q := by
+    min cap (μ2 α β n) ≤ μ α β n p q := by
+  refine le_trans (min_le_right _ _) ?_
   have hn := n_pos h
   have hα := alpha_pos h
   have hpq1 : 1 < p + q := by linarith [h.c1_lo]
@@ -248,20 +248,29 @@ theorem mu3_M_pos (h : Constraints α β n) :
   nlinarith [hM, mul_pos (mul_pos (alpha_add_n_pos h) hn)
     (show (0:ℝ) < μ3 α β n - 1 by linarith), hβ]
 
-/-- **thm:1.2**: if `p + q ≥ 1`, `p > α·q`, and `p ≤ α`, then `μ(p,q) ≥ μ₃`.
+/-- **thm:1.2**: if `p + q ≥ 1`, `p > α·q`, and `p ≤ α`, then `μ(p,q) ≥ min cap μ₃`
+(the paper's `μ(p,q) ≥ μ₃`; the `min cap` works around Lean's `x/0` convention — it
+absorbs the `q = 0` corner, where `μ = cap` and `μ₃` may exceed `cap`. Downstream
+`cStar ≤ cap` recovers `cStar ≤ μ`).
 
-We take `0 < q` (the paper's "so let `q > 0`"): at `q = 0` seller 2 earns `0`, giving
-the `x/0 = ∞` corner, which — since `μ₃` may exceed `cap` — is handled downstream by
-`μ ≥ cap` rather than here.
-
-With `0 < q`, seller 2's ratio is `p/(αq)`. If `p ≥ α·q·μ₃` this already gives
-`μ ≥ p/(αq) ≥ μ₃`. Otherwise `p < α·μ₃·q`, and seller 1's ratio dominates: writing
-`r₁⁻ = p + n(1-q)` and using the lower bounds `r₁*(q) ≥ β + n(1-q)` (for `q ≤ q₁`) or
-`r₁*(q) ≥ αq + n` (for `q ≥ q₁`), the gap to `μ₃·r₁⁻` is `K·(β - q(α+n))` resp.
-`M·(q(α+n) - β)`, nonnegative by the sign of `q - q₁`. -/
+At `q = 0` seller 2 earns `0`, so `ratio₂ = cap ≥ min cap μ₃`. For `q > 0`, seller 2's
+ratio is `p/(αq)`: if `p ≥ α·q·μ₃` this already gives `μ ≥ p/(αq) ≥ μ₃`. Otherwise
+`p < α·μ₃·q`, and seller 1's ratio dominates: writing `r₁⁻ = p + n(1-q)` and using the
+lower bounds `r₁*(q) ≥ β + n(1-q)` (for `q ≤ q₁`) or `r₁*(q) ≥ αq + n` (for `q ≥ q₁`),
+the gap to `μ₃·r₁⁻` is `K·(β - q(α+n))` resp. `M·(q(α+n) - β)`, nonnegative by the sign
+of `q - q₁`. -/
 theorem thm_1_2 (h : Constraints α β n) {p q : ℝ}
-    (hqpos : 0 < q) (hpq1 : 1 ≤ p + q) (hpaq : α * q < p) (hpα : p ≤ α) :
-    μ3 α β n ≤ μ α β n p q := by
+    (hq : 0 ≤ q) (hpq1 : 1 ≤ p + q) (hpaq : α * q < p) (hpα : p ≤ α) :
+    min cap (μ3 α β n) ≤ μ α β n p q := by
+  rw [μ_eq_max_case1 h hq hpq1 hpaq]
+  rcases eq_or_lt_of_le hq with hq0 | hqpos
+  · -- `q = 0`: `r₂⁺ = 0`, so `ratio₂ = cap ≥ min cap μ₃`.
+    have hr2cap : ratio (r2star α n p) (r2hi n p q) = cap := by
+      have hr : r2hi n p q = 0 := by rw [r2hi, ← hq0, min_eq_left zero_le_one, mul_zero]
+      rw [ratio, if_pos hr]
+    rw [hr2cap]
+    exact le_trans (min_le_left _ _) (le_max_right _ _)
+  refine le_trans (min_le_right _ _) ?_
   have hn := n_pos h
   have hα := alpha_pos h
   have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
@@ -270,7 +279,6 @@ theorem thm_1_2 (h : Constraints α β n) {p q : ℝ}
   have hqlt1 : q < 1 := by
     have h1 : α * q < α * 1 := by rw [mul_one]; linarith
     exact lt_of_mul_lt_mul_left h1 hα.le
-  rw [μ_eq_max_case1 h hqpos.le hpq1 hpaq]
   -- exact value of `r₁⁻` in this region
   have hr1lo : r1lo β n p q = p + n * (1 - q) := by
     simp only [r1lo]
