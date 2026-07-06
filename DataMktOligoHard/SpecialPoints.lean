@@ -11,6 +11,16 @@ It establishes the interval bounds and defining identities of the special points
 (Notation: this section transcribes old-paper text, where the poor-buyer count is
 written `n - 1`; that is our Lean `n`. In particular the paper's `n·ĉ₁` is our
 `(n + 1)·chat1 = n + α·q1`.)
+
+## Omitted results
+
+These lemmas feed the next 4 subsections and the main claim (`cStar_le_μ`, in
+`Pending`), so omissions are tracked here explicitly. Add back if later needed.
+
+* Uniqueness of the positive roots of the defining quadratics for `p₁` (thm:p1),
+  `q₂` (thm:q2), `μ₃` (thm:mu3). We formalize only *existence* (that the point
+  satisfies its equation), which is all that `μ(pᵢ,qᵢ) = μᵢ` requires. Believed
+  unneeded downstream.
 -/
 
 namespace DataMktOligoHard
