@@ -161,37 +161,8 @@ noncomputable def μ4 : ℝ := 1 + β * n / L2 α β n
 noncomputable def candidatePoints : Finset (ℝ × ℝ) :=
   {(p1 α β n, q1 α β n), (p2 β, q2 α β n), (p3 α β n, q3 α β n), (p4 α β n, q4 α β n)}
 
-/-! ### Main reduction lemma (thm:pq-redn)
-
-Under the constraints, the infimum of `μ` over all prices collapses to the minimum
-of `μ` over the four candidate points, and `μ(pᵢ, qᵢ) = μᵢ`. -/
-
-/-- `μ(pᵢ, qᵢ) = μᵢ` for the four candidate points. -/
-theorem μ_p1_q1 (h : Constraints α β n) :
-    μ α β n (p1 α β n) (q1 α β n) = μ1 α β n := by
-  sorry
-
-theorem μ_p2_q2 (h : Constraints α β n) :
-    μ α β n (p2 β) (q2 α β n) = μ2 α β n := by
-  sorry
-
-theorem μ_p3_q3 (h : Constraints α β n) :
-    μ α β n (p3 α β n) (q3 α β n) = μ3 α β n := by
-  sorry
-
-theorem μ_p4_q4 (h : Constraints α β n) :
-    μ α β n (p4 α β n) (q4 α β n) = μ4 α β n := by
-  sorry
-
-/-- The inapproximability constant `c* := min(μ₁,μ₂,μ₃,μ₄)`. -/
+/-- The inapproximability constant `c* := min(μ₁,μ₂,μ₃,μ₄)`. The main result
+(`cStar_le_μ`, in `Pending`) is that `μ(p,q) ≥ cStar` for all nonnegative `p, q`. -/
 noncomputable def cStar : ℝ := min (μ1 α β n) (min (μ2 α β n) (min (μ3 α β n) (μ4 α β n)))
-
-/-- **Main reduction** (thm:pq-redn, lower bound): under Constraints c1–c4, every
-nonnegative price pair has `μ(p,q) ≥ cStar := min_i μᵢ`, so no `(cStar - ε)`-NE exists.
-Together with the `μ_pᵢ_qᵢ` lemmas (which show the bound is attained), this gives
-`inf_{p,q} μ = cStar`. -/
-theorem cStar_le_μ (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
-    cStar α β n ≤ μ α β n p q := by
-  sorry
 
 end DataMktOligoHard
