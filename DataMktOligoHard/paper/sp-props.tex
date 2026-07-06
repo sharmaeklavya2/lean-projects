@@ -1,0 +1,157 @@
+\subsection{Properties of the Special Points}
+\label{sec:sp-props}
+
+We now hint towards where we got the points $\{(p_i, q_i)\}_{i=1}^3$ from,
+and prove that $\mu_i = \mu(p_i, q_i)$ for all $i \in [3]$.
+We defer the corresponding discussion for $(p_4, q_4)$ to \cref{sec:case4},
+since $p_4/q_4 = \alpha$, and that case needs careful handling.
+
+\begin{lemma}
+\label{thm:q1}
+$q_1 \in (1/\alpha, 1)$, $r_1^*(q_1) = n\chat_1$,
+and $r_1^*(q) \ge n\chat_1$ for all $q \ge 0$.
+\end{lemma}
+\begin{proof}
+By Constraint \ref{item:c1}, $q_1 = \beta/(\alpha + n-1) < 1$.
+By Constraint \ref{item:c2}, $\alpha q_1 = \alpha\beta/(\alpha + n-1) > 1$.
+Thus, $q_1 \in (1/\alpha, 1)$.
+
+Define the functions $g_1, g_2: \mathbb{R}_{\ge 0} \to \mathbb{R}$ as follows:
+\begin{align*}
+g_1(x) &\defeq \beta + (n-1)\max(0, 1-x),
+& g_2(x) &\defeq \min(\beta, \alpha x) + (n-1)\min(1, \alpha x).
+\end{align*}
+Then
+\begin{align*}
+g_1(q_1) &= \beta + (n-1)(1-q_1) = \beta + (n-1)\left(1 - \frac{\beta}{\alpha + n-1}\right)
+\\ &= (n-1) + \beta\left(1 - \frac{n-1}{\alpha + n-1}\right)
+    = n-1 + \frac{\alpha\beta}{\alpha + n-1}
+\\ &= n-1 + \alpha q_1 = n\chat_1.
+\end{align*}
+By Constraint \ref{item:c1}, $\alpha q_1 < \alpha \le \beta$.
+Since $q_1 > 1/\alpha$, we get
+$g_2(q_1) = \min(\beta, \alpha q_1) + (n-1)\min(1, \alpha q_1) = \alpha q_1 + n-1 = n\chat_1$.
+Hence, $g_1(q_1) = g_2(q_1)$.
+
+$r_1^*(q_1) = \max(g_1(q_1), g_2(q_1)) = n\chat_1$.
+$g_1$ is non-increasing, and $g_2$ is non-decreasing.
+Thus, for any $q \in [0, q_1]$, we have
+$r_1^*(q) = \max(g_1(q), g_2(q)) \ge g_1(q) \ge g_1(q_1) = n\chat_1$,
+and for any $q \ge q_1$, we have
+$r_1^*(q) = \max(g_1(q), g_2(q)) \ge g_2(q) \ge g_2(q_1) = n\chat_1$.
+Thus, $r_1^*(q) \ge n\chat_1$ for all $q \ge 0$.
+\end{proof}
+
+\begin{lemma}
+\label{thm:p1}
+$p_1 \in (\frac{\alpha}{\alpha+1}, 1)$ and $\chat_1 > 1$.
+\[ \frac{r_1^*(q_1)}{r_1(p_1, q_1)} = \frac{r_2^*(p_1)}{r_2(p_1, q_1)} = \mu_1, \]
+so $\mu(p_1, q_1) = \mu_1$.
+Moreover, $p_1$ is the unique positive solution to the equation
+\[ \frac{\chat_1}{x} = \frac{x}{\alpha(1-x)}. \]
+\end{lemma}
+\begin{proof}
+By \cref{thm:q1}, we have $q_1 \in (1/\alpha, 1)$.
+$\chat_1 = (\alpha q_1 + (n-1))/n > (1 + (n-1))/n = 1$.
+
+Define the function $f: (0, 1) \to \mathbb{R}$ as
+\[ f(x) \defeq \frac{\chat_1}{x} - \frac{x}{\alpha(1-x)}. \]
+It is easy to verify that $p_1$ is the unique positive solution to $f(x) = 0$.
+
+$f$ is a (strictly) decreasing function,
+\[ f\left(\frac{\alpha}{\alpha+1}\right) = \chat_1\frac{\alpha+1}{\alpha} - 1 > \frac{1}{\alpha} > 0, \]
+and $\lim_{x \to 1} f(x) = -\infty$.
+Thus, $f$ has a unique zero in the interval $(\frac{\alpha}{\alpha+1}, 1)$.
+Thus, $p_1 \in (\frac{\alpha}{\alpha+1}, 1)$.
+
+Since $p_1 \in (\frac{\alpha}{\alpha+1}, 1)$ and $q_1 \in (1/\alpha, 1)$,
+we get $p_1 < \alpha q_1$, $p_1 + q_1 \ge 1$, and $1-p_1 \le p_1/\alpha$.
+Moreover, by \cref{thm:q1}, we have $r_1^*(q_1) = n\chat_1$. Thus,
+\begin{align*}
+\frac{r_1^*(q_1)}{r_1(p_1, q_1)} &= \frac{\chat_1}{p_1} = \mu_1,
+& \frac{r_2^*(p_1)}{r_2(p_1, q_1)} &= \frac{p_1/\alpha}{1-p_1} = \frac{\chat_1}{p_1} = \mu_1.
+\qedhere \end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{thm:q2}
+$q_2 \in (1/\alpha, 1)$, $\mu_2 = \mu(\beta, q_2)$, and
+\[ \frac{r_1^*(q_2)}{r_1(\beta, q_2)} = \frac{r_2^*(\beta)}{r_2(\beta, q_2)} = \mu_2. \]
+Moreover, $q_2$ is the unique positive solution to the equation
+\[ \frac{\alpha x + n-1}{\beta + (n-1)(1-x)} = \frac{1}{x}. \]
+\end{lemma}
+\begin{proof}
+Define the function $f: (0, 1] \to \mathbb{R}$ as
+\[ f(x) \defeq \frac{\alpha x + n-1}{\beta + (n-1)(1-x)} - \frac{1}{x}. \]
+It is easy to verify that $q_2$ is the unique positive solution to $f(x) = 0$.
+
+By Constraint \ref{item:c1},
+\[ f(1) = \frac{\alpha + n-1}{\beta} - 1 > 0. \]
+\begin{align*}
+f(1/\alpha) &= \frac{n}{\beta + (n-1)(1-1/\alpha)} - \alpha
+\\ &= \frac{\alpha n}{\alpha\beta + (n-1)(\alpha - 1)} - \alpha
+\\ &\le \frac{\alpha n}{4 + (n-1)} - \alpha
+    \tag{since $\alpha\beta \ge 4$ and $\alpha-1 \ge 1$}
+\\ &= -\frac{3\alpha}{n+3} < 0.
+\end{align*}
+Since $f$ is a (strictly) increasing function, $f(1) > 0$, and $f(1/\alpha) < 0$,
+we get that it has a unique zero in $(1/\alpha, 1)$.
+Thus, $q_2 \in (1/\alpha, 1)$.
+
+We have $p_2 \defeq \beta \ge \alpha > \alpha q_2$, and $p_2 + q_2 \ge \beta > 1$. Thus,
+\begin{align*}
+\frac{r_1^*(q_2)}{r_1(\beta, q_2)} &= \frac{\max(\beta + (n-1)(1-q_2), \alpha q_2 + n-1)}{\beta + (n-1)q_2}
+\\ &= \max\left(1, \frac{\alpha q_2 + n-1}{\beta + (n-1)(1-q_2)}\right)
+\\ &= \max\left(1, \frac{1}{q_2}\right)
+    \tag{since $f(q_2) = 0$}
+\\ &= \mu_2,
+\\ \frac{r_2^*(\beta)}{r_2(\beta, q_2)} &= \frac{1}{q_2} = \mu_2.
+\end{align*}
+Hence, $\mu(\beta, q_2) = \mu_2$.
+\end{proof}
+
+\begin{lemma}
+\label{thm:mu3}
+$1 < \mu_3 < 1/q_1$ and
+$\mu_3$ is the unique positive solution to the equation
+$\alpha\beta x^2 + (n-1)(n-1+\alpha-\beta)x - ((n-1)^2 + (n-1)\alpha + \alpha\beta) = 0$.
+\end{lemma}
+\begin{proof}
+Let $f(x) = \alpha\beta x^2 - (n-1)(n-1+\alpha-\beta)x - ((n-1)^2 + (n-1)\alpha + \alpha\beta)$.
+It is easy to verify that $\mu_3$ is the unique positive solution to $f(x) = 0$.
+
+Let $\nu$ be the other (negative) root of $f(x) = 0$.
+Since $f$ is a quadratic function, where the quadratic term's coefficient is positive,
+we get that $f(x) \le 0 \iff x \in [\nu, \mu_3]$.
+Thus, to prove that $1 < \mu_3 < 1/q_1$,
+we must show that $f(1) < 0$ and $f(1/q_1) > 0$.
+$f(1) = -\beta(n-1) < 0$.
+One can verify that $f(1/q_1) > 0$ is equivalent to Constraint \ref{item:c3}.
+
+Thus, $f(1/q_1) > 0$, and so, $1 < \mu_3 < 1/q_1$.
+\end{proof}
+
+\begin{lemma}
+\label{thm:p3}
+$p_3 \in (\alpha q_3, \alpha)$, $\mu_3 = \mu(p_3, q_3)$, and
+\[ \frac{r_1^*(q_3)}{r_1(p_3, q_3)} = \frac{r_2^*(p_3)}{r_2(p_3, q_3)} = \mu_3. \]
+\end{lemma}
+\begin{proof}
+$q_3 \defeq q_1$ and $p_3 \defeq \alpha q_1 \mu_3$.
+By \cref{thm:mu3}, $\mu_3 \in (1, 1/q_1)$, so $p_3 \in (\alpha q_1, \alpha)$.
+
+By \cref{thm:q1}, $q_1 \in (1/\alpha, 1)$, so $p_3 \ge \alpha q_1 \ge 1$.
+Since $p_3 \in (\alpha q_3, \alpha)$, we get
+\[ \frac{r_2^*(p_3)}{r_2(p_3, q_3)} = \frac{p_3/\alpha}{q_1} = \mu_3. \]
+By \cref{thm:q1}, $r_1^*(q_1) = n\chat_1 = \alpha q_1 + n-1$. Thus,
+\begin{align*}
+\frac{r_1^*(q_3)}{r_1(p_3, q_3)} &= \frac{\alpha q_1 + n-1}{p_3 + (n-1)(1-q_1)}
+\\ &= \frac{\alpha\frac{\beta}{\alpha+n-1} + n-1}{\alpha \mu_3 \frac{\beta}{\alpha+n-1}
+    + (n-1)\left(1 - \frac{\beta}{\alpha + n-1}\right)}
+\\ &= \frac{(n-1)^2 + (n-1)\alpha + \alpha\beta}{\alpha\beta\mu_3 + (n-1)(\alpha + n-1 - \beta)}.
+\end{align*}
+Since $\mu_3$ is a positive root of the equation
+$\alpha\beta x^2 + (n-1)(\alpha + n-1 - \beta)x - ((n-1)^2 + (n-1)\alpha + \alpha\beta) = 0$,
+we get that $r_1^*(q_3)/r_1(p_3, q_3) = \mu_3$.
+Thus, $\mu(p_3, q_3) = \mu_3$.
+\end{proof}
