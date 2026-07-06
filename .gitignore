@@ -3,7 +3,7 @@
 Scratch.lean
 AiScratch.lean
 
-*.claude
+.claude/settings.local.json
 *.zip
 *~
 *.sw[po]

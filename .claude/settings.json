@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lake build *)",
+      "Bash(lake env lean *)",
+      "Bash(grep *)",
+      "Edit(**/*.lean)"
+    ]
+  },
+  "outputStyle": "Explanatory",
+  "showThinkingSummaries": true,
+  "verbose": true
+}
