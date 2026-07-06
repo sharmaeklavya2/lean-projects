@@ -68,6 +68,7 @@ noncomputable def r1star (q : ℝ) : ℝ :=
 `r₂*(p) = n·max(1 - p, min(1, p/α))`. -/
 noncomputable def r2star (p : ℝ) : ℝ :=
   n * max (1 - p) (min 1 (p / α))
+  -- α > 0 (see `Constraints.c1_lo`), so division is well-defined.
 
 /-! ### The instability ratio `μ`
 
@@ -115,7 +116,10 @@ noncomputable def L1 : ℝ := α + n - β
 /-- `L₂ := n² + αn + αβ`. Positive (all terms are, since `n > 0`). -/
 noncomputable def L2 : ℝ := n ^ 2 + α * n + α * β
 
-/-! The four candidate points. Auxiliary `q₁` and `ĉ₁` are shared. -/
+/-! The four candidate points. Auxiliary `q₁` and `ĉ₁` are shared.
+In the definition of `pᵢ`, `qᵢ`, `μᵢ`, division is well-defined since
+each numerator and denominator is positive.
+-/
 
 /-- `q₁ := β / (α + n)`. -/
 noncomputable def q1 : ℝ := β / (α + n)
