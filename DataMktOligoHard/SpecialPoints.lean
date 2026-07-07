@@ -1,4 +1,4 @@
-import DataMktOligoHard.Basic
+import DataMktOligoHard.Defs
 import Mathlib.Tactic.LinearCombination
 
 /-!

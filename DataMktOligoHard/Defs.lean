@@ -1,10 +1,13 @@
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Data.Real.Sqrt
 
 /-!
 # Data-market oligopoly: inapproximability of approximate Nash equilibria
 -/
+
+@[expose] public section
 
 namespace DataMktOligoHard
 

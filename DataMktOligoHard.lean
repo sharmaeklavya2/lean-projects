@@ -1,4 +1,4 @@
-import DataMktOligoHard.Basic
+import DataMktOligoHard.Defs
 import DataMktOligoHard.SpecialPoints
 import DataMktOligoHard.Pending
 import DataMktOligoHard.Case1

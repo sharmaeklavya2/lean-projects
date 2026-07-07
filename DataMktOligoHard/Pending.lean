@@ -1,4 +1,4 @@
-import DataMktOligoHard.Basic
+import DataMktOligoHard.Defs
 import DataMktOligoHard.Case1
 import DataMktOligoHard.Case2
 import DataMktOligoHard.Case3
