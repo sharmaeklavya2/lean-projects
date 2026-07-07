@@ -19,8 +19,6 @@ The `p = 0` and `p ≥ 1` corners (where a seller earns `0`) give `μ = cap` und
 `x/0` convention, but `μ₁ ≤ cap` (`μ1_le_cap`) so the sharp bound `μ₁ ≤ μ` holds there too.
 -/
 
-public section
-
 namespace DataMktOligoHard
 
 variable {α β n : ℝ}
@@ -73,7 +71,7 @@ gives `μ = cap`, and `μ₁ ≤ cap` (`μ1_le_cap`) closes those.
 
 For `p ≥ p₁` seller 2's ratio `p/(α(1-p))` (increasing on `(0,1)`) already clears `μ₁`;
 for `p ≤ p₁` seller 1's ratio `r₁*(q)/(p(n+1)) ≥ (n+1)ĉ₁/(p(n+1)) = ĉ₁/p ≥ ĉ₁/p₁ = μ₁`. -/
-theorem thm_2 (h : Constraints α β n) {p q : ℝ}
+public theorem thm_2 (h : Constraints α β n) {p q : ℝ}
     (hp : 0 ≤ p) (hq : 0 ≤ q) (hpaq : p < α * q) (hpq1 : 1 ≤ p + q) :
     μ1 α β n ≤ μ α β n p q := by
   have hn := n_pos h

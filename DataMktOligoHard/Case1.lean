@@ -12,8 +12,6 @@ In this region `V(p,q)` is the singleton `{(r₁⁻, r₂⁺)}`, so
 `μ(p,q) = max(r₁*(q)/r₁⁻, r₂*(p)/r₂⁺)`.
 -/
 
-public section
-
 namespace DataMktOligoHard
 
 variable {α β n : ℝ}
@@ -75,7 +73,7 @@ hypothesis is redundant: with the standing price assumption `0 ≤ q` and `p ≥
 For `q ≤ q₂` seller 2's ratio `1/q ≥ 1/q₂ = μ₂` already suffices (with the `q = 0`
 corner handled by `μ₂ ≤ cap`). For `q ≥ q₂` seller 1's ratio dominates: the monotone
 chain `r₁⁻ ≤ β + n(1-q₂) = q₂(αq₂+n) ≤ q₂·r₁*(q)` gives `r₁*(q)/r₁⁻ ≥ 1/q₂ = μ₂`. -/
-theorem thm_1_1 (h : Constraints α β n) {p q : ℝ}
+public theorem thm_1_1 (h : Constraints α β n) {p q : ℝ}
     (hq : 0 ≤ q) (hpaq : α * q < p) (hpα : α ≤ p) :
     μ2 α β n ≤ μ α β n p q := by
   have hn := n_pos h
@@ -235,7 +233,7 @@ ratio is `p/(αq)`: if `p ≥ α·q·μ₃` this already gives `μ ≥ p/(αq) �
 lower bounds `r₁*(q) ≥ β + n(1-q)` (for `q ≤ q₁`) or `r₁*(q) ≥ αq + n` (for `q ≥ q₁`),
 the gap to `μ₃·r₁⁻` is `K·(β - q(α+n))` resp. `M·(q(α+n) - β)`, nonnegative by the sign
 of `q - q₁`. -/
-theorem thm_1_2 (h : Constraints α β n) {p q : ℝ}
+public theorem thm_1_2 (h : Constraints α β n) {p q : ℝ}
     (hq : 0 ≤ q) (hpq1 : 1 ≤ p + q) (hpaq : α * q < p) (hpα : p ≤ α) :
     μ3 α β n ≤ μ α β n p q := by
   rw [μ_eq_max_case1 h hq hpq1 hpaq]
@@ -341,7 +339,7 @@ theorem thm_1_2 (h : Constraints α β n) {p q : ℝ}
         _ ≤ r1star α β n q := hg2
 
 /-- combination of thm_1_1 and thm_1_2 -/
-theorem thm_1 (h : Constraints α β n) {p q : ℝ}
+public theorem thm_1 (h : Constraints α β n) {p q : ℝ}
     (hq : 0 ≤ q) (hpq1 : 1 ≤ p + q) (hpaq : α * q < p) :
     min (μ2 α β n) (μ3 α β n) ≤ μ α β n p q := by
     simp only [min_le_iff]

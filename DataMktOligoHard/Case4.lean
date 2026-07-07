@@ -20,7 +20,6 @@ infimum. We reuse `Basic`'s revenue bounds `r1lo/r1hi/r2lo/r2hi` (the paper's
 ## Status: fully proved (`thm_4` and all supporting lemmas are `sorry`-free).
 -/
 
-public section
 
 namespace DataMktOligoHard
 
@@ -456,7 +455,7 @@ theorem thm_mu4 (h : Constraints α β n) :
   rw [h2nd, hX, max_eq_left hμ4ge]
 
 /-- `μ(p₄, q₄) = μ₄` -/
-theorem μ_p4_q4 (h : Constraints α β n) :
+public theorem μ_p4_q4 (h : Constraints α β n) :
     μ α β n (p4 α β n) (q4 α β n) = μ4 α β n := by
   have hpaq : p4 α β n = α * q4 α β n := by rw [p4, q4]
   have hpq1 : 1 < p4 α β n + q4 α β n := by
@@ -557,7 +556,7 @@ theorem thm_4_2 (h : Constraints α β n) {p q : ℝ}
 knife-edge `p = α·q` with `p + q > 1` (and `0 ≤ p, q`), `μ(p,q) ≥ min(μ₂,μ₄)`.
 The `min cap` handles the `x/0` corners of the `cap` convention; downstream
 `cStar ≤ cap` recovers `cStar ≤ μ`. Proved from `thm_4_2` via `μ_eq_inf_z`. -/
-theorem thm_4 (h : Constraints α β n) {p q : ℝ}
+public theorem thm_4 (h : Constraints α β n) {p q : ℝ}
     (hpaq : p = α * q) (hpq1 : 1 < p + q) :
     min (μ2 α β n) (μ4 α β n) ≤ μ α β n p q := by
   rw [μ_eq_inf_z h hpaq hpq1, (thm_4_1 h hpaq hpq1).1]

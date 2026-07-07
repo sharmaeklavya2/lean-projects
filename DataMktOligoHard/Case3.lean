@@ -6,8 +6,6 @@ import DataMktOligoHard.Case1
 import DataMktOligoHard.Case2
 import Mathlib.Tactic.LinearCombination
 
-public section
-
 /-!
 # Case 3 of the main reduction (case3.tex)
 
@@ -317,7 +315,7 @@ trichotomy on `p̂` vs `α·q̂` dispatches to `thm_2` (`p̂ < α·q̂`, giving 
 `thm_1_1`/`thm_1_2` (`p̂ > α·q̂`, giving `μ₂`/`μ₃` by `p̂ ≥ α` or `p̂ ≤ α`), or the
 knife-edge `p̂ = α·q̂ = α/(α+1)`: there `V` is a singleton (on the line), and the
 seller-1 ratio gives `μ ≥ ĉ₁/p̂ ≥ ĉ₁/p₁ = μ₁`. -/
-theorem thm_3 (h : Constraints α β n) {p q : ℝ}
+public theorem thm_3 (h : Constraints α β n) {p q : ℝ}
     (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p + q ≤ 1) :
     min (μ1 α β n) (min (μ2 α β n) (μ3 α β n)) ≤ μ α β n p q := by
   obtain ⟨ph, qh, hsum, hph, hqh, hdom⟩ := thm_pq_dom h hp hq hpq
