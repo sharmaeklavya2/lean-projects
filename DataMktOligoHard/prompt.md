@@ -30,3 +30,4 @@ First, from `paper/`, read `intro.tex`, then `revenue.tex`, then `inapprox.tex`.
 
 Then read `paper/sp-props.tex` and `SpecialPoints.lean`.
 Then ask me about the current status of the project, and I will tell you want to do next.
+Do not read any other files. Some of them might be quite large and not relevant to the task at hand.
