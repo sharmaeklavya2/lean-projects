@@ -3,4 +3,196 @@
     and \texorpdfstring{$p + q > 1$}{p + q > 1}}
 \label{sec:case4}
 
-% Omitted to save tokens. Ask for it if needed.
+\begin{observation}
+$1-q < p = \alpha q \implies q > 1/(\alpha+1)$ and $p > \alpha/(\alpha+1)$.
+\end{observation}
+
+Since $p$ can be expressed as a function of $q$, we write $r_2^*(q)$ instead of $r_1^*(p)$.
+By \cref{thm:rstar}, and using $p = \alpha q$ and $p + q > 1$, we get
+\begin{align*}
+r_1^*(q) &= \max\left(\beta + (n-1)\max(0, 1-q),
+    \min(\beta, \alpha q) + (n-1)\min(1, \alpha q)\right),
+\\ r_2^*(q) &= (n-1)\min(1, q),
+\end{align*}
+
+The revenue collected by the sellers cannot be precisely determined,
+but we can still give upper and lower bounds on them.
+For $j \in [2]$, define
+\begin{enumerate}
+\item $r_1^-(q) \defeq \min(\beta, \alpha q) + (n-1)\max(0, 1-q)$,
+\item $r_1^+(q) \defeq \min(\beta, \alpha q) + (n-1)\min(1, \alpha q)$,
+\item $r_2^-(q) \defeq (n-1)\max(0, 1-\alpha q)$,
+\item $r_2^+(q) \defeq (n-1)\min(q, 1)$,
+\item $s(q) \defeq \min(\beta, \alpha q) + (n-1)$.
+\end{enumerate}
+Then by \cref{thm:r}, the revenue of seller $j$ lies between
+$r_j^-(q)$ and $r_j^+(q)$, and the sum of the sellers' revenues is $s(q)$.
+
+\begin{observation}
+For all $q > 1/(\alpha+1)$, we have $r_1^*(q) \ge r_1^+(q)$ and $r_2^*(q) = r_2^+(q)$.
+\end{observation}
+
+\begin{observation}
+For all $q > 1/(\alpha+1)$, we have
+$r_1^-(q) + r_2^+(q) = r_1^+(q) + r_2^-(q) = s(q)$.
+Let $d(q) \defeq (n-1)(\min(q, 1) + \min(\alpha q, 1) - 1)$.
+Then $r_1^+(q) - r_1^-(q) = r_2^+(q) - r_2^-(q) = d(q)$.
+Moreover, $d(q) > 0$ for all $q > 1/(\alpha+1)$.
+This is because if $q \ge 1/\alpha$, then $d(q) = (n-1)q > 0$,
+and otherwise, $d(q) = (n-1)((\alpha+1)q - 1) > 0$.
+\end{observation}
+
+Seller 1's revenue will always be a convex combination of $r_1^-(q)$ and $r_1^+(q)$.
+Denote her revenue by $r_1(q, z) \defeq (1-z) \cdot r_1^-(q) + z \cdot r_1^+(q)$.
+Since the sellers' revenues sum to $s(q)$, we get that seller 2's revenue is
+$r_2(q, z) \defeq z \cdot r_2^-(q) + (1-z) \cdot r_2^+(q)$.
+We can rewrite these as, $r_1(q, z) = r_1^-(q) + z \cdot d(q)$
+and $r_2(q, z) = r_2^+(q) - z \cdot d(q)$.
+
+Let
+\[ \mu(q, z) \defeq \max\left(\frac{r_1^*(q)}{r_1(q, z)}, \frac{r_2^*(q)}{r_2(q, z)}\right). \]
+We would like to lower bound $\mu(q, z)$ for all $q > \frac{1}{\alpha+1}$ and $z \in [0, 1]$.
+
+\begin{lemma}
+\label{thm:4.1}
+For all $q > \frac{1}{\alpha+1}$, let
+\[ z^*(q) \defeq \min\left(1, \frac{r_2^*(q)(r_1^*(q) - r_1^-(q))}{(r_1^*(q) + r_2^*(q))d(q)}\right). \]
+Then
+\[ \inf_{z \in [0, 1]} \mu(q, z) = \mu(q, z^*(q))
+    = \max\left(\frac{r_1^*(q)+r_2^*(q)}{s(q)}, \frac{r_1^*(q)}{r_1^+(q)}\right). \]
+\end{lemma}
+\begin{proof}
+The key idea is that $r_1^*(q)/r_1(q, z)$ is decreasing in $z$
+and $r_2^*(q)/r_2(q, z)$ is increasing in $z$.
+If these curves (as functions of $z$) intersect,
+then the point of intersection is $z^*$, and this minimizes $\mu(q, z)$.
+Otherwise, we show that $\mu(q, z) = r_1^*(q)/r_1(q, z)$,
+so $\mu(q, z)$ is minimized at $z = 1$.
+We now formalize this argument.
+
+For $j \in [2]$, let $g_j(q, z) \defeq r_j^*(q)/r_j(q, z)$. Let
+\[ \zhat(q) \defeq \frac{r_2^*(q)(r_1^*(q) - r_1^-(q))}{(r_1^*(q) + r_2^*(q))d(q)}. \]
+Then $\zhat(q) \ge 0$ and
+\begin{align*}
+g_1(q, z) \ge g_2(q, z)
+    &\iff \frac{r_1^*(q)}{r_1(q, z)} \ge \frac{r_2^*(q)}{r_2(q, z)}
+\\ &\iff r_1^*(q)r_2(q, z) \ge r_2^*(q)r_1(q, z)
+\\ &\iff r_1^*(q)(r_2^*(q) - d(q)z) \ge r_2^*(q)(r_1^-(q) + d(q)z)
+    \tag{since $r_2^+(q) = r_2^*(q)$}
+\\ &\iff z \le \zhat(q).
+\end{align*}
+Similarly, we can show that $g_1(q, z) \le g_2(q, z) \iff z \ge \zhat(q)$.
+
+\textbf{Case 1}: $\zhat(q) \ge 1$.
+\\ Then $z^*(q) = 1$ and for all $z \in [0, 1]$, we have $g_1(q, z) \ge g_2(q, z)$.
+Thus, $\mu(q, z) = g_1(q, z)$. Moreover, $g_1(q, z)$ is decreasing in $z$, so
+\[ \inf_{z \in [0, 1]} \mu(q, z) = \inf_{z \in [0, 1]} g_1(q, z) = g_1(q, 1) = \mu(q, 1) = \mu(q, z^*(q)). \]
+Moreover,
+\[ \mu(q, z^*(q)) = g_1(q, 1) = \frac{r_1^*(q)}{r_1^+(q)}. \]
+
+\textbf{Case 2}: $\zhat(q) \le 1$.
+\\ Then $z^*(q) = \zhat(q)$.
+For $z \le \zhat(q)$, we have $g_1(q, z) \ge g_2(q, z)$, so $\mu(q, z) = g_1(q, z)$.
+Since $g_1(q, z)$ is decreasing in $z$, we have
+$\mu(q, z) = g_1(q, z) \ge g_1(q, \zhat(q)) = \mu(q, \zhat(q))$.
+For $z \ge \zhat(q)$, we have $g_1(q, z) \le g_2(q, z)$, so $\mu(q, z) = g_2(q, z)$.
+Since $g_2(q, z)$ is increasing in $z$, we have
+$\mu(q, z) = g_2(q, z) \ge g_2(q, \zhat(q)) = \mu(q, \zhat(q))$.
+Thus, $\inf_{z \in [0, 1]} \mu(q, z) = \mu(q, z^*(q))$.
+Moreover,
+\[ \mu(q, z^*(q)) = g_2(z^*(q)) = \frac{r_2^*(q)}{r_2^*(q) - d(q)\zhat(q)}
+    = \frac{1}{1 - \frac{r_1^*(q) - r_1^-(q)}{r_1^*(q)+r_2^*(q)}}
+    = \frac{r_1^*(q) + r_2^*(q)}{r_2^*(q) + r_1^-(q)}. \]
+
+On combining the two cases, we get
+\[ \inf_{z \in [0, 1]} \mu(q, z) = \mu(q, z^*(q)) = \begin{cases}
+    \frac{r_1^*(q)}{r_1^+(q)} & \text{ if } \zhat(q) \ge 1
+    \\ \frac{r_1^*(q) + r_2^*(q)}{r_2^*(q) + r_1^-(q)} & \text{ otherwise}
+\end{cases}. \]
+\begin{align*}
+& \frac{r_1^*(q)}{r_1^+(q)} \ge \frac{r_1^*(q) + r_2^*(q)}{r_2^*(q) + r_1^-(q)}
+\\ &\iff r_1^*(q)(r_2^*(q) + r_1^-(q)) \ge (r_1^-(q) + d(q))(r_1^*(q) + r_2^*(q))
+\\ &\iff r_1^*(q)r_2^*(q) \ge r_1^-(q)r_2^*(q) + d(q)(r_1^*(q) + r_2^*(q))
+\\ &\iff \zhat(q) \ge 1.
+\end{align*}
+Thus,
+\[ \inf_{z \in [0, 1]} \mu(q, z) = \mu(q, z^*(q))
+    = \max\left(\frac{r_1^*(q)+r_2^*(q)}{r_2^*(q) + r_1^-(q)}, \frac{r_1^*(q)}{r_1^+(q)}\right).
+    \qedhere \]
+\end{proof}
+
+\begin{lemma}
+\label{thm:mu4}
+\[ \mu(q_1, z^*(q_1)) = \mu_4 \defeq 1 + \frac{\beta(n-1)}{(n-1)^2 + (n-1)\alpha + \alpha\beta}. \]
+\end{lemma}
+\begin{proof}
+By \cref{thm:q1}, we get $q_1 \in (1/\alpha, 1)$
+and $r_1^*(q_1) = n\chat_1 = \alpha q_1 + n-1$.
+Also, $r_2^*(q_1) = r_2^+(q) = (n-1)q_1$,
+$r_1^+(q_1) = \alpha q_1 + (n-1)$, and $r_1^-(q_1) = \alpha q_1 + (n-1)(1-q_1)$.
+Thus, by \cref{thm:4.1}, we get
+\begin{align*}
+\mu(q_1, z^*(q_1))
+    &= \max\left(\frac{r_1^*(q_1)}{r_1^+(q_1)}, \frac{r_1^*(q_1)+r_2^*(q_1)}{r_1^-(q)+r_2^*(q)}\right)
+    = \max\left(1, \frac{\alpha q_1 + (n-1)(1+q_1)}{\alpha q_1 + n-1}\right)
+\\ &= 1 + \frac{(n-1)q_1}{\alpha q_1 + n-1}
+    = 1 + \frac{(n-1)\beta}{(n-1)^2 + (n-1)\alpha + \alpha\beta}.
+\qedhere
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{thm:4.2}
+For all $q > \frac{1}{\alpha+1}$, we have
+\[ \mu(q, z^*(q)) \ge \min(\mu_2, \mu_4). \]
+\end{lemma}
+\begin{proof}
+Let $h(q) \defeq \beta + (n-1)\max(0, 1-q)$.
+Then $r_1^*(q) = \max(h_1(q), r_1^+(q))$.
+Using techniques from the proof of \cref{thm:q1},
+one can easily show that $h_1(q) \ge r_1^+(q) \iff q \le q_1$
+and $h_1(q) \le r_1^+(q) \iff q \ge q_1$.
+
+\textbf{Case 1}: $q \in (\frac{1}{\alpha+1}, q_1]$. Then
+\[ \frac{r_1^*(q)}{r_1^+(q)} = \max\left(1, \frac{h_1(q)}{r_1^+(q)}\right). \]
+Since $h_1(q)$ is non-increasing in $q$ and $r_1^+(q)$ is non-decreasing in $q$,
+we get that $r_1^*(q)/r_1^+(q)$ is non-increasing in $q$.
+\[ \frac{r_1^*(q)+r_2^*(q)}{s(q)} = \frac{\beta + n-1}{s(q)}. \]
+Since $s(q)$ is non-decreasing in $q$, we get that $(r_1^*(q)+r_2^*(q))/s(q)$
+is non-increasing in $q$. Thus,
+$\mu(q, z^*(q))$ is non-increasing in $q$.
+So, $\mu(q, z^*(q)) \ge \mu(q_1, z^*(q_1)) = \mu_4$
+by \cref{thm:mu4}.
+
+\textbf{Case 2}: $q \ge q_1$.
+\\ Then $q_1 \ge 1/\alpha$ by \cref{thm:q1}.
+Also, $r_1^*(q)/r_1^+(q) = 1$.
+Since $r_1^*(q) + r_2^*(q) = r_1^+(q) + r_2^+(q) = s(q) + d(q)$, we get
+\[ \frac{r_1^*(q)+r_2^*(q)}{s(q)} = 1 + \frac{d(q)}{s(q)}
+= 1 + \frac{(n-1)\min(q, 1)}{\min(\beta, \alpha q) + (n-1)}. \]
+
+\textbf{Case 2a}: $q \in [q_1, 1]$. Then
+\[ \frac{r_1^*(q)+r_2^*(q)}{s(q)} = 1 + \frac{(n-1)q}{\alpha q + n-1}. \]
+One can show that this is increasing in $q$.
+Thus, for $q \in [q_1, 1]$, we have $\mu(q, z^*(q)) \ge \mu(q_1, z^*(q_1)) = \mu_4$
+by \cref{thm:mu4}.
+
+\textbf{Case 2b}: $q \ge 1$. Then
+\[ \frac{r_1^*(q)+r_2^*(q)}{s(q)} = 1 + \frac{n-1}{\min(\beta, \alpha q) + (n-1)}, \]
+which is non-increasing in $q$.
+Thus, for $q \ge 1$, we get
+\[ \mu(q, z^*(q)) \ge \mu(\infty, z^*(\infty)) = 1 + \frac{n-1}{\beta + n-1}. \]
+To complete the proof, we need to show that
+\[ 1 + \frac{n-1}{\beta+n-1} \ge \mu_2. \]
+This holds because
+\begin{align*}
+\mu_2 &= \frac{\sqrt{(n-1)^2+(n-1)\alpha+\alpha\beta}+(n-1)}{\beta + n-1}
+\\ &\le \frac{\sqrt{(n-1)^2+(n-1)\alpha+\alpha(\alpha + n-1)}+(n-1)}{\beta + n-1}
+    \tag{since $\beta \le \alpha + n-1$ by Constraint \ref{item:c1}}
+\\ &= \frac{\alpha+2(n-1)}{\beta + n-1}
+    \le \frac{\beta+2(n-1)}{\beta + n-1}
+    = 1 + \frac{n-1}{\beta + n-1}.
+\end{align*}
+
+Thus, in all cases, we get that $\mu(q, z^*(q)) \ge \min(\mu_2, \mu_4)$.
+\end{proof}
