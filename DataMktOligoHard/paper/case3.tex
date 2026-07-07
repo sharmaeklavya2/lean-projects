@@ -2,4 +2,108 @@
     \texorpdfstring{$p + q \le 1$}{p + q <= 1}}
 \label{sec:case3}
 
-% Omitted to save tokens. Ask for it if needed.
+Recall \cref{thm:r,thm:rstar}.
+Since $p + q \le 1$, we get
+\begin{align*}
+r_1^*(q) &= \max\left(\beta + (n-1)(1-q),
+    \min(\beta, \alpha q) + (n-1)\min(1, \alpha q)\right),
+    \tag{by \cref{thm:rstar}}
+\\ r_1(p, q) &= \min(\beta, p) + (n-1)p,
+    \tag{by \cref{thm:r}}
+\\ r_2^*(p) &= (n-1)\max(1-p, p/\alpha),
+    \tag{by \cref{thm:rstar}, $p \le 1$, $\alpha \ge 1$}
+\\ r_2(p, q) &= (n-1)q.
+    \tag{by \cref{thm:r}}
+\end{align*}
+
+Let $p' \defeq \frac{\alpha}{\alpha+1}$.
+We first show that (informally) $\mu(p, q)$ is decreasing in $p$ if $p \le p'$
+and $\mu(p, q)$ is decreasing in $q$ if $q \le q_1$.
+
+\begin{lemma}
+\label{thm:mu-dec-p}
+Let $q \in [0, 1]$ and $0 \le x_1 \le x_2 \le \min(p', 1-q)$.
+Then $\mu(x_1, q) \ge \mu(x_2, q)$.
+\end{lemma}
+\begin{proof}
+For any $p \in [0, \min(p', 1-q)]$, we have $1-p \ge p/\alpha$, so
+\[ \mu(p, q) = \max\left(\frac{r_1^*(q)}{r_1(p, q)}, \frac{r_2^*(p)}{r_2(p, q)}\right)
+    = \max\left(\frac{r_1^*(q)}{np}, \frac{1-p}{q}\right). \]
+Both terms in the $\max(\ldots)$ are decreasing in $p$.
+\end{proof}
+
+\begin{lemma}
+\label{thm:mu-dec-q}
+Let $p \in [0, 1]$ and $0 \le y_1 \le y_2 \le \min(q_1, 1-p)$.
+Then $\mu(p, y_1) \ge \mu(p, y_2)$.
+\end{lemma}
+\begin{proof}
+For any $q \in [0, 1]$, we have
+$\beta + (n-1)(1-q) \ge \min(\beta, \alpha q) + (n-1)\min(1, \alpha q) \iff q \le q_1$.
+Thus, for any $q \in [0, \min(q_1, 1-p)]$, we have
+\[ \mu(p, q) = \max\left(\frac{r_1^*(q)}{r_1(p, q)}, \frac{r_2^*(p)}{r_2(p, q)}\right)
+    = \max\left(\frac{\beta + (n-1)(1-q)}{np}, \frac{r_2^*(p)}{q}\right). \]
+Both terms in the $\max(\ldots)$ are decreasing in $q$.
+\end{proof}
+
+\begin{lemma}
+\label{thm:pq-dom}
+For any $(p, q) \in \mathbb{R}_{\ge 0}^2$ such that $p + q \le 1$,
+there exists $(\phat, \qhat) \in \mathbb{R}_{\ge 0}^2$ such that
+$\phat + \qhat = 1$, $\phat \ge p$, $\qhat \ge q$,
+and $\mu(\phat, \qhat) \le \mu(p, q)$.
+\end{lemma}
+\begin{proof}
+Let $p' \defeq \frac{\alpha}{\alpha+1}$.
+By \cref{thm:q1}, $q_1 \in (1/\alpha, 1)$.
+Thus, $p' + q_1 > 1$.
+
+Let $\phat \defeq \max(p, \min(p', 1-q))$
+and $\qhat \defeq \max(q, \min(q_1, 1-\phat))$.
+It is easy to see that $\phat \ge p$ and $\qhat \ge q$.
+
+\textbf{Case 1}: $p \le 1-q \le p'$
+\\ Then $\phat = 1-q$, and so, $\qhat = \max(q, \min(q_1, q)) = q$.
+Then $\phat + \qhat = (1-q) + q = 1$.
+By \cref{thm:mu-dec-p}, we get
+$\mu(p, q) \ge \mu(\phat, q) = \mu(\phat, \qhat)$.
+
+\textbf{Case 2}: $p \le p' \le 1-q$
+\\ Then $\phat = p'$.
+Since $p' + q_1 > 1$ and $p' \le 1-q$, we get $q \le 1-p' < q_1$.
+Hence, $\qhat = \max(q, \min(q_1, 1-q_4)) = 1-p'$.
+Thus, $\phat + \qhat = p' + (1-p') = 1$.
+By \cref{thm:mu-dec-p}, we get $\mu(p, q) \ge \mu(\phat, q)$,
+and by \cref{thm:mu-dec-q}, we get $\mu(\phat, q) \ge \mu(\phat, \qhat)$.
+Thus, $\mu(p, q) \ge \mu(\phat, \qhat)$.
+
+\textbf{Case 3}: $p' \le p \le 1-q$
+\\ Then $\phat = p$.
+Since $p' + q_1 > 1$, we get $q \le 1-p \le 1-p' < q_1$.
+Thus, $\qhat = \max(q, \min(q_1, 1-p)) = 1-p$, so $\phat + \qhat = p + (1-p) = 1$.
+Also, by \cref{thm:mu-dec-q}, $\mu(p, q) = \mu(\phat, q) \ge \mu(\phat, \qhat)$.
+
+Thus, in each case, we get $\phat \ge p$, $\qhat \ge q$,
+$\phat + \qhat = 1$, and $\mu(p, q) \ge \mu(\phat, \qhat)$.
+\end{proof}
+
+\begin{lemma}
+\label{thm:3}
+If $p + q \le 1$, then $\mu(p, q) \ge \min(\mu_1, \mu_2, \mu_3)$.
+\end{lemma}
+\begin{proof}
+By \cref{thm:pq-dom}, there exist $\phat \ge p$ and $\qhat \ge q$
+such that $\phat + \qhat = 1$ and $\mu(p, q) \ge \mu(\phat, \qhat)$.
+
+If $\phat > \alpha q$, then by \cref{thm:1.1,thm:1.2},
+we get $\mu(\phat, \qhat) \ge \min(\mu_2, \mu_3)$.
+If $\phat < \alpha q$, then by \cref{thm:2}, we get
+$\mu(\phat, \qhat) \ge \mu_1$.
+Now let $\phat = \alpha q$. Then $\phat = \frac{\alpha}{\alpha+1}$ and $\qhat = \frac{1}{\alpha+1}$.
+
+By \cref{thm:q1}, $\qhat < 1/\alpha < q_1$ and $r_1^*(\qhat) \ge r_1^*(q_1)$.
+By \cref{thm:p1}, $\phat = < p_1$, and
+\[ \mu(\phat, \qhat) \ge \frac{r_1^*(\qhat)}{r_1(\phat, \qhat)} = \frac{r_1^*(\qhat)}{n\phat}
+    \ge \frac{r_1^*(q_1)}{np_1} = \frac{r_1^*(q_1)}{r_1(p_1, q_1)} = \mu_1. \]
+Hence, $\mu(p, q) \ge \mu(\phat, \qhat) \ge \min(\mu_1, \mu_2, \mu_3)$.
+\end{proof}
