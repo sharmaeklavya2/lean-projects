@@ -26,8 +26,6 @@ These lemmas feed the next 4 subsections and the main claim (`cStar_le_μ`, in
   unneeded downstream.
 -/
 
-public section
-
 namespace DataMktOligoHard
 
 variable {α β n : ℝ}
@@ -35,38 +33,38 @@ variable {α β n : ℝ}
 /-! ## Positivity facts from the constraints -/
 
 /-- `0 < α`, from Constraint c1 (`2 ≤ α`). -/
-theorem alpha_pos (h : Constraints α β n) : 0 < α := by linarith [h.c1_lo]
+public theorem alpha_pos (h : Constraints α β n) : 0 < α := by linarith [h.c1_lo]
 
 /-- `0 < n`, from `α ≤ β < α + n`. -/
-theorem n_pos (h : Constraints α β n) : 0 < n := by linarith [h.c1_mid, h.c1_hi]
+public theorem n_pos (h : Constraints α β n) : 0 < n := by linarith [h.c1_mid, h.c1_hi]
 
 /-- `0 < α + n`. -/
-theorem alpha_add_n_pos (h : Constraints α β n) : 0 < α + n := by
+public theorem alpha_add_n_pos (h : Constraints α β n) : 0 < α + n := by
   linarith [alpha_pos h, n_pos h]
 
 /-! ## Properties of `q₁` (thm:q1) -/
 
 /-- `q₁ < 1`, from Constraint c1 (`β < α + n`). -/
-theorem q1_lt_one (h : Constraints α β n) : q1 α β n < 1 := by
+public theorem q1_lt_one (h : Constraints α β n) : q1 α β n < 1 := by
   simp only [q1]
   rw [div_lt_one (alpha_add_n_pos h)]
   exact h.c1_hi
 
 /-- `1 < α·q₁`, i.e. `q₁ > 1/α`, from Constraint c2 (`α + n < α·β`). -/
-theorem one_lt_alpha_mul_q1 (h : Constraints α β n) : 1 < α * q1 α β n := by
+public theorem one_lt_alpha_mul_q1 (h : Constraints α β n) : 1 < α * q1 α β n := by
   simp only [q1]
   rw [← mul_div_assoc, one_lt_div (alpha_add_n_pos h)]
   exact h.c2
 
 /-- `α·q₁ < β`, since `α·q₁ < α ≤ β` (uses `q₁ < 1`). -/
-theorem alpha_mul_q1_lt_beta (h : Constraints α β n) : α * q1 α β n < β := by
+public theorem alpha_mul_q1_lt_beta (h : Constraints α β n) : α * q1 α β n < β := by
   have h1 : α * q1 α β n < α * 1 := mul_lt_mul_of_pos_left (q1_lt_one h) (alpha_pos h)
   rw [mul_one] at h1
   linarith [h.c1_mid]
 
 /-- First `max` branch of `r₁*` at `q₁`: `g₁(q₁) = β + n·(1 - q₁) = n + α·q₁`
 (uses `q₁ < 1`). -/
-theorem g1_q1 (h : Constraints α β n) :
+public theorem g1_q1 (h : Constraints α β n) :
     β + n * max 0 (1 - q1 α β n) = n + α * q1 α β n := by
   have hne : (α + n) ≠ 0 := ne_of_gt (alpha_add_n_pos h)
   rw [max_eq_right (by linarith [q1_lt_one h] : (0:ℝ) ≤ 1 - q1 α β n)]
@@ -74,21 +72,21 @@ theorem g1_q1 (h : Constraints α β n) :
 
 /-- Second `max` branch of `r₁*` at `q₁`: `g₂(q₁) = α·q₁ + n = n + α·q₁`
 (uses `1 < α·q₁ < β`). -/
-theorem g2_q1 (h : Constraints α β n) :
+public theorem g2_q1 (h : Constraints α β n) :
     min β (α * q1 α β n) + n * min 1 (α * q1 α β n) = n + α * q1 α β n := by
   rw [min_eq_right (le_of_lt (alpha_mul_q1_lt_beta h)),
       min_eq_left (le_of_lt (one_lt_alpha_mul_q1 h))]
   ring
 
 /-- `r₁*(q₁) = n + α·q₁` (thm:q1). Both `max` branches evaluate to this common value. -/
-theorem r1star_q1 (h : Constraints α β n) :
+public theorem r1star_q1 (h : Constraints α β n) :
     r1star α β n (q1 α β n) = n + α * q1 α β n := by
   unfold r1star
   rw [g1_q1 h, g2_q1 h, max_self]
 
 /-- `r₁*(q) ≥ n + α·q₁` for all `q` (thm:q1). For `q ≤ q₁` the non-increasing first
 branch `g₁` dominates; for `q ≥ q₁` the non-decreasing second branch `g₂` does. -/
-theorem r1star_ge (h : Constraints α β n) (q : ℝ) :
+public theorem r1star_ge (h : Constraints α β n) (q : ℝ) :
     n + α * q1 α β n ≤ r1star α β n q := by
   have hn : (0:ℝ) < n := n_pos h
   have hα : (0:ℝ) < α := alpha_pos h
@@ -110,13 +108,13 @@ theorem r1star_ge (h : Constraints α β n) (q : ℝ) :
     linarith
 
 /-- `1/α < q₁` (thm:q1), the lower end of `q₁ ∈ (1/α, 1)`. -/
-theorem one_div_alpha_lt_q1 (h : Constraints α β n) : 1 / α < q1 α β n := by
+public theorem one_div_alpha_lt_q1 (h : Constraints α β n) : 1 / α < q1 α β n := by
   rw [div_lt_iff₀ (alpha_pos h)]
   nlinarith [one_lt_alpha_mul_q1 h]
 
 /-- `r₁*(q₁) = (n+1)·ĉ₁`, i.e. the paper's `n·ĉ₁` (paper's total-buyer count `n`
 is our `n + 1`). -/
-theorem r1star_q1' (h : Constraints α β n) :
+public theorem r1star_q1' (h : Constraints α β n) :
     r1star α β n (q1 α β n) = (n + 1) * chat1 α β n := by
   have hn1 : (n:ℝ) + 1 ≠ 0 := by linarith [n_pos h]
   rw [r1star_q1 h]
@@ -147,7 +145,7 @@ theorem thm_q1 (h : Constraints α β n) :
 /-! ## Properties of `ĉ₁` and `p₁` (thm:p1) -/
 
 /-- `ĉ₁ > 1` (thm:p1): since `ĉ₁ = (n + α·q₁)/(n + 1)` and `α·q₁ > 1`. -/
-theorem chat1_gt_one (h : Constraints α β n) : 1 < chat1 α β n := by
+public theorem chat1_gt_one (h : Constraints α β n) : 1 < chat1 α β n := by
   have hn1 : (0:ℝ) < n + 1 := by linarith [n_pos h]
   simp only [chat1]
   rw [one_lt_div hn1]
@@ -158,7 +156,7 @@ theorem alpha_mul_chat1_pos (h : Constraints α β n) : 0 < α * chat1 α β n :
   mul_pos (alpha_pos h) (by linarith [chat1_gt_one h])
 
 /-- `0 < p₁` (independent of the constraints — the square root is `≥ 0`). -/
-theorem p1_pos (_h : Constraints α β n) : 0 < p1 α β n := by
+public theorem p1_pos (_h : Constraints α β n) : 0 < p1 α β n := by
   simp only [p1]; positivity
 
 /-- `p₁ < 1` (thm:p1), since the square root exceeds `1`. -/
@@ -177,7 +175,7 @@ theorem p1_lt_one (h : Constraints α β n) : p1 α β n < 1 := by
 /-- The defining identity `p₁² = α·ĉ₁·(1 - p₁)` (thm:p1): `p₁` solves
 `ĉ₁/x = x/(α(1-x))`, i.e. `x² + α·ĉ₁·x - α·ĉ₁ = 0`. Reduces to `k(s² - 1) = 4`
 where `k = α·ĉ₁`, `s = √(1 + 4/k)`. -/
-theorem p1_quadratic (h : Constraints α β n) :
+public theorem p1_quadratic (h : Constraints α β n) :
     p1 α β n ^ 2 = α * chat1 α β n * (1 - p1 α β n) := by
   have hk : 0 < α * chat1 α β n := alpha_mul_chat1_pos h
   simp only [p1]
@@ -222,7 +220,7 @@ theorem one_lt_p1_add_q1 (h : Constraints α β n) : 1 < p1 α β n + q1 α β n
 
 /-- `α/(α+1) < p₁` (thm:p1 line 47), the lower end of `p₁ ∈ (α/(α+1), 1)`.
 Equivalent to `α(1-p₁) < p₁`. -/
-theorem p1_gt_ratio (h : Constraints α β n) : α / (α + 1) < p1 α β n := by
+public theorem p1_gt_ratio (h : Constraints α β n) : α / (α + 1) < p1 α β n := by
   have hα := alpha_pos h
   rw [div_lt_iff₀ (by linarith : (0:ℝ) < α + 1)]
   nlinarith [alpha_mul_one_sub_p1_lt_p1 h]
@@ -287,7 +285,7 @@ theorem ratio2_p1_q1 (h : Constraints α β n) :
 
 /-- `μ(p₁, q₁) = μ₁` (thm:p1). Here `p₁ < α·q₁`, so `V` is the singleton
 `{(r₁⁺, r₂⁻)}` and both best-response ratios equal `μ₁`. -/
-theorem μ_p1_q1 (h : Constraints α β n) :
+public theorem μ_p1_q1 (h : Constraints α β n) :
     μ α β n (p1 α β n) (q1 α β n) = μ1 α β n := by
   -- `V` is the singleton `{(r₁⁺, r₂⁻)}` (branch `p < α·q`, since `p₁ + q₁ > 1`).
   have hV : V α β n (p1 α β n) (q1 α β n)
@@ -338,7 +336,7 @@ theorem L2_pos (h : Constraints α β n) : 0 < L2 α β n := by
   nlinarith [mul_pos hα hn, mul_pos hα hβ, sq_nonneg n]
 
 /-- `0 < q₂`. -/
-theorem q2_pos (h : Constraints α β n) : 0 < q2 α β n := by
+public theorem q2_pos (h : Constraints α β n) : 0 < q2 α β n := by
   have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
   have hn := n_pos h
   simp only [q2]
@@ -361,7 +359,7 @@ theorem alpha_mul_q2 (h : Constraints α β n) :
 
 /-- The defining quadratic `α·q₂² + 2n·q₂ = n + β` (thm:q2): `q₂` solves
 `(αx+n)/(β+n(1-x)) = 1/x`. Derived from `α·q₂ + n = √L₂` (`alpha_mul_q2`). -/
-theorem q2_quadratic (h : Constraints α β n) :
+public theorem q2_quadratic (h : Constraints α β n) :
     α * (q2 α β n) ^ 2 + 2 * n * (q2 α β n) = n + β := by
   have hα := alpha_pos h
   have hαne : α ≠ 0 := ne_of_gt hα
@@ -378,13 +376,13 @@ theorem q2_quadratic (h : Constraints α β n) :
 
 /-- `q₂ < 1` (thm:q2). Root-sign: `f(1) = α + n - β > 0` for the upward parabola
 `f(x) = αx² + 2nx - (n+β)` with `f(q₂) = 0`. -/
-theorem q2_lt_one (h : Constraints α β n) : q2 α β n < 1 := by
+public theorem q2_lt_one (h : Constraints α β n) : q2 α β n < 1 := by
   nlinarith [q2_quadratic h, h.c1_hi, alpha_pos h, n_pos h, q2_pos h,
     mul_pos (alpha_pos h) (q2_pos h)]
 
 /-- `1 < α·q₂`, i.e. `q₂ > 1/α` (thm:q2). Uses `α·q₂ = √L₂ - n` and `(n+1)² < L₂`
 (equivalently `2n + 1 < α(n+β)`, from `α ≥ 2 ≤ β`). -/
-theorem one_lt_alpha_mul_q2 (h : Constraints α β n) : 1 < α * q2 α β n := by
+public theorem one_lt_alpha_mul_q2 (h : Constraints α β n) : 1 < α * q2 α β n := by
   have hn := n_pos h
   rw [alpha_mul_q2 h]
   have h1 : ((n + 1 : ℝ)) ^ 2 < L2 α β n := by
@@ -402,7 +400,7 @@ theorem one_div_alpha_lt_q2 (h : Constraints α β n) : 1 / α < q2 α β n := b
   nlinarith [one_lt_alpha_mul_q2 h]
 
 /-- `α·q₂ < β` (thm:q2 line 101), since `α·q₂ < α ≤ β` (uses `q₂ < 1`). -/
-theorem alpha_mul_q2_lt_beta (h : Constraints α β n) : α * q2 α β n < β := by
+public theorem alpha_mul_q2_lt_beta (h : Constraints α β n) : α * q2 α β n < β := by
   have h1 : α * q2 α β n < α * 1 := mul_lt_mul_of_pos_left (q2_lt_one h) (alpha_pos h)
   rw [mul_one] at h1
   linarith [h.c1_mid]
@@ -473,7 +471,7 @@ theorem ratio1_β_q2 (h : Constraints α β n) :
 
 /-- `μ(p₂, q₂) = μ₂` (thm:q2), where `p₂ = β`. Here `p₂ > α·q₂`, so `V` is the
 singleton `{(r₁⁻, r₂⁺)}` and both best-response ratios equal `μ₂`. -/
-theorem μ_p2_q2 (h : Constraints α β n) :
+public theorem μ_p2_q2 (h : Constraints α β n) :
     μ α β n (p2 β) (q2 α β n) = μ2 α β n := by
   simp only [p2]
   -- `V` is the singleton `{(r₁⁻, r₂⁺)}` (branch `p > α·q`, since `β > α·q₂`).
@@ -520,11 +518,11 @@ theorem thm_q2 (h : Constraints α β n) :
 (paper: `αβx² + (n-1)(n-1+α-β)x - ((n-1)²+(n-1)α+αβ) = 0`). -/
 
 /-- `0 < q₁ = β/(α+n)`. -/
-theorem q1_pos (h : Constraints α β n) : 0 < q1 α β n :=
+public theorem q1_pos (h : Constraints α β n) : 0 < q1 α β n :=
   div_pos (by linarith [h.c1_lo, h.c1_mid]) (alpha_add_n_pos h)
 
 /-- `0 < L₁ = α + n - β`, from Constraint c1 (`β < α + n`). -/
-theorem L1_pos (h : Constraints α β n) : 0 < L1 α β n := by
+public theorem L1_pos (h : Constraints α β n) : 0 < L1 α β n := by
   simp only [L1]; linarith [h.c1_hi]
 
 /-- The discriminant `D := n²L₁² + 4αβL₂ ≥ 0` under `D`'s square root in `μ₃`. -/
@@ -538,7 +536,7 @@ theorem mu3_disc_nonneg (h : Constraints α β n) :
 /-- `μ₃` satisfies its defining quadratic `αβ·μ₃² + n·L₁·μ₃ - L₂ = 0` (thm:mu3).
 Proof: `2αβ·μ₃ + L₁·n = √D`; squaring kills the root and, after clearing `4αβ`,
 leaves the quadratic. -/
-theorem mu3_quadratic (h : Constraints α β n) :
+public theorem mu3_quadratic (h : Constraints α β n) :
     α * β * (μ3 α β n) ^ 2 + n * L1 α β n * μ3 α β n - L2 α β n = 0 := by
   have hα := alpha_pos h
   have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
@@ -555,7 +553,7 @@ theorem mu3_quadratic (h : Constraints α β n) :
   exact (mul_eq_zero.mp key).resolve_left h4ne
 
 /-- `0 < μ₃` (thm:mu3): the numerator `√D - L₁n > 0` since `D > (L₁n)²`. -/
-theorem mu3_pos (h : Constraints α β n) : 0 < μ3 α β n := by
+public theorem mu3_pos (h : Constraints α β n) : 0 < μ3 α β n := by
   have hα := alpha_pos h
   have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
   have hn := n_pos h
@@ -573,7 +571,7 @@ theorem mu3_pos (h : Constraints α β n) : 0 < μ3 α β n := by
 
 /-- `1 < μ₃` (thm:mu3): `f(1) = -βn < 0` for the upward parabola `f`, so its
 positive root `μ₃` exceeds `1`. Concretely `(μ₃-1)(αβ(μ₃+1)+nL₁) = βn > 0`. -/
-theorem one_lt_mu3 (h : Constraints α β n) : 1 < μ3 α β n := by
+public theorem one_lt_mu3 (h : Constraints α β n) : 1 < μ3 α β n := by
   have hα := alpha_pos h
   have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
   have hn := n_pos h
@@ -720,7 +718,7 @@ theorem ratio1_p3_q1 (h : Constraints α β n) :
 
 /-- `μ(p₃, q₃) = μ₃` (thm:p3). Here `p₃ > α·q₃`, so `V` is the singleton
 `{(r₁⁻, r₂⁺)}` and both best-response ratios equal `μ₃`. -/
-theorem μ_p3_q3 (h : Constraints α β n) :
+public theorem μ_p3_q3 (h : Constraints α β n) :
     μ α β n (p3 α β n) (q3 α β n) = μ3 α β n := by
   simp only [q3]
   -- `V` is the singleton `{(r₁⁻, r₂⁺)}` (branch `p > α·q`, since `p₃ > α·q₁ > 1`).
@@ -773,7 +771,7 @@ theorem alpha_le_cap (h : Constraints α β n) : α ≤ cap α β n := by
   nlinarith [mul_le_mul_of_nonneg_left hβ hα.le]
 
 /-- `μ₂ ≤ cap` (thm:q2): `μ₂ = 1/q₂ < α ≤ cap`, using `1 < α·q₂`. -/
-theorem μ2_le_cap (h : Constraints α β n) : μ2 α β n ≤ cap α β n := by
+public theorem μ2_le_cap (h : Constraints α β n) : μ2 α β n ≤ cap α β n := by
   have hq2 := q2_pos h
   have hlt : μ2 α β n < α := by
     simp only [μ2]
@@ -782,7 +780,7 @@ theorem μ2_le_cap (h : Constraints α β n) : μ2 α β n ≤ cap α β n := by
   linarith [alpha_le_cap h]
 
 /-- `μ₃ ≤ cap` (thm:mu3): `μ₃ < 1/q₁ = (α+n)/β ≤ α+n ≤ cap`. -/
-theorem μ3_le_cap (h : Constraints α β n) : μ3 α β n ≤ cap α β n := by
+public theorem μ3_le_cap (h : Constraints α β n) : μ3 α β n ≤ cap α β n := by
   have hβpos : 0 < β := by linarith [h.c1_lo, h.c1_mid]
   have hα := alpha_pos h
   have hn := n_pos h
@@ -795,7 +793,7 @@ theorem μ3_le_cap (h : Constraints α β n) : μ3 α β n ≤ cap α β n := by
 
 /-- `μ₄ ≤ cap` (thm:mu4/case4): `μ₄ = 1 + βn/L₂ < 2 ≤ cap`, since `L₂ > βn`
 (as `L₂ − βn = n·L₁ + αβ > 0`). -/
-theorem μ4_le_cap (h : Constraints α β n) : μ4 α β n ≤ cap α β n := by
+public theorem μ4_le_cap (h : Constraints α β n) : μ4 α β n ≤ cap α β n := by
   have hβpos : 0 < β := by linarith [h.c1_lo, h.c1_mid]
   have hα := alpha_pos h
   have hn := n_pos h
@@ -855,7 +853,7 @@ theorem p1_ge_half (h : Constraints α β n) : (1:ℝ) / 2 ≤ p1 α β n := by
 
 /-- `μ₁ ≤ cap` (thm:p1). `μ₁ = ĉ₁/p₁`; with `ĉ₁ < α·β/2` (`chat1_lt_half_alpha_beta`)
 and `p₁ ≥ 1/2` (`p1_ge_half`), `μ₁ = ĉ₁/p₁ ≤ 2·ĉ₁ < α·β ≤ cap`. -/
-theorem μ1_le_cap (h : Constraints α β n) : μ1 α β n ≤ cap α β n := by
+public theorem μ1_le_cap (h : Constraints α β n) : μ1 α β n ≤ cap α β n := by
   have hα := alpha_pos h
   have hn := n_pos h
   have hβpos : 0 < β := by linarith [h.c1_lo, h.c1_mid]
