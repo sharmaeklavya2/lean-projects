@@ -41,8 +41,8 @@ noncomputable def r2c (β n p q z : ℝ) : ℝ := r2hi n p q - z * d β n p q
 convention for `·/0`. On the knife-edge this is `Basic.μ α β n p q` restricted
 to the point of the segment indexed by `z`. -/
 noncomputable def μz (α β n p q z : ℝ) : ℝ :=
-  max (ratio (r1star α β n q) (r1c β n p q z))
-      (ratio (r2star α n p) (r2c β n p q z))
+  max (ratio (cap α β n) (r1star α β n q) (r1c β n p q z))
+      (ratio (cap α β n) (r2star α n p) (r2c β n p q z))
 
 /-- Paper `ẑ(q)`, the `z` where the two ratio curves cross. On the knife-edge
 `p = α·q`, so we take `q` alone as the argument. -/
@@ -80,33 +80,31 @@ theorem q_lb (h : Constraints α β n) {q : ℝ} (hpq : 1 < α * q + q) :
   sorry
 
 /-- **Bridge**: on the knife-edge, `Basic.V α β n p q` is the image of `[0,1]`
-under `z ↦ (r₁(q,z), r₂(q,z))`, so `Basic.μ = ⨅ z ∈ [0,1], μz`.
-*(Provisional — representation of the `z`-machinery still under discussion.)* -/
+under `z ↦ (r₁(q,z), r₂(q,z))`, so `Basic.μ = ⨅ z ∈ [0,1], μz`. -/
 theorem μ_eq_inf_z (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q)
     (hpaq : p = α * q) (hpq1 : 1 < p + q) :
     μ α β n p q = sInf (Set.image (μz α β n p q) (Set.Icc 0 1)) := by
   sorry
 
-/-- **thm:4.1** (closed form of the infimum over `z`). *(Provisional.)* -/
+/-- **thm:4.1** (closed form of the infimum over `z`). -/
 theorem thm_4_1 (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q)
     (hpaq : p = α * q) (hpq1 : 1 < p + q) :
-    sInf (Set.image (μz α β n p q) (Set.Icc 0 1))
+    sInf (Set.image (μz α β n p q) (Set.Icc 0 1)) = μz α β n p q (zstar α β n q)
+    ∧ μz α β n p q (zstar α β n q)
       = max ((r1star α β n q + r2star α n p) / sSum β n p)
             (r1star α β n q / r1hi β n p q) := by
   sorry
 
-/-- **thm:mu4**: at the special point `(p₄,q₄) = (α·q₁, q₁)`, the case-4 value is
-`μ₄`. *(Provisional.)* -/
+/-- **thm:mu4**: at the special point `(p₄,q₄) = (α·q₁, q₁)`, the case-4 value is `μ₄`. -/
 theorem thm_mu4 (h : Constraints α β n) :
-    sInf (Set.image (μz α β n (p4 α β n) (q1 α β n)) (Set.Icc 0 1)) = μ4 α β n := by
+    μz α β n (p4 α β n) (q4 α β n) (zstar α β n (q4 α β n)) = μ4 α β n := by
   sorry
 
 /-- **thm:4.2** (the case-4 lower bound): on the knife-edge with `p+q>1`,
-`inf_z μ(q,z) ≥ min(μ₂, μ₄)`. *(Provisional.)* -/
+`inf_z μ(q,z) ≥ min(μ₂, μ₄)`. -/
 theorem thm_4_2 (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q)
     (hpaq : p = α * q) (hpq1 : 1 < p + q) :
-    min (μ2 α β n) (μ4 α β n)
-      ≤ sInf (Set.image (μz α β n p q) (Set.Icc 0 1)) := by
+    min (μ2 α β n) (μ4 α β n) ≤ μz α β n p q (zstar α β n q) := by
   sorry
 
 /-- **thm:4** (paper-facing, `z`-free — same shape as `thm_2`/`thm_3`): on the
@@ -115,7 +113,7 @@ The `min cap` handles the `x/0` corners of the `cap` convention; downstream
 `cStar ≤ cap` recovers `cStar ≤ μ`. Proved from `thm_4_2` via `μ_eq_inf_z`. -/
 theorem thm_4 (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q)
     (hpaq : p = α * q) (hpq1 : 1 < p + q) :
-    min cap (min (μ2 α β n) (μ4 α β n)) ≤ μ α β n p q := by
+    min (μ2 α β n) (μ4 α β n) ≤ μ α β n p q := by
   sorry
 
 end DataMktOligoHard
