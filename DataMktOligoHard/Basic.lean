@@ -79,21 +79,26 @@ This keeps `μ` in `ℝ`, keeps the "convert the NE problem into a 2-D optimizat
 `μ`" narrative explicit, and is sound for the lower bound: we only ever compare `μ`
 against values `< cap`, and `min(cap, μ) ≥ c ↔ μ ≥ c` whenever `c < cap`. -/
 
-/-- Finite stand-in for `∞` in the `x/0 = ∞` convention. Any constant `≥ min_i μᵢ`
-works; `2` suffices because `min_i μᵢ ≤ μ₄ < 2` holds under Constraint c1
-(`β < α + n` gives `β(n - α) < n(n + α)`). -/
-noncomputable def cap : ℝ := 2
+/-- The best-response ratio `r*/r`, with `r*/0` read as `fallback`
+(the `x/0 = ∞` convention, made finite by substituting `fallback` for `∞`). -/
+noncomputable def ratio (fallback rstar r : ℝ) : ℝ :=
+  if r = 0 then fallback else rstar / r
 
-/-- The best-response ratio `r*/r`, with `r*/0` read as `cap`
-(the `x/0 = ∞` convention, made finite). -/
-noncomputable def ratio (rstar r : ℝ) : ℝ := if r = 0 then cap else rstar / r
+/-- Finite stand-in for `∞` in the `x/0 = ∞` convention, used as `ratio`'s
+`fallback` inside `μ`. Any value `≥ min_i μᵢ` that stays above every intermediate
+`μ(p,q) ≥ X` bound in the case analysis works; `α·β + n` gives ample headroom
+(each `μᵢ < α·β` under the constraints, e.g. `μ₁ = ĉ₁/p₁ ≤ 2·ĉ₁ < α·β`, and `n > 0`).
+It is deliberately a function of `α, β, n` so the *value* can be enlarged later
+(e.g. to `n²` or `(α+n)(β+n)`) without touching any call site. -/
+noncomputable def cap : ℝ := α * β + n
 
 /-- The instability ratio `μ(p,q) = inf_{(r₁,r₂) ∈ V} max(r₁*/r₁, r₂*/r₂)`
 (revenue.tex), with `x/0` read as `cap`. `(p,q)` is a `c`-NE iff `μ(p,q) ≤ c`
 (for `c < cap`); minimizing `μ` over prices is the core optimization problem. -/
 noncomputable def μ (p q : ℝ) : ℝ :=
   sInf {m : ℝ | ∃ r1 r2, (r1, r2) ∈ V α β n p q ∧
-                m = max (ratio (r1star α β n q) r1) (ratio (r2star α n p) r2)}
+                m = max (ratio (cap α β n) (r1star α β n q) r1)
+                        (ratio (cap α β n) (r2star α n p) r2)}
 
 /-! ## Inapproximability -/
 

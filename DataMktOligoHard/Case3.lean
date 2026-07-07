@@ -32,14 +32,15 @@ variable {α β n : ℝ}
 /-- In the case-3 region (`p + q ≤ 1`), `V` is the singleton `{(r₁⁻, r₂⁻)}`, so
 `μ(p,q) = max(r₁*(q)/r₁⁻, r₂*(p)/r₂⁻)`. Constraint-free. -/
 theorem μ_eq_max_case3_raw {p q : ℝ} (hpq : p + q ≤ 1) :
-    μ α β n p q = max (ratio (r1star α β n q) (r1lo β n p q))
-                      (ratio (r2star α n p) (r2lo n p q)) := by
+    μ α β n p q = max (ratio (cap α β n) (r1star α β n q) (r1lo β n p q))
+                      (ratio (cap α β n) (r2star α n p) (r2lo n p q)) := by
   have hV : V α β n p q = {(r1lo β n p q, r2lo n p q)} := by
     unfold V; rw [if_pos hpq]
   have hset : {m : ℝ | ∃ r1 r2, (r1, r2) ∈ V α β n p q ∧
-                m = max (ratio (r1star α β n q) r1) (ratio (r2star α n p) r2)}
-            = {max (ratio (r1star α β n q) (r1lo β n p q))
-                   (ratio (r2star α n p) (r2lo n p q))} := by
+                m = max (ratio (cap α β n) (r1star α β n q) r1)
+                        (ratio (cap α β n) (r2star α n p) r2)}
+            = {max (ratio (cap α β n) (r1star α β n q) (r1lo β n p q))
+                   (ratio (cap α β n) (r2star α n p) (r2lo n p q))} := by
     rw [hV]; ext m
     simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, Prod.mk.injEq]
     constructor
@@ -95,7 +96,7 @@ the `0`-revenue corners `x₁ = 0` / `q = 0` (where `μ(x₁,q) = cap`), but the
 theorem mu_dec_p (h : Constraints α β n) {q x1 x2 : ℝ}
     (hq0 : 0 ≤ q) (hx1 : 0 ≤ x1) (hx12 : x1 ≤ x2)
     (hx2 : x2 ≤ min (α / (α + 1)) (1 - q)) :
-    min cap (μ α β n x2 q) ≤ μ α β n x1 q := by
+    min (cap α β n) (μ α β n x2 q) ≤ μ α β n x1 q := by
   have hα := alpha_pos h
   have hn := n_pos h
   have hx2p' : x2 ≤ α / (α + 1) := le_trans hx2 (min_le_left _ _)
@@ -111,7 +112,7 @@ theorem mu_dec_p (h : Constraints α β n) {q x1 x2 : ℝ}
           min_eq_left (le_max_left 0 (1 - q))]
       ring
     rw [μ_eq_max_case3_raw (show (0:ℝ) + q ≤ 1 by linarith), hr1lo0]
-    rw [show ratio (r1star α β n q) 0 = cap from by rw [ratio, if_pos rfl]]
+    rw [show ratio (cap α β n) (r1star α β n q) 0 = cap α β n from by rw [ratio, if_pos rfl]]
     exact le_trans (min_le_left _ _) (le_max_left _ _)
   · rcases eq_or_lt_of_le hq0 with hq00 | hqpos
     · -- `q = 0`: seller 2 earns `0`, so `μ(x₁,0) ≥ cap ≥ min cap (μ x₂ 0)`.
@@ -123,7 +124,7 @@ theorem mu_dec_p (h : Constraints α β n) {q x1 x2 : ℝ}
             (by rw [div_lt_one (by linarith : (0:ℝ) < α + 1)]; linarith :
               α / (α + 1) < 1)]),
           hr2lo0]
-      rw [show ratio (r2star α n x1) 0 = cap from by rw [ratio, if_pos rfl]]
+      rw [show ratio (cap α β n) (r2star α n x1) 0 = cap α β n from by rw [ratio, if_pos rfl]]
       exact le_trans (min_le_left _ _) (le_max_right _ _)
     · -- `0 < x₁ ≤ x₂` and `0 < q`: genuine monotonicity, both ratios finite.
       have hx2pos : 0 < x2 := lt_of_lt_of_le hx1pos hx12
@@ -209,7 +210,7 @@ decreasing in `q` (first numerator shrinks, second denominator grows). -/
 theorem mu_dec_q (h : Constraints α β n) {p y1 y2 : ℝ}
     (hp : 0 ≤ p) (hy1 : 0 ≤ y1) (hy12 : y1 ≤ y2)
     (hy2 : y2 ≤ min (q1 α β n) (1 - p)) :
-    min cap (μ α β n p y2) ≤ μ α β n p y1 := by
+    min (cap α β n) (μ α β n p y2) ≤ μ α β n p y1 := by
   have hα := alpha_pos h
   have hn := n_pos h
   have hy2q1 : y2 ≤ q1 α β n := le_trans hy2 (min_le_left _ _)
@@ -226,7 +227,7 @@ theorem mu_dec_q (h : Constraints α β n) {p y1 y2 : ℝ}
           min_eq_left (le_max_left 0 (1 - y1))]
       ring
     rw [μ_eq_max_case3_raw (show (0:ℝ) + y1 ≤ 1 by linarith), hr1lo0]
-    rw [show ratio (r1star α β n y1) 0 = cap from by rw [ratio, if_pos rfl]]
+    rw [show ratio (cap α β n) (r1star α β n y1) 0 = cap α β n from by rw [ratio, if_pos rfl]]
     exact le_trans (min_le_left _ _) (le_max_left _ _)
   · rcases eq_or_lt_of_le hy1 with hy10 | hy1pos
     · -- `y₁ = 0`: seller 2 earns `0`, so `μ(p,0) ≥ cap ≥ min cap (μ p y₂)`.
@@ -235,7 +236,7 @@ theorem mu_dec_q (h : Constraints α β n) {p y1 y2 : ℝ}
         simp only [r2lo]
         rw [min_eq_left (le_max_left 0 (1 - p))]; ring
       rw [μ_eq_max_case3_raw (show p + (0:ℝ) ≤ 1 by linarith), hr2lo0]
-      rw [show ratio (r2star α n p) 0 = cap from by rw [ratio, if_pos rfl]]
+      rw [show ratio (cap α β n) (r2star α n p) 0 = cap α β n from by rw [ratio, if_pos rfl]]
       exact le_trans (min_le_left _ _) (le_max_right _ _)
     · -- `0 < p` and `0 < y₁ ≤ y₂`: genuine monotonicity, both ratios finite.
       have hy2pos : 0 < y2 := lt_of_lt_of_le hy1pos hy12
@@ -272,7 +273,7 @@ to the line and apply `mu_dec_p` and/or `mu_dec_q`. The geometric key is
 theorem thm_pq_dom (h : Constraints α β n) {p q : ℝ}
     (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p + q ≤ 1) :
     ∃ ph qh : ℝ, ph + qh = 1 ∧ p ≤ ph ∧ q ≤ qh ∧
-      min cap (μ α β n ph qh) ≤ μ α β n p q := by
+      min (cap α β n) (μ α β n ph qh) ≤ μ α β n p q := by
   have hα := alpha_pos h
   have hpppos : 0 < α / (α + 1) := div_pos hα (by linarith)
   have hpplt1 : α / (α + 1) < 1 := by rw [div_lt_one (by linarith : (0:ℝ) < α + 1)]; linarith
@@ -292,43 +293,45 @@ theorem thm_pq_dom (h : Constraints α β n) {p q : ℝ}
       exact mu_dec_p h hq hp (by linarith) (le_min h1q le_rfl)
     · -- Case 2: `p ≤ p' ≤ 1-q`. Take `(p̂,q̂) = (p', 1-p')`; slide in both.
       refine ⟨α / (α + 1), 1 - α / (α + 1), by ring, hple, by linarith, ?_⟩
-      have hA : min cap (μ α β n (α / (α + 1)) q) ≤ μ α β n p q :=
+      have hA : min (cap α β n) (μ α β n (α / (α + 1)) q) ≤ μ α β n p q :=
         mu_dec_p h hq hp hple (le_min le_rfl h1q)
-      have hB : min cap (μ α β n (α / (α + 1)) (1 - α / (α + 1)))
+      have hB : min (cap α β n) (μ α β n (α / (α + 1)) (1 - α / (α + 1)))
               ≤ μ α β n (α / (α + 1)) q :=
         mu_dec_q h hpppos.le hq (by linarith) (le_min h1mpp.le le_rfl)
       exact le_trans (le_min (min_le_left _ _) hB) hA
 
 /-! ### thm:3 -/
 
-/-- **thm:3**: if `p + q ≤ 1`, then `μ(p,q) ≥ min cap (min(μ₁, μ₂, μ₃))`
-(the paper's `μ(p,q) ≥ min(μ₁,μ₂,μ₃)`, with the `min cap` workaround inherited from
-the case bounds).
+/-- **thm:3**: if `p + q ≤ 1`, then `μ(p,q) ≥ min(μ₁, μ₂, μ₃)`.
 
-By `thm_pq_dom` reduce to a point `(p̂,q̂)` on the line `p̂+q̂=1`. A trichotomy on
-`p̂` vs `α·q̂` dispatches to `thm_2` (`p̂ < α·q̂`, giving `μ₁`), `thm_1_1`/`thm_1_2`
-(`p̂ > α·q̂`, giving `μ₂`/`μ₃` by `p̂ ≥ α` or `p̂ ≤ α`), or the knife-edge
-`p̂ = α·q̂ = α/(α+1)`: there `V` is a singleton (on the line), and the seller-1 ratio
-gives `μ ≥ ĉ₁/p̂ ≥ ĉ₁/p₁ = μ₁`. -/
+By `thm_pq_dom` reduce to a point `(p̂,q̂)` on the line `p̂+q̂=1`. That reduction is
+still capped (`min cap (μ p̂ q̂) ≤ μ(p,q)`, genuinely necessary at the `0`-revenue
+corners), but `min(μ₁,μ₂,μ₃) ≤ μ₁ ≤ cap` (`μ1_le_cap`) absorbs the cap here. A
+trichotomy on `p̂` vs `α·q̂` dispatches to `thm_2` (`p̂ < α·q̂`, giving `μ₁`),
+`thm_1_1`/`thm_1_2` (`p̂ > α·q̂`, giving `μ₂`/`μ₃` by `p̂ ≥ α` or `p̂ ≤ α`), or the
+knife-edge `p̂ = α·q̂ = α/(α+1)`: there `V` is a singleton (on the line), and the
+seller-1 ratio gives `μ ≥ ĉ₁/p̂ ≥ ĉ₁/p₁ = μ₁`. -/
 theorem thm_3 (h : Constraints α β n) {p q : ℝ}
     (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p + q ≤ 1) :
-    min cap (min (μ1 α β n) (min (μ2 α β n) (μ3 α β n))) ≤ μ α β n p q := by
+    min (μ1 α β n) (min (μ2 α β n) (μ3 α β n)) ≤ μ α β n p q := by
   obtain ⟨ph, qh, hsum, hph, hqh, hdom⟩ := thm_pq_dom h hp hq hpq
   have hα := alpha_pos h
   have hph0 : 0 ≤ ph := le_trans hp hph
   have hqh0 : 0 ≤ qh := le_trans hq hqh
   have hsum1 : (1:ℝ) ≤ ph + qh := le_of_eq hsum.symm
-  -- `min(μ₁,μ₂,μ₃) ≤ μᵢ` for each `i`.
+  -- `min(μ₁,μ₂,μ₃) ≤ μᵢ` for each `i`, and `≤ cap` (via `μ₁ ≤ cap`).
   have hBμ1 : min (μ1 α β n) (min (μ2 α β n) (μ3 α β n)) ≤ μ1 α β n := min_le_left _ _
   have hBμ2 : min (μ1 α β n) (min (μ2 α β n) (μ3 α β n)) ≤ μ2 α β n :=
     le_trans (min_le_right _ _) (min_le_left _ _)
   have hBμ3 : min (μ1 α β n) (min (μ2 α β n) (μ3 α β n)) ≤ μ3 α β n :=
     le_trans (min_le_right _ _) (min_le_right _ _)
-  -- Goal★: `min cap (min μ₁ μ₂ μ₃) ≤ μ(p̂,q̂)`.
-  have hstar : min cap (min (μ1 α β n) (min (μ2 α β n) (μ3 α β n))) ≤ μ α β n ph qh := by
+  have hBcap : min (μ1 α β n) (min (μ2 α β n) (μ3 α β n)) ≤ cap α β n :=
+    le_trans hBμ1 (μ1_le_cap h)
+  -- `min(μ₁,μ₂,μ₃) ≤ μ(p̂,q̂)`.
+  have hstar : min (μ1 α β n) (min (μ2 α β n) (μ3 α β n)) ≤ μ α β n ph qh := by
     rcases lt_trichotomy ph (α * qh) with hlt | heq | hgt
     · -- `p̂ < α·q̂`: `thm_2` gives `μ₁`.
-      exact le_trans (min_le_min le_rfl hBμ1) (thm_2 h hph0 hlt hsum1)
+      exact le_trans hBμ1 (thm_2 h hph0 hqh0 hlt hsum1)
     · -- `p̂ = α·q̂`: the knife-edge point `(α/(α+1), 1/(α+1))`.
       have hph_eq : ph = α / (α + 1) := by
         rw [eq_div_iff (by linarith : (α + 1:ℝ) ≠ 0)]
@@ -355,14 +358,15 @@ theorem thm_3 (h : Constraints α β n) {p q : ℝ}
         rw [div_le_div_iff₀ (p1_pos h) hden]
         nlinarith [mul_le_mul_of_nonneg_right hr1 hph_pos.le,
           mul_le_mul_of_nonneg_left hph_le_p1 hr1s_nonneg]
-      have hμ1 : min cap (μ1 α β n) ≤ μ α β n ph qh := by
+      have hμ1 : μ1 α β n ≤ μ α β n ph qh := by
         rw [μ_eq_max_case3 h hph_pos hqh_pos (le_of_eq hsum) (le_of_eq hph_eq)]
-        exact le_trans (min_le_right _ _) (le_trans hμ1_ineq (le_max_left _ _))
-      exact le_trans (min_le_min le_rfl hBμ1) hμ1
+        exact le_trans hμ1_ineq (le_max_left _ _)
+      exact le_trans hBμ1 hμ1
     · -- `α·q̂ < p̂`: `thm_1_1`/`thm_1_2` give `μ₂`/`μ₃`.
       rcases le_total α ph with hαle | hαge
-      · exact le_trans (min_le_min le_rfl hBμ2) (thm_1_1 h hqh0 hgt hαle)
-      · exact le_trans (min_le_min le_rfl hBμ3) (thm_1_2 h hqh0 hsum1 hgt hαge)
-  exact le_trans (le_min (min_le_left _ _) hstar) hdom
+      · exact le_trans hBμ2 (thm_1_1 h hqh0 hgt hαle)
+      · exact le_trans hBμ3 (thm_1_2 h hqh0 hsum1 hgt hαge)
+  -- combine with the capped domination `min cap (μ p̂ q̂) ≤ μ(p,q)`.
+  exact le_trans (le_min hBcap hstar) hdom
 
 end DataMktOligoHard

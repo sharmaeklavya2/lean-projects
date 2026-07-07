@@ -13,7 +13,7 @@ The paper's proof (thm:2) is a dichotomy at `p₁`:
   `r₁*(q) ≥ r₁*(q₁) = (n+1)·ĉ₁` (thm:q1) and `p ≤ p₁`.
 
 The `p = 0` and `p ≥ 1` corners (where a seller earns `0`) give `μ = cap` under Lean's
-`x/0` convention; as in Case 1 the paper-facing bound is stated as `min cap μ₁ ≤ μ`.
+`x/0` convention, but `μ₁ ≤ cap` (`μ1_le_cap`) so the sharp bound `μ₁ ≤ μ` holds there too.
 -/
 
 namespace DataMktOligoHard
@@ -28,8 +28,8 @@ At the boundary `p + q = 1`, `V` takes its `{(r₁⁻, r₂⁻)}` branch instead
 `r₁⁻ = r₁⁺` (since `1 - q = p ≤ 1`), so the singleton is the same. -/
 theorem μ_eq_max_case2 (h : Constraints α β n) {p q : ℝ}
     (hp : 0 ≤ p) (hpq1 : 1 ≤ p + q) (hpaq : p < α * q) :
-    μ α β n p q = max (ratio (r1star α β n q) (r1hi β n p q))
-                      (ratio (r2star α n p) (r2lo n p q)) := by
+    μ α β n p q = max (ratio (cap α β n) (r1star α β n q) (r1hi β n p q))
+                      (ratio (cap α β n) (r2star α n p) (r2lo n p q)) := by
   have hV : V α β n p q = {(r1hi β n p q, r2lo n p q)} := by
     rcases lt_or_eq_of_le hpq1 with hlt | heq
     · unfold V
@@ -49,9 +49,10 @@ theorem μ_eq_max_case2 (h : Constraints α β n) {p q : ℝ}
       unfold V
       rw [if_pos (le_of_eq heq.symm), hr1]
   have hset : {m : ℝ | ∃ r1 r2, (r1, r2) ∈ V α β n p q ∧
-                m = max (ratio (r1star α β n q) r1) (ratio (r2star α n p) r2)}
-            = {max (ratio (r1star α β n q) (r1hi β n p q))
-                   (ratio (r2star α n p) (r2lo n p q))} := by
+                m = max (ratio (cap α β n) (r1star α β n q) r1)
+                        (ratio (cap α β n) (r2star α n p) r2)}
+            = {max (ratio (cap α β n) (r1star α β n q) (r1hi β n p q))
+                   (ratio (cap α β n) (r2star α n p) (r2lo n p q))} := by
     rw [hV]; ext m
     simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, Prod.mk.injEq]
     constructor
@@ -62,32 +63,26 @@ theorem μ_eq_max_case2 (h : Constraints α β n) {p q : ℝ}
 /-! ### thm:2 -/
 
 /-- **thm:2**: if `p < α·q` and `p + q ≥ 1` (with `0 ≤ p`, `0 ≤ q`), then
-`μ(p,q) ≥ min cap μ₁` (the paper's `μ(p,q) ≥ μ₁`; the `min cap` works around Lean's
-`x/0` convention at the `0`-revenue corners `p = 0` and `p ≥ 1`, where `μ = cap`.
-Downstream `cStar ≤ cap` recovers `cStar ≤ μ`).
+`μ(p,q) ≥ μ₁`. At the `0`-revenue corners `p = 0` and `p ≥ 1` Lean's `x/0` convention
+gives `μ = cap`, and `μ₁ ≤ cap` (`μ1_le_cap`) closes those.
 
 For `p ≥ p₁` seller 2's ratio `p/(α(1-p))` (increasing on `(0,1)`) already clears `μ₁`;
 for `p ≤ p₁` seller 1's ratio `r₁*(q)/(p(n+1)) ≥ (n+1)ĉ₁/(p(n+1)) = ĉ₁/p ≥ ĉ₁/p₁ = μ₁`. -/
 theorem thm_2 (h : Constraints α β n) {p q : ℝ}
-    (hp : 0 ≤ p) (hpaq : p < α * q) (hpq1 : 1 ≤ p + q) :
-    min cap (μ1 α β n) ≤ μ α β n p q := by
+    (hp : 0 ≤ p) (hq : 0 ≤ q) (hpaq : p < α * q) (hpq1 : 1 ≤ p + q) :
+    μ1 α β n ≤ μ α β n p q := by
   have hn := n_pos h
   have hα := alpha_pos h
-  -- `q > 0` is forced: `0 ≤ p < α·q` with `α > 0`.
-  have hq : 0 ≤ q := by
-    rcases lt_or_ge q 0 with h' | h'
-    · exact absurd hpaq (not_lt.mpr (le_trans (mul_neg_of_pos_of_neg hα h').le hp))
-    · exact h'
   rw [μ_eq_max_case2 h hp hpq1 hpaq]
   rcases le_or_gt 1 p with hp1le | hplt1
   · -- `p ≥ 1`: seller 2 earns `0`, so `ratio₂ = cap ≥ min cap μ₁`.
     have hr2lo0 : r2lo n p q = 0 := by
       simp only [r2lo]
       rw [max_eq_left (by linarith : (1:ℝ) - p ≤ 0), min_eq_right hq, mul_zero]
-    have hratio2cap : ratio (r2star α n p) (r2lo n p q) = cap := by
+    have hratio2cap : ratio (cap α β n) (r2star α n p) (r2lo n p q) = cap α β n := by
       rw [ratio, if_pos hr2lo0]
     rw [hratio2cap]
-    exact le_trans (min_le_left _ _) (le_max_right _ _)
+    exact le_trans (μ1_le_cap h) (le_max_right _ _)
   · -- `p < 1`.
     rcases eq_or_lt_of_le hp with hp0 | hppos
     · -- `p = 0`: seller 1 earns `0`, so `ratio₁ = cap ≥ min cap μ₁`.
@@ -96,10 +91,10 @@ theorem thm_2 (h : Constraints α β n) {p q : ℝ}
         rw [min_eq_left (by linarith [h.c1_lo, h.c1_mid] : (0:ℝ) ≤ β),
             min_eq_left (by norm_num : (0:ℝ) ≤ 1)]
         ring
-      have hratio1cap : ratio (r1star α β n q) (r1hi β n p q) = cap := by
+      have hratio1cap : ratio (cap α β n) (r1star α β n q) (r1hi β n p q) = cap α β n := by
         rw [ratio, if_pos hr1hi0]
       rw [hratio1cap]
-      exact le_trans (min_le_left _ _) (le_max_left _ _)
+      exact le_trans (μ1_le_cap h) (le_max_left _ _)
     · -- `0 < p < 1`: the two genuine sub-cases.
       have hr1hi : r1hi β n p q = p * (n + 1) := by
         simp only [r1hi]
@@ -112,7 +107,7 @@ theorem thm_2 (h : Constraints α β n) {p q : ℝ}
             min_eq_right (by linarith : 1 - p ≤ q)]
       rcases le_total p (p1 α β n) with hpp1 | hp1p
       · -- `p ≤ p₁`: seller 1's ratio clears `μ₁`.
-        refine le_trans (min_le_right _ _) (le_trans ?_ (le_max_left _ _))
+        refine le_trans ?_ (le_max_left _ _)
         have hden_pos : 0 < r1hi β n p q := by
           rw [hr1hi]; exact mul_pos hppos (by linarith)
         -- `(n+1)·ĉ₁ = n + α·q₁ ≤ r₁*(q)`.
@@ -129,7 +124,7 @@ theorem thm_2 (h : Constraints α β n) {p q : ℝ}
             (mul_pos (by linarith [chat1_gt_one h] : (0:ℝ) < chat1 α β n)
               (by linarith : (0:ℝ) < n + 1)).le]
       · -- `p ≥ p₁`: seller 2's ratio clears `μ₁`.
-        refine le_trans (min_le_right _ _) (le_trans ?_ (le_max_right _ _))
+        refine le_trans ?_ (le_max_right _ _)
         have hpgt : α / (α + 1) < p := lt_of_lt_of_le (p1_gt_ratio h) hp1p
         have hgt' : α < p * (α + 1) := by
           rwa [div_lt_iff₀ (by linarith : (0:ℝ) < α + 1)] at hpgt

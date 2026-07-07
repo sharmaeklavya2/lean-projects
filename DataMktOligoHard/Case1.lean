@@ -12,32 +12,6 @@ namespace DataMktOligoHard
 
 variable {α β n : ℝ}
 
-/-! ## Two facts about `q₂` / `μ₂` used below -/
-
-/-- `1/2 < q₂` (needed to compare `μ₂` against the finite cap). Equivalent to
-`√L₂ < n + 2β`, i.e. `L₂ < (n+2β)²`, which holds since `α ≤ β`. -/
-theorem q2_gt_half (h : Constraints α β n) : 1 / 2 < q2 α β n := by
-  have hn := n_pos h
-  have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
-  have hL2 := L2_pos h
-  have hsqrt : Real.sqrt (L2 α β n) < n + 2 * β := by
-    have hlt : L2 α β n < (n + 2 * β) ^ 2 := by
-      simp only [L2]; nlinarith [h.c1_lo, h.c1_mid, mul_pos hn hβ, mul_pos hβ hβ]
-    have := Real.sqrt_lt_sqrt hL2.le hlt
-    rwa [Real.sqrt_sq (by linarith : (0:ℝ) ≤ n + 2 * β)] at this
-  simp only [q2]
-  rw [lt_div_iff₀ (by linarith [Real.sqrt_nonneg (L2 α β n)] :
-        (0:ℝ) < n + Real.sqrt (L2 α β n))]
-  linarith [hsqrt]
-
-/-- `μ₂ < 2 = cap` (so the `x/0 = ∞` convention is harmless for this lower bound).
-Since `μ₂ = 1/q₂` and `q₂ > 1/2`. -/
-theorem μ2_lt_two (h : Constraints α β n) : μ2 α β n < 2 := by
-  have hq2 := q2_pos h
-  simp only [μ2]
-  rw [div_lt_iff₀ hq2]
-  linarith [q2_gt_half h]
-
 /-! ## `μ` as a max in the case-1 region -/
 
 /-- `r₂*(p) = n` when `p ≥ α` (then `p/α ≥ 1`, so both `min(1,p/α) = 1` and
@@ -56,8 +30,8 @@ At the boundary `p + q = 1`, `V` takes its `{(r₁⁻, r₂⁻)}` branch instead
 `r₂⁻ = r₂⁺` (since `1 - p = q ≤ 1`), so the singleton is the same. -/
 theorem μ_eq_max_case1 (h : Constraints α β n) {p q : ℝ}
     (hq : 0 ≤ q) (hpq1 : 1 ≤ p + q) (hpaq : α * q < p) :
-    μ α β n p q = max (ratio (r1star α β n q) (r1lo β n p q))
-                      (ratio (r2star α n p) (r2hi n p q)) := by
+    μ α β n p q = max (ratio (cap α β n) (r1star α β n q) (r1lo β n p q))
+                      (ratio (cap α β n) (r2star α n p) (r2hi n p q)) := by
   have hV : V α β n p q = {(r1lo β n p q, r2hi n p q)} := by
     rcases lt_or_eq_of_le hpq1 with hlt | heq
     · unfold V
@@ -72,9 +46,10 @@ theorem μ_eq_max_case1 (h : Constraints α β n) {p q : ℝ}
       unfold V
       rw [if_pos (le_of_eq heq.symm), hr2]
   have hset : {m : ℝ | ∃ r1 r2, (r1, r2) ∈ V α β n p q ∧
-                m = max (ratio (r1star α β n q) r1) (ratio (r2star α n p) r2)}
-            = {max (ratio (r1star α β n q) (r1lo β n p q))
-                   (ratio (r2star α n p) (r2hi n p q))} := by
+                m = max (ratio (cap α β n) (r1star α β n q) r1)
+                        (ratio (cap α β n) (r2star α n p) r2)}
+            = {max (ratio (cap α β n) (r1star α β n q) (r1lo β n p q))
+                   (ratio (cap α β n) (r2star α n p) (r2hi n p q))} := by
     rw [hV]; ext m
     simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, Prod.mk.injEq]
     constructor
@@ -84,21 +59,19 @@ theorem μ_eq_max_case1 (h : Constraints α β n) {p q : ℝ}
 
 /-! ### thm:1.1 -/
 
-/-- **thm:1.1**: if `p > α·q` and `p ≥ α`, then `μ(p,q) ≥ min cap μ₂` (the paper's
-`μ(p,q) ≥ μ₂`; the `min cap` works around Lean's `x/0` convention at `0`-revenue corners,
-where `μ = cap`. Downstream `cStar ≤ cap` recovers `cStar ≤ μ`).
+/-- **thm:1.1**: if `p > α·q` and `p ≥ α`, then `μ(p,q) ≥ μ₂`. At the `q = 0` corner
+seller 2 earns `0`, so `μ = cap`, and `μ₂ ≤ cap` (`μ2_le_cap`) closes it.
 
 The paper also lists `p + q ≥ 1` (it defines the whole Case-1 region), but here that
 hypothesis is redundant: with the standing price assumption `0 ≤ q` and `p ≥ α ≥ 2`
 (c1) we already get `p + q ≥ 2 > 1`.
 
 For `q ≤ q₂` seller 2's ratio `1/q ≥ 1/q₂ = μ₂` already suffices (with the `q = 0`
-corner handled by `μ₂ < cap`). For `q ≥ q₂` seller 1's ratio dominates: the monotone
+corner handled by `μ₂ ≤ cap`). For `q ≥ q₂` seller 1's ratio dominates: the monotone
 chain `r₁⁻ ≤ β + n(1-q₂) = q₂(αq₂+n) ≤ q₂·r₁*(q)` gives `r₁*(q)/r₁⁻ ≥ 1/q₂ = μ₂`. -/
 theorem thm_1_1 (h : Constraints α β n) {p q : ℝ}
     (hq : 0 ≤ q) (hpaq : α * q < p) (hpα : α ≤ p) :
-    min cap (μ2 α β n) ≤ μ α β n p q := by
-  refine le_trans (min_le_right _ _) ?_
+    μ2 α β n ≤ μ α β n p q := by
   have hn := n_pos h
   have hα := alpha_pos h
   have hpq1 : 1 < p + q := by linarith [h.c1_lo]
@@ -107,12 +80,11 @@ theorem thm_1_1 (h : Constraints α β n) {p q : ℝ}
   · -- `q ≤ q₂`: seller 2's ratio.
     refine le_trans ?_ (le_max_right _ _)
     rcases eq_or_lt_of_le hq with hq0 | hqpos
-    · -- `q = 0`: `r₂⁺ = 0`, ratio is `cap = 2 > μ₂`.
+    · -- `q = 0`: `r₂⁺ = 0`, ratio is `cap ≥ μ₂`.
       have hr : r2hi n p q = 0 := by
         rw [r2hi, ← hq0, min_eq_left (zero_le_one), mul_zero]
       rw [ratio, if_pos hr]
-      simp only [cap]
-      exact le_of_lt (μ2_lt_two h)
+      exact μ2_le_cap h
     · -- `0 < q ≤ q₂ < 1`: ratio is `1/q ≥ 1/q₂ = μ₂`.
       have hq1 : q < 1 := lt_of_le_of_lt hqq2 (q2_lt_one h)
       rw [r2star_eq_n h hpα, r2hi, min_eq_left (le_of_lt hq1),
@@ -248,12 +220,10 @@ theorem mu3_M_pos (h : Constraints α β n) :
   nlinarith [hM, mul_pos (mul_pos (alpha_add_n_pos h) hn)
     (show (0:ℝ) < μ3 α β n - 1 by linarith), hβ]
 
-/-- **thm:1.2**: if `p + q ≥ 1`, `p > α·q`, and `p ≤ α`, then `μ(p,q) ≥ min cap μ₃`
-(the paper's `μ(p,q) ≥ μ₃`; the `min cap` works around Lean's `x/0` convention — it
-absorbs the `q = 0` corner, where `μ = cap` and `μ₃` may exceed `cap`. Downstream
-`cStar ≤ cap` recovers `cStar ≤ μ`).
+/-- **thm:1.2**: if `p + q ≥ 1`, `p > α·q`, and `p ≤ α`, then `μ(p,q) ≥ μ₃`. At the
+`q = 0` corner seller 2 earns `0`, so `μ = cap`, and `μ₃ ≤ cap` (`μ3_le_cap`) closes it.
 
-At `q = 0` seller 2 earns `0`, so `ratio₂ = cap ≥ min cap μ₃`. For `q > 0`, seller 2's
+At `q = 0` seller 2 earns `0`, so `ratio₂ = cap ≥ μ₃`. For `q > 0`, seller 2's
 ratio is `p/(αq)`: if `p ≥ α·q·μ₃` this already gives `μ ≥ p/(αq) ≥ μ₃`. Otherwise
 `p < α·μ₃·q`, and seller 1's ratio dominates: writing `r₁⁻ = p + n(1-q)` and using the
 lower bounds `r₁*(q) ≥ β + n(1-q)` (for `q ≤ q₁`) or `r₁*(q) ≥ αq + n` (for `q ≥ q₁`),
@@ -261,16 +231,15 @@ the gap to `μ₃·r₁⁻` is `K·(β - q(α+n))` resp. `M·(q(α+n) - β)`, no
 of `q - q₁`. -/
 theorem thm_1_2 (h : Constraints α β n) {p q : ℝ}
     (hq : 0 ≤ q) (hpq1 : 1 ≤ p + q) (hpaq : α * q < p) (hpα : p ≤ α) :
-    min cap (μ3 α β n) ≤ μ α β n p q := by
+    μ3 α β n ≤ μ α β n p q := by
   rw [μ_eq_max_case1 h hq hpq1 hpaq]
   rcases eq_or_lt_of_le hq with hq0 | hqpos
-  · -- `q = 0`: `r₂⁺ = 0`, so `ratio₂ = cap ≥ min cap μ₃`.
-    have hr2cap : ratio (r2star α n p) (r2hi n p q) = cap := by
+  · -- `q = 0`: `r₂⁺ = 0`, so `ratio₂ = cap ≥ μ₃`.
+    have hr2cap : ratio (cap α β n) (r2star α n p) (r2hi n p q) = cap α β n := by
       have hr : r2hi n p q = 0 := by rw [r2hi, ← hq0, min_eq_left zero_le_one, mul_zero]
       rw [ratio, if_pos hr]
     rw [hr2cap]
-    exact le_trans (min_le_left _ _) (le_max_right _ _)
-  refine le_trans (min_le_right _ _) ?_
+    exact le_trans (μ3_le_cap h) (le_max_right _ _)
   have hn := n_pos h
   have hα := alpha_pos h
   have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
@@ -296,7 +265,7 @@ theorem thm_1_2 (h : Constraints α β n) {p q : ℝ}
     rw [min_eq_right hpα1, max_eq_right h1p]
   have hr2hi : r2hi n p q = n * q := by
     simp only [r2hi]; rw [min_eq_left (le_of_lt hqlt1)]
-  have hratio2 : ratio (r2star α n p) (r2hi n p q) = p / (α * q) := by
+  have hratio2 : ratio (cap α β n) (r2star α n p) (r2hi n p q) = p / (α * q) := by
     rw [hr2star, hr2hi, ratio, if_neg (mul_ne_zero (ne_of_gt hn) (ne_of_gt hqpos)),
         mul_div_mul_left (p / α) q (ne_of_gt hn), div_div]
   rcases le_total (α * μ3 α β n * q) p with hA | hB
