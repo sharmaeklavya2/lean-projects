@@ -451,6 +451,14 @@ theorem thm_mu4 (h : Constraints α β n) :
     linarith
   rw [h2nd, hX, max_eq_left hμ4ge]
 
+/-- `μ(p₄, q₄) = μ₄` -/
+theorem μ_p4_q4 (h : Constraints α β n) :
+    μ α β n (p4 α β n) (q4 α β n) = μ4 α β n := by
+  have hpaq : p4 α β n = α * q4 α β n := by rw [p4, q4]
+  have hpq1 : 1 < p4 α β n + q4 α β n := by
+    rw [p4, q4]; nlinarith [one_lt_alpha_mul_q1 h, q1_pos h]
+  rw [μ_eq_inf_z h hpaq hpq1, (thm_4_1 h hpaq hpq1).1, thm_mu4 h]
+
 /-- **thm:4.2** (the case-4 lower bound): on the knife-edge with `p+q>1`,
 `inf_z μ(q,z) ≥ min(μ₂, μ₄)`. -/
 theorem thm_4_2 (h : Constraints α β n) {p q : ℝ}
