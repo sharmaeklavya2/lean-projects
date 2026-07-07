@@ -1,4 +1,8 @@
+module
+
+public import DataMktOligoHard.Defs
 import DataMktOligoHard.SpecialPoints
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Case 1 of the main reduction (case1.tex)
@@ -7,6 +11,8 @@ This file corresponds to the "Case 1: `p > α·q` and `p + q ≥ 1`" subsection.
 In this region `V(p,q)` is the singleton `{(r₁⁻, r₂⁺)}`, so
 `μ(p,q) = max(r₁*(q)/r₁⁻, r₂*(p)/r₂⁺)`.
 -/
+
+public section
 
 namespace DataMktOligoHard
 

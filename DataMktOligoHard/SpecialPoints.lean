@@ -1,4 +1,6 @@
-import DataMktOligoHard.Defs
+module
+
+public import DataMktOligoHard.Defs
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -23,6 +25,8 @@ These lemmas feed the next 4 subsections and the main claim (`cStar_le_μ`, in
   satisfies its equation), which is all that `μ(pᵢ,qᵢ) = μᵢ` requires. Believed
   unneeded downstream.
 -/
+
+public section
 
 namespace DataMktOligoHard
 

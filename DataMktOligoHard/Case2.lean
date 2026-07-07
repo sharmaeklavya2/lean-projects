@@ -1,3 +1,6 @@
+module
+
+public import DataMktOligoHard.Defs
 import DataMktOligoHard.SpecialPoints
 
 /-!
@@ -15,6 +18,8 @@ The paper's proof (thm:2) is a dichotomy at `p₁`:
 The `p = 0` and `p ≥ 1` corners (where a seller earns `0`) give `μ = cap` under Lean's
 `x/0` convention, but `μ₁ ≤ cap` (`μ1_le_cap`) so the sharp bound `μ₁ ≤ μ` holds there too.
 -/
+
+public section
 
 namespace DataMktOligoHard
 

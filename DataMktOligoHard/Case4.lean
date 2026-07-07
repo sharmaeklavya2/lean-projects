@@ -1,4 +1,6 @@
-import DataMktOligoHard.Defs
+module
+
+public import DataMktOligoHard.Defs
 import DataMktOligoHard.SpecialPoints
 import Mathlib.Tactic.LinearCombination
 
@@ -17,6 +19,8 @@ infimum. We reuse `Basic`'s revenue bounds `r1lo/r1hi/r2lo/r2hi` (the paper's
 
 ## Status: fully proved (`thm_4` and all supporting lemmas are `sorry`-free).
 -/
+
+public section
 
 namespace DataMktOligoHard
 

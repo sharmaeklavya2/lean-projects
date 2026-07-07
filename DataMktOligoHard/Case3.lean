@@ -1,6 +1,12 @@
+module
+
+public import DataMktOligoHard.Defs
 import DataMktOligoHard.SpecialPoints
 import DataMktOligoHard.Case1
 import DataMktOligoHard.Case2
+import Mathlib.Tactic.LinearCombination
+
+public section
 
 /-!
 # Case 3 of the main reduction (case3.tex)

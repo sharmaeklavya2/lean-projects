@@ -1,8 +1,12 @@
-import DataMktOligoHard.Defs
+module
+
+public import DataMktOligoHard.Defs
 import DataMktOligoHard.Case1
 import DataMktOligoHard.Case2
 import DataMktOligoHard.Case3
 import DataMktOligoHard.Case4
+
+public section
 
 namespace DataMktOligoHard
 
