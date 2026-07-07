@@ -334,4 +334,14 @@ theorem thm_1_2 (h : Constraints α β n) {p q : ℝ}
         _ ≤ α * q + n := by linarith [hexpr2]
         _ ≤ r1star α β n q := hg2
 
+/-- combination of thm_1_1 and thm_1_2 -/
+theorem thm_1 (h : Constraints α β n) {p q : ℝ}
+    (hq : 0 ≤ q) (hpq1 : 1 ≤ p + q) (hpaq : α * q < p) :
+    min (μ2 α β n) (μ3 α β n) ≤ μ α β n p q := by
+    simp only [min_le_iff]
+    by_cases hpα : α ≤ p
+    · left ; exact thm_1_1 h hq hpaq hpα
+    · right ; exact thm_1_2 h hq hpq1 hpaq (le_of_not_ge hpα)
+
+
 end DataMktOligoHard
