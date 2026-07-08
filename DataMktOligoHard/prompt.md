@@ -4,7 +4,7 @@ I have written a paper on oligopolistic data markets. It was accepted to ICML 20
 
 Reading the original paper might not be the best use of your context window (the paper includes other results, discussion of prior work, etc), so I have prepared a new version for you with just the relevant details. In `DataMktOligoHard/paper/`, read `intro.tex`, then `revenue.tex`, and then `inapprox.tex`. `inapprox.tex` states the main result(s) that I want to formalize. (`revenue.tex` has some results too, but I don't want to formalize those. So we will take those as given.)
 
-The lean file `DataMktOligoHard/Basic.lean` contains the necessary definitions. `DataMktOligoHard/Pending.lean` contains the main result (and maybe some other results too), with `sorry` for proof. We are yet to prove these.
+The lean file `DataMktOligoHard/Defs.lean` contains the necessary definitions. `DataMktOligoHard/Pending.lean` contains the main result (and maybe some other results too), with `sorry` for proof. We are yet to prove these.
 
 ## Proof of the Result
 
@@ -12,7 +12,7 @@ The proof of the main result is split across 5 TeX files in `DataMktOligoHard/pa
 
 The file `inapprox.tex` defines 4 points: $(p_i, q_i)$ for $i ∈ [4]$. `sp-props.tex` proves several properties of these points. The proof of the main theorem (`thm:pq` in tex, `cStar_le_μ` in lean) is split into 4 cases, each in its own tex file. These case files use some results from `sp-props.tex`.
 
-When proving stuff in lean, I would like to have one lean file for each of the 5 tex files. In `DataMktOligoHard/`, `SpecialPoints.lean` formalizes `sp-props.tex`. `Case1.lean` would formalize `case1.tex`, and so on. Additionally, `Basic.lean` just has definitions that the other files would need, and we can rename `Pending.lean` to something else (`Main.lean` maybe?) later.
+When proving stuff in lean, I would like to have one lean file for each of the 5 tex files. In `DataMktOligoHard/`, `SpecialPoints.lean` formalizes `sp-props.tex`. `Case1.lean` would formalize `case1.tex`, and so on. Additionally, `Defs.lean` just has definitions that the other files would need, and we can rename `Pending.lean` to something else (`Final.lean` maybe?) later.
 
 ## How to Work
 
@@ -26,7 +26,7 @@ I'm a beginner at lean. I'm counting on your expertise at lean.
 
 ## What to do Now
 
-First, from `paper/`, read `intro.tex`, then `revenue.tex`, then `inapprox.tex`. This will explain _what_ we are trying to prove. Then read `Basic.lean` and `Pending.lean`. Stop and ask any questions if you have them.
+First, from `paper/`, read `intro.tex`, then `revenue.tex`, then `inapprox.tex`. This will explain _what_ we are trying to prove. Then read `Defs.lean` and `Pending.lean`. Stop and ask any questions if you have them.
 
 Then read `paper/sp-props.tex` and `SpecialPoints.lean`.
 Then ask me about the current status of the project, and I will tell you want to do next.
