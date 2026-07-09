@@ -1,3 +1,3 @@
 import DataMktOligoHard.Defs
-import DataMktOligoHard.SpecialPoints
+import DataMktOligoHard.Cap
 import DataMktOligoHard.Final

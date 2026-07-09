@@ -80,7 +80,7 @@ noncomputable def r2star (p : ℝ) : ℝ :=
 Since `ℝ` has no `∞` in Lean, we replace it by a finite cap `cap`.
 This keeps `μ` in `ℝ`, keeps the "convert the NE problem into a 2-D optimization of
 `μ`" narrative explicit, and is sound for the lower bound: we only ever compare `μ`
-against values `< cap`, and `min(cap, μ) ≥ c ↔ μ ≥ c` whenever `c < cap`. -/
+against values `< cap`; see `Cap.lean`. -/
 
 /-- The best-response ratio `r*/r`, with `r*/0` read as `fallback`
 (the `x/0 = ∞` convention, made finite by substituting `fallback` for `∞`). -/

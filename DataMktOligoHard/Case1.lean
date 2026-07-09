@@ -2,6 +2,7 @@ module
 
 public import DataMktOligoHard.Defs
 import DataMktOligoHard.SpecialPoints
+import DataMktOligoHard.Cap
 import Mathlib.Tactic.LinearCombination
 
 /-!
