@@ -177,4 +177,10 @@ noncomputable def candidatePoints : Finset (ℝ × ℝ) :=
 (`cStar_le_μ`, in `Pending`) is that `μ(p,q) ≥ cStar` for all nonnegative `p, q`. -/
 noncomputable def cStar : ℝ := min (μ1 α β n) (min (μ2 α β n) (min (μ3 α β n) (μ4 α β n)))
 
+def μ_at_special : Prop :=
+  μ α β n (p1 α β n) (q1 α β n) = μ1 α β n
+  ∧ μ α β n (p2 β) (q2 α β n) = μ2 α β n
+  ∧ μ α β n (p3 α β n) (q3 α β n) = μ3 α β n
+  ∧ μ α β n (p4 α β n) (q4 α β n) = μ4 α β n
+
 end DataMktOligoHard

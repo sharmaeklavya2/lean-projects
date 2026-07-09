@@ -1,6 +1,7 @@
 module
 
 public import DataMktOligoHard.Defs
+import DataMktOligoHard.SpecialPoints
 import DataMktOligoHard.Case1
 import DataMktOligoHard.Case2
 import DataMktOligoHard.Case3
@@ -17,7 +18,8 @@ nonnegative price pair has `μ(p,q) ≥ cStar := min_i μᵢ`, so no `(cStar - �
 Together with the `μ_pᵢ_qᵢ` lemmas (which show the bound is attained), this gives
 `inf_{p,q} μ = cStar`. -/
 theorem cStar_le_μ (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
-    cStar α β n ≤ μ α β n p q := by
+    cStar α β n ≤ μ α β n p q ∧ μ_at_special α β n := by
+  refine ⟨?_, μ_p1_q1 h, μ_p2_q2 h, μ_p3_q3 h, μ_p4_q4 h⟩
   unfold cStar
   simp only [min_le_iff]
   by_cases hpq : p + q ≤ 1
