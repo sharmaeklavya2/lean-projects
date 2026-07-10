@@ -1,0 +1,73 @@
+\section{Introduction}
+\label{sec:intro}
+
+This paper studies the bin-packing problem.
+Here we are given a set of $n$ items. The $i\Th$ item has size $s_i \in (0, 1]$.
+Our goal is to pack the items into a small number of bins.
+Formally, we must partition the items into sets $B_1, \ldots, B_m$ such that
+$m$ is small and for each bin $j \in [m]$, we have
+\[ \sum_{i \in B_j} s_i \le 1. \]
+
+The \emph{harmonic algorithm} \cite{lee1985simple} is a simple online algorithm for this problem.
+This algorithm has an integer parameter $M \ge 1$.
+For each item of size $x \in (0, 1]$, define its \emph{category} $\categ_M(x)$
+as $\min(M, \floor{1/x})$, and its \emph{harmonic weight} $w_M(x)$ as
+\[ w_M(x) \defeq \begin{cases}
+    \frac{1}{\floor{1/x}} & \text{ if } 1/M < x \le 1
+    \\ \frac{M}{M-1}x & \text{ if } 0 < x \le 1/M
+\end{cases}. \]
+The harmonic algorithm packs all items of the same category using the Next-Fit algorithm.
+
+\subsection{Weight Functions}
+
+The analysis of several bin-packing algorithms follow a technique called \emph{weight functions}.
+The key idea is to devise a function $w: (0, 1] \to \mathbb{R}_{> 0}$
+and find constants $\alpha, \beta \in \mathbb{R}_{\ge 0}$ having the following properties:
+\begin{enumerate}
+\item The algorithm packs all items into less than $\sum_{i=1}^n w(s_i) + \beta$ bins.
+\item If a subset $S$ of items can be packed into a bin, their total weight is at most $\alpha$. Formally,
+    \[ \sum_{i \in S} s_i \le 1 \implies \sum_{i \in S} w(s_i) \le \alpha. \]
+\end{enumerate}
+Then it can be shown that the algorithm packs all items into less than $\alpha m^* + \beta$ bins,
+where $m^*$ is the optimal number of bins.
+Here $\alpha$ is called the \emph{asymptotic approximation factor}.
+
+The harmonic algorithm uses the harmonic weight function $w_M$,
+and it can be shown that it packs all items into less than $\sum_{i=1}^n w_M(s_i) + (M-1)$ bins.
+In this paper, we show an upper-bound on the total weight of items that can be packed into a bin.
+
+\subsection{Statement of this Paper's Main Result}
+
+We first define $Q_M$, the supposed asymptotic approximation factor of the harmonic algorithm.
+
+For any $n \in \mathbb{N}$, let $k_n$ be the $n\Th$ \emph{modified Sylvester number} \cite{oeisA007018},
+defined recursively as follows:
+\[ k_n \defeq \begin{cases}
+    1 & \text{ if } n = 1
+    \\ k_{n-1}(k_{n-1}+1) & \text{ if } n > 1
+\end{cases}. \]
+For any $n \defeq \mathbb{N}$, define $T_n$ to be the reciprocal of the first $n$ modified Sylvester numbers:
+\[ T_n \defeq \sum_{i=1}^n \frac{1}{k_i}. \]
+
+For any number $n \in \mathbb{N}$, define its \emph{modified Sylvester inverse} to be the
+largest number $i \in \mathbb{N}$ such that $n \le k_i$.
+(If $n \ge 2$, then we get that $i \ge 2$ and $k_{i-1} < n \le k_i$.)
+
+For any integer $M \ge 2$ and its modified Sylvester inverse $i$, define $Q_M$ as
+\[ T_i + \frac{1}{M-1}\frac{1}{k_i}. \]
+Define $T_{\infty}$ and $Q_{\infty}$ as
+\begin{align*}
+T_{\infty} &\defeq \lim_{n \to \infty} T_n
+& Q_M &\defeq \lim_{M \to \infty} Q_M
+\end{align*}
+Then $T_{\infty} = Q_{\infty} \approx 1.691$.
+In practice, for $M \ge 12$, $Q_M \approx Q_{\infty}$.
+
+We now state the main result that we prove.
+
+\begin{restatable}{theorem}{thmHarmonicWeightBound}
+\label{thm:harmonic-bound}
+For all $n, M \in \mathbb{N}$ and $y \in (0, 1]^n$ such that
+$M \ge 2$ and $\sum_{i=1}^n y_i \le 1$, we get
+\[ \sum_{i=1}^n w_M(y_i) \le Q_M. \]
+\end{restatable}

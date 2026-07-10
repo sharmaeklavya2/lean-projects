@@ -1,0 +1,93 @@
+\section{Proof}
+\label{sec:proof}
+
+\begin{lemma}
+\label{thm:t2-simp}
+For all $n \in \mathbb{N}$,
+\[ \sum_{i=1}^n \frac{1}{k_i + 1} = 1 - \frac{1}{k_{n+1}}. \]
+\end{lemma}
+\begin{proof}[Proof sketch]
+\[ \frac{1}{k_i + 1} = \frac{1}{k_i} - \frac{1}{k_{i+1}}.
+\qedhere \]
+\end{proof}
+
+\begin{lemma}
+\label{thm:tplus-monotone}
+Let $i, j, M \in \mathbb{N}$ such that $i < j$ and $k_j < M$. Then
+\[ T_i + \frac{1}{M-1}\frac{1}{k_i} \le T_j + \frac{1}{M-1}\frac{1}{k_j}. \]
+\end{lemma}
+\begin{proof}
+\WLoG, assume $j = i+1$. Then
+\begin{align*}
+& \left(T_{i+1} + \frac{1}{M-1}\frac{1}{k_{i+1}}\right) - \left(T_i + \frac{1}{M-1}\frac{1}{k_i} \le T_j\right)
+\\ &= \frac{1}{k_{i+1}} - \frac{1}{M-1}\left(\frac{1}{k_i} - \frac{1}{k_{i+1}}\right)
+\\ &= \frac{1}{k_{i+1}} - \frac{1}{M-1}\frac{1}{k_i+1}
+\\ &\ge \frac{1}{k_{i+1}} - \frac{1}{k_{i+1}}\frac{1}{k_i+1}
+    \tag{since $k_{i+1} \le M-1$}
+\\ &= \frac{1}{(k_i+1)^2} > 0.
+\qedhere
+\end{align*}
+\end{proof}
+
+\thmHarmonicWeightBound*
+\begin{proof}
+Let $i$ be the Sylvester inverse of $M$.
+Then $i \ge 2$ and $k_{i-1} < M \le k_i$.
+Assume \wLoG{} that $y$ is sorted in non-decreasing order.
+
+Let $t$ be the largest integer in $[0, \min(n, i-1)]$ such that
+the first $t$ items have consecutive modified Sylvester number categories, i.e.,
+$\forall j \in [t]$, we have $\categ_M(y_j) = k_j$.
+
+By \cref{thm:t2-simp}, we get
+\[ \sum_{i=1}^t y_j \ge \sum_{j=1}^t \frac{1}{k_j+1} = 1 - \frac{1}{k_{t+1}}. \]
+Hence,
+\begin{equation}
+\label{eq:1}
+\sum_{j=t+1}^n y_j \le \frac{1}{k_{t+1}}.
+\end{equation}
+Moreover,
+\begin{equation}
+\label{eq:2}
+\sum_{j=1}^t w_M(y_j) = \sum_{j=1}^t \frac{1}{k_t} = T_t.
+\end{equation}
+
+Now we get three cases depending on the value of $t$.
+
+\textbf{Case 1}: $t = i-1$.
+\\ Then for all $j > t$, we have $y_j < 1/k_i \le 1/M$.
+Thus, $\categ_M(y_j) = M$ and $w_M(y_j) = \frac{M}{M-1} y_j$.
+Hence, using \eqref{eq:1} and \eqref{eq:2}, we get
+\[ \sum_{j=1}^n w_M(y_j) = T_{i-1} + \frac{M}{M-1}\sum_{j=t+1}^n y_j
+    \le T_{i-1} + \frac{M}{M-1}\frac{1}{k_i} = Q_M. \]
+
+\textbf{Case 2}: $t = n$. By \cref{eq:2},
+\[ \sum_{j=1}^n w_M(y_j) = T_t \le T_{i-1} \le Q_M. \]
+
+\textbf{Case 3}: $t \le n-1$ and $t \le i-2$.
+\\ We first show that $\categ_M(y_{t+1}) \ge k_{t+1}+1$.
+\[ y_{t+1} \le \sum_{j=t+1}^n y_j \le \frac{1}{k_{t+1}}. \]
+Since $\categ_M$ is a non-increasing function, we get $\categ_M(y_{t+1}) \ge \categ_M(1/k_{t+1})$.
+Since $k_{t+1} \le k_{i-1} < M$, we get $1/k_{t+1} > 1/M$.
+Thus, $\categ_M(1/k_{t+1}) = k_{t+1}$, so $\categ_M(y_{t+1}) \ge k_{t+1}$.
+By the maximality of $t$, we get that $\categ_M(y_{t+1}) \neq k_{t+1}$.
+Thus, $\categ_M(y_{t+1}) \ge k_{t+1}+1$.
+Since the sequence $y$ is non-increasing, we get that
+$\categ_M(y_j) \ge k_{t+1}+1$ for all $j \in [n] \setminus [t]$.
+
+Pick any $j \in [n] \setminus [t]$. Let $c \defeq \categ_M(y_j)$.
+Then $k_{t+1}+1 \le c \le M$.
+
+\textbf{Case 3a}: $c = M$.
+\[ \frac{w_M(y_j)}{y_j} = \frac{M}{M-1}. \]
+
+\textbf{Case 3b}: $c < M$. Then
+\[ \frac{w_M(y_j)}{y_j} = 1 + \frac{1}{c} \le 1 + \frac{1}{k_{t+1}+1}. \]
+Thus, for all $j \in [n] \setminus [t]$, we have
+\[ \frac{w_M(y_j)}{y_j} \le \max\left(\frac{M}{M-1}, 1 + \frac{1}{k_{t+1}+1}\right). \]
+Hence, using \eqref{eq:1} and \eqref{eq:2}, we get
+\[ \sum_{j=1}^n w_M(y_j) \le T_t + \max\left(\frac{M}{M-1}, 1 + \frac{1}{k_{t+1}+1}\right)\frac{1}{k_{t+1}}
+    \le \max\left(T_{t+1} + \frac{1}{M-1}\frac{1}{k_{t+1}}, T_{t+2}\right). \]
+The first term in the max is at most $Q_M$ by \cref{thm:tplus-monotone}.
+The second term in the max is at most $T_i \le Q_M$.
+\end{proof}
