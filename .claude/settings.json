@@ -4,7 +4,8 @@
       "Bash(lake build *)",
       "Bash(lake env lean *)",
       "Bash(grep *)",
-      "Edit(**/*.lean)"
+      "Edit(**/*.lean)",
+      "Write(**/*.lean)"
     ]
   },
   "outputStyle": "Explanatory",
