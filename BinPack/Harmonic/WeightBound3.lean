@@ -6,6 +6,9 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Push
 
+/- This file is very old and considered deprecated.
+It predates several conventions that the other files are now using. -/
+
 /-- The w₃ weight function -/
 noncomputable def w3 (x : ℝ) : ℝ :=
   if 1/2 < x then 1
