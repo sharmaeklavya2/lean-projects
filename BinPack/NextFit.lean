@@ -253,7 +253,8 @@ omit [IsStrictOrderedRing α] in
 /-- `size` is trivially a weighting with per-bin bound `1`: a bin of total size
 `≤ 1` has total weight (= size) `≤ 1`. The competitive factor `2` comes entirely
 from the algorithm fact `nextFit_halg`, not from the weight function. -/
-theorem isWeighting_size (size : β → α) : IsWeighting size size 1 := fun _ hb => hb
+theorem isWeighting_size (size : β → α) : IsWeighting size size 1 := by
+  intro _ _ hb; exact hb
 
 /-- **Next-fit is 2-competitive.** The weighting method with `wt := size`
 (so `wbound = 1`) and algorithm ratio `2` gives `length < 2·1·OPT + 1`; since
@@ -261,7 +262,8 @@ theorem isWeighting_size (size : β → α) : IsWeighting size size 1 := fun _ h
 public theorem nextFit_ratio (size : β → α) (l : List β) (hl : ValidInput size l) :
     (nextFit size l).length ≤ 2 * optimum size l := by
   have main := length_lt_opt size size 2 1 1 l (nextFit size l)
-    (by norm_num) (nextFit_isPacking size l hl) (isWeighting_size size) (nextFit_halg size l hl)
+    (by norm_num) (nextFit_isPacking size l hl) (fun x hx => (hl x hx).1)
+    (isWeighting_size size) (nextFit_halg size l hl)
   simp only [mul_one] at main
   have hcast : ((nextFit size l).length : α) < ((2 * optimum size l + 1 : ℕ) : α) := by
     push_cast; linarith

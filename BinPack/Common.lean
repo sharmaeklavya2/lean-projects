@@ -55,12 +55,10 @@ structure Item (α : Type*) where
 
 /-! ## Weight functions
 
-The reusable engine for approximation ratios. Assign each item a *weight*
-`wt : β → α`. To bound an algorithm by `ratio · wbound · OPT + const` it suffices
-to show two independent facts:
+The reusable engine for approximation ratios. Assign each item a *weight* `wt : β → α`.
+To bound an algorithm by `ratio · wbound · OPT + const` it suffices to show two facts:
 
-* **(algorithm fact)** the algorithm uses fewer than `ratio · totalWeight + const`
-  bins, and
+* **(algorithm fact)** the algorithm uses fewer than `ratio · totalWeight + const` bins, and
 * **(weight fact, `IsWeighting`)** any single bin's items weigh at most `wbound`.
 
 `length_lt_opt` combines these into the ratio bound. The weight fact is a
@@ -72,17 +70,16 @@ algorithms with different `ratio`s. -/
 /-- Total weight of a list of items. -/
 def totalWeight (wt : β → α) (l : List β) : α := (l.map wt).sum
 
-/-- `wt` is a *weighting* with per-bin bound `wbound` (for capacity-`1` bins): any
-bin of items with total size `≤ 1` has total weight `≤ wbound`. This is the fact
-one proves about the weight function, independent of any algorithm or instance. -/
+/-- `wt` is a *weighting* with per-bin bound `wbound` (for capacity-`1` bins):
+any bin whose total size is `≤ 1` has total weight `≤ wbound`. -/
 def IsWeighting (size wt : β → α) (wbound : α) : Prop :=
-  ∀ b : List β, binLoad size b ≤ 1 → totalWeight wt b ≤ wbound
+  ∀ b : List β, (∀ x ∈ b, 0 < size x) → binLoad size b ≤ 1 → totalWeight wt b ≤ wbound
 
 /-- The total weight of the items is at most `wbound` times the number of bins in
-*any* valid packing (each bin weighs `≤ wbound`, and the packing's bins partition
-the items). No positivity of weights is needed. -/
+*any* valid packing (each bin weighs `≤ wbound`, and the packing's bins partition the items). -/
 theorem weight_le_opt (size wt : β → α) (wbound : α) (l : List β)
-    (hw : IsWeighting size wt wbound) (q : Packing β) (hq : IsPacking size l q) :
+    (hw : IsWeighting size wt wbound) (q : Packing β) (hq : IsPacking size l q)
+    (hl : ∀ x ∈ l, 0 < size x) :
     totalWeight wt l ≤ wbound * q.length := by
   have hsplit : totalWeight wt l = (q.map (fun b => totalWeight wt b)).sum := by
     have hperm := (hq.perm.map wt).sum_eq
@@ -94,19 +91,22 @@ theorem weight_le_opt (size wt : β → α) (wbound : α) (l : List β)
     intro x hx
     rw [List.mem_map] at hx
     obtain ⟨b, hbq, rfl⟩ := hx
-    exact hw b (hq.fits b hbq)
+    have hbpos : ∀ y ∈ b, 0 < size y := fun y hy =>
+      hl y (hq.perm.mem_iff.mp (List.mem_flatten.mpr ⟨b, hbq, hy⟩))
+    exact hw b hbpos (hq.fits b hbq)
   have h := List.sum_le_card_nsmul (q.map (fun b => totalWeight wt b)) wbound hb
   rw [List.length_map, nsmul_eq_mul, mul_comm] at h
   exact h
 
 /-- **The weighting method.** Two separate quantities combine here: `wbound` is a
-property of the *weight function* (any one bin weighs `≤ wbound`, i.e.
-`IsWeighting`), while `ratio` is a property of the *algorithm* (it uses fewer than
+property of the *weight function* (any one bin weighs `≤ wbound`, i.e. `IsWeighting`),
+while `ratio` is a property of the *algorithm* (it uses fewer than
 `ratio · totalWeight + const` bins). Then the packing uses fewer than
 `ratio · wbound · OPT + const` bins. -/
 theorem length_lt_opt (size wt : β → α) (ratio wbound const : α) (l : List β) (p : Packing β)
     (hratio : 0 ≤ ratio)
     (hp : IsPacking size l p)
+    (hl : ∀ x ∈ l, 0 < size x)
     (hw : IsWeighting size wt wbound)
     (halg : (p.length : α) < ratio * totalWeight wt l + const) :
     (p.length : α) < ratio * wbound * optimum size l + const := by
@@ -114,7 +114,7 @@ theorem length_lt_opt (size wt : β → α) (ratio wbound const : α) (l : List 
     ⟨p.length, p, hp, rfl⟩
   obtain ⟨q, hq, hqlen⟩ := Nat.sInf_mem hne
   have hqlen' : q.length = optimum size l := hqlen
-  have hw' := weight_le_opt size wt wbound l hw q hq
+  have hw' := weight_le_opt size wt wbound l hw q hq hl
   have hopt : (optimum size l : α) = (q.length : α) := by rw [hqlen']
   rw [hopt, mul_assoc]
   exact halg.trans_le (add_le_add (mul_le_mul_of_nonneg_left hw' hratio) (le_refl const))
