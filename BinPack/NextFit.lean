@@ -4,8 +4,6 @@ public import BinPack.Common
 public import Mathlib.Tactic.Linarith
 meta import Mathlib.Algebra.Field.Rat
 
-@[expose] public section
-
 /-!
 # Next-fit
 
@@ -24,7 +22,8 @@ variable {β : Type*}
 /-- Place `x` in the currently-open bin (the head) if it fits there,
 else close that bin and open a new one. Only the most-recent bin is considered,
 which is what distinguishes next-fit from first-fit's full scan. -/
-def insertNext (size : β → α) (x : β) : List (List β) → List (List β)
+@[expose]
+public def insertNext (size : β → α) (x : β) : List (List β) → List (List β)
   | [] => [[x]]
   | b :: rest =>
       if binLoad size b + size x ≤ 1 then (x :: b) :: rest
@@ -32,7 +31,8 @@ def insertNext (size : β → α) (x : β) : List (List β) → List (List β)
 
 /-- Next-fit: keep only the most-recent bin open (head of the list).
 If the item fits there, add it; otherwise close it and open a new bin. -/
-def nextFit (size : β → α) (l : List β) : Packing β :=
+@[expose]
+public def nextFit (size : β → α) (l : List β) : Packing β :=
   l.foldl (fun bins x => insertNext size x bins) []
 
 -- Examples of invoking nextFit
@@ -123,7 +123,7 @@ theorem foldl_insertNext_fits (size : β → α) (l : List β) (acc : List (List
 
 omit [IsStrictOrderedRing α] in
 /-- Next-fit produces a valid packing on any well-formed instance. -/
-theorem nextFit_isPacking (size : β → α) (l : List β) (hl : ValidInput size l) :
+public theorem nextFit_isPacking (size : β → α) (l : List β) (hl : ValidInput size l) :
     IsPacking size l (nextFit size l) := by
   constructor
   · show List.Perm (nextFit size l).flatten l
@@ -233,7 +233,7 @@ theorem packLoad_nextFit (size : β → α) (l : List β) :
 
 /-- The algorithm fact: next-fit uses strictly fewer than `2·(total size) + 1`
 bins. This is the adjacency argument, packaged via the fold invariant. -/
-theorem nextFit_halg (size : β → α) (l : List β) (hl : ValidInput size l) :
+public theorem nextFit_halg (size : β → α) (l : List β) (hl : ValidInput size l) :
     ((nextFit size l).length : α) < 2 * totalWeight size l + 1 := by
   have hpos : ∀ x ∈ l, 0 < size x := fun x hx => (hl x hx).1
   have hbase :
@@ -258,7 +258,7 @@ theorem isWeighting_size (size : β → α) : IsWeighting size size 1 := fun _ h
 /-- **Next-fit is 2-competitive.** The weighting method with `wt := size`
 (so `wbound = 1`) and algorithm ratio `2` gives `length < 2·1·OPT + 1`; since
 `length` and `OPT` are naturals, this sharpens to `length ≤ 2·OPT`. -/
-theorem nextFit_ratio (size : β → α) (l : List β) (hl : ValidInput size l) :
+public theorem nextFit_ratio (size : β → α) (l : List β) (hl : ValidInput size l) :
     (nextFit size l).length ≤ 2 * optimum size l := by
   have main := length_lt_opt size size 2 1 1 l (nextFit size l)
     (by norm_num) (nextFit_isPacking size l hl) (isWeighting_size size) (nextFit_halg size l hl)
@@ -267,5 +267,3 @@ theorem nextFit_ratio (size : β → α) (l : List β) (hl : ValidInput size l) 
     push_cast; linarith
   have hnat : (nextFit size l).length < 2 * optimum size l + 1 := by exact_mod_cast hcast
   omega
-
-end
