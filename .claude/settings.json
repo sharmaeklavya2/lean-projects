@@ -1,11 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(lake build *)",
-      "Bash(lake env lean *)",
-      "Bash(grep *)",
-      "Edit(**/*.lean)",
-      "Write(**/*.lean)"
+      "Bash(lake build:*)",
+      "Bash(lake env lean:*)",
+      "Bash(rg:*)",
+      "Edit(/**/*.lean)",
+      "Write(/**/*.lean)",
+      "Read(~/.elan/toolchains/**)"
     ]
   },
   "outputStyle": "Explanatory",
