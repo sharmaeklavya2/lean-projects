@@ -72,6 +72,28 @@ private theorem sum_indicator (k N : ℕ) : ∀ M,
     simp only [List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, add_zero]
     split_ifs <;> omega
 
+/-- The categories `1..M` cover a `ValidInput` instance: filtering `l` by each
+category `c+1` (for `c < M`) and concatenating recovers `l` up to permutation. -/
+public theorem categories_cover (size : β → α) (M : ℕ) (hM : 1 ≤ M)
+    (l : List β) (hl : ValidInput size l) :
+    List.Perm ((List.range M).flatMap fun c => l.filter fun x => cat M (size x) == c + 1) l := by
+  classical
+  rw [List.perm_iff_count]
+  intro a
+  rw [List.count_flatMap]
+  have hmap : List.map (List.count a ∘ fun c => l.filter fun x => cat M (size x) == c + 1)
+        (List.range M)
+      = List.map (fun c => if cat M (size a) = c + 1 then l.count a else 0) (List.range M) := by
+    apply List.map_congr_left
+    intro c _
+    simp only [Function.comp_apply, count_filter_cat, beq_iff_eq]
+  rw [hmap, sum_indicator]
+  by_cases ha : a ∈ l
+  · obtain ⟨hpos, hle⟩ := hl a ha
+    obtain ⟨h1, h2⟩ := cat_mem_Icc size M hM a hpos hle
+    rw [if_pos ⟨h1, h2⟩]
+  · rw [List.count_eq_zero.mpr ha]; simp
+
 /-- **`harmonicPack` is correct**: on any `ValidInput` instance with `M ≥ 1` it
 produces a valid packing. -/
 public theorem harmonicPack_isPacking (size : β → α) (M : ℕ) (hM : 1 ≤ M)
@@ -86,24 +108,9 @@ public theorem harmonicPack_isPacking (size : β → α) (M : ℕ) (hM : 1 ≤ M
     unfold harmonicPack
     rw [flatten_flatMap]
     -- replace each next-fit packing by its category's items (perm per branch)
-    refine (List.Perm.flatMap_left _
-      (fun c _ => (nextFit_isPacking size _ (hvalid c)).perm)).trans ?_
-    -- the categories 1..M partition l — proved via counts
-    rw [List.perm_iff_count]
-    intro a
-    rw [List.count_flatMap]
-    have hmap : List.map (List.count a ∘ fun c => l.filter fun x => cat M (size x) == c + 1)
-          (List.range M)
-        = List.map (fun c => if cat M (size a) = c + 1 then l.count a else 0) (List.range M) := by
-      apply List.map_congr_left
-      intro c _
-      simp only [Function.comp_apply, count_filter_cat, beq_iff_eq]
-    rw [hmap, sum_indicator]
-    by_cases ha : a ∈ l
-    · obtain ⟨hpos, hle⟩ := hl a ha
-      obtain ⟨h1, h2⟩ := cat_mem_Icc size M hM a hpos hle
-      rw [if_pos ⟨h1, h2⟩]
-    · rw [List.count_eq_zero.mpr ha]; simp
+    exact (List.Perm.flatMap_left _
+      (fun c _ => (nextFit_isPacking size _ (hvalid c)).perm)).trans
+      (categories_cover size M hM l hl)
   · -- fits: every bin comes from some category's next-fit, which never overflows
     intro b hb
     unfold harmonicPack at hb
