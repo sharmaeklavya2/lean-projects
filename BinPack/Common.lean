@@ -39,6 +39,12 @@ structure IsPacking (size : β → α) (input : List β) (p : Packing β) : Prop
 noncomputable def optimum (size : β → α) (l : List β) : ℕ :=
   sInf { n | ∃ p : Packing β, IsPacking size l p ∧ p.length = n }
 
+/-- A well-formed instance: every item has size in `(0, 1]`. The upper bound is
+what makes a packing *possible* (an item bigger than a bin can never fit); the
+lower bound (positivity) is the standing assumption that bin loads strictly grow. -/
+def ValidInput (size : β → α) (l : List β) : Prop :=
+  ∀ x ∈ l, 0 < size x ∧ size x ≤ 1
+
 /-- An item carrying an identifier alongside its size. Instantiate `β := Item α`
 when the caller must read off *which* item went where. Genericize `id`'s type if
 you prefer strings or handles. -/
