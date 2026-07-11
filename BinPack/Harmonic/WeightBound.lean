@@ -13,25 +13,12 @@ import Mathlib.Data.Rat.BigOperators
 
 public import BinPack.Harmonic.Core
 public import BinPack.Harmonic.Syl
+public import BinPack.Common
 
 /-! Here we prove an upper-bound on the total harmonic weight
 of a set of items that fit into a bin. -/
 
 /- Definitions -/
-
-@[expose]
-public def T (n : ℕ) : ℚ :=
-  ∑ i ∈ Finset.range n, 1 / syl (i + 1)
-
-@[expose]
-public def Q (M : ℕ) :=
-  let i := syl_inv_fast M
-  T i + (1 / (M-1)) / (syl i)
-
-public structure HarmonicBoundPreconds (M : ℕ) (y : List ℝ) : Prop where
-  hM : M ≥ 2
-  hyb : ∀ z ∈ y, (0 < z ∧ z ≤ 1)
-  hySum : y.sum ≤ 1
 
 def T2 (n : ℕ) : ℚ := ∑ i ∈ Finset.range n, 1 / (syl (i + 1) + 1)
 
@@ -230,7 +217,7 @@ theorem list_sum_eq_range (l : List ℝ) :
     rw [ih]; ring
 
 theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
-  (h : HarmonicBoundPreconds M y)
+  (hM : M ≥ 2) (hyb : ∀ z ∈ y, 0 < z) (hySum : y.sum ≤ 1)
   (hi1 : i ≥ 2) (hi2 : syl (i - 1) < M ∧ M ≤ syl i)
   (hySort : y.SortedGE)
   (ht1 : t ≤ y.length) (ht2 : t + 1 ≤ i)
@@ -238,6 +225,9 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
   (ht4 : (h : t + 1 ≤ y.length ∧ t + 1 ≤ i - 1)
     → rawcat (y[t]'(by omega)) ≠ syl (t + 1))
   : (y.map (wh M)).sum ≤ T i + (1 / (M - 1)) / (syl i) := by
+  -- Every element is ≤ 1: it is one nonnegative summand of a sum that is ≤ 1.
+  have hyb1 : ∀ z ∈ y, 0 < z ∧ z ≤ 1 := fun z hz =>
+    ⟨hyb z hz, le_trans (List.single_le_sum (fun w hw => (hyb w hw).le) _ hz) hySum⟩
   -- Each of the first `t` items has size > 1/(syl(j+1)+1) and weight 1/syl(j+1),
   -- because `syl(j+1) ≤ syl(i-1) < M` puts it in the `else` branch of `wh`.
   have hper : ∀ j ∈ Finset.range t,
@@ -247,7 +237,7 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
     have hj : j < t := Finset.mem_range.mp hjmem
     have hjlen : j < y.length := by omega
     rw [List.getD_eq_getElem y 0 hjlen]
-    obtain ⟨hx0, hx1⟩ := h.hyb _ (List.getElem_mem hjlen)
+    obtain ⟨hx0, hx1⟩ := hyb1 _ (List.getElem_mem hjlen)
     have hrc : rawcat (y[j]'hjlen) = syl (j + 1) := ht3 j hj
     have hk : syl (j + 1) < M :=
       lt_of_le_of_lt (syl_le (by omega : j + 1 ≤ i - 1)) hi2.1
@@ -275,7 +265,7 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
     (Finset.sum_range_add_sum_Ico _ ht1).symm
   have hT2R : (T2 t : ℝ) = 1 - 1 / (syl (t + 1)) := by rw [T2_simp]; push_cast; ring
   have htail : ∑ j ∈ Finset.Ico t n, y.getD j 0 ≤ 1 / (syl (t + 1)) := by
-    have hySum := h.hySum
+    have hySum := hySum
     linarith [hsum_ge]
   -- weights of the whole list as a range-sum, then split head/tail (case-independent)
   have hwsum : (y.map (wh M)).sum = ∑ j ∈ Finset.range n, wh M (y.getD j 0) := by
@@ -296,7 +286,7 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
   · -- Case t = i - 1: every tail item is ≤ 1/M, so its weight is (M/(M-1))·size.
     have hti : t + 1 = i := by omega
     rw [hti] at htail          -- htail : tail-size-sum ≤ 1 / syl i
-    have hMR : (2 : ℝ) ≤ (M : ℝ) := by exact_mod_cast h.hM
+    have hMR : (2 : ℝ) ≤ (M : ℝ) := by exact_mod_cast hM
     have hM1 : (0 : ℝ) < (M : ℝ) - 1 := by linarith
     have hsyli : (0 : ℝ) < (syl i : ℝ) := by
       have : 0 < syl i := by have := syl_pos (i - 1); omega
@@ -315,7 +305,7 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
         obtain ⟨hkt, hkn⟩ := Finset.mem_Ico.mp hk
         change (0 : ℝ) ≤ y.getD k 0
         rw [List.getD_eq_getElem y 0 (by omega)]
-        exact le_of_lt (h.hyb _ (List.getElem_mem _)).1
+        exact le_of_lt (hyb1 _ (List.getElem_mem _)).1
       have hsyliM : (1 : ℝ) / (syl i) ≤ 1 / M :=
         one_div_le_one_div_of_le (by exact_mod_cast (by omega : 0 < M)) (by exact_mod_cast hi2.2)
       have hxleM : y.getD j 0 ≤ 1 / (M : ℝ) := by linarith [hle_tail, htail, hsyliM]
@@ -350,7 +340,7 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
           linarith
         exact_mod_cast hstep
       have hM1 : (0 : ℝ) < (M : ℝ) - 1 := by
-        have h2 : (2 : ℝ) ≤ (M : ℝ) := by exact_mod_cast h.hM
+        have h2 : (2 : ℝ) ≤ (M : ℝ) := by exact_mod_cast hM
         linarith
       have hsyli : (0 : ℝ) < (syl i : ℝ) := by
         have : 0 < syl i := by have := syl_pos (i - 1); omega
@@ -366,12 +356,12 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
         intro k hk
         obtain ⟨_, hkn⟩ := Finset.mem_Ico.mp hk
         rw [List.getD_eq_getElem y 0 (by omega)]
-        exact le_of_lt (h.hyb _ (List.getElem_mem _)).1
+        exact le_of_lt (hyb1 _ (List.getElem_mem _)).1
       have hmemt : t ∈ Finset.Ico t n := Finset.mem_Ico.mpr ⟨le_refl t, by omega⟩
       have hyt_le : y.getD t 0 ≤ 1 / (syl (t + 1) : ℝ) :=
         le_trans (Finset.single_le_sum hnonneg hmemt) htail
       have hyt0 : 0 < y.getD t 0 := by
-        rw [List.getD_eq_getElem y 0 htn]; exact (h.hyb _ (List.getElem_mem _)).1
+        rw [List.getD_eq_getElem y 0 htn]; exact (hyb1 _ (List.getElem_mem _)).1
       have hge_t : syl (t + 1) ≤ rawcat (y.getD t 0) :=
         rawcat_ge _ _ hyt0 hyt_le (syl_pos t)
       have hne_t : rawcat (y.getD t 0) ≠ syl (t + 1) := by
@@ -383,7 +373,7 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
         obtain ⟨hjt, hjn⟩ := Finset.mem_Ico.mp hjmem
         have hjy : j < y.length := by omega
         have hyj0 : 0 < y.getD j 0 := by
-          rw [List.getD_eq_getElem y 0 hjy]; exact (h.hyb _ (List.getElem_mem _)).1
+          rw [List.getD_eq_getElem y 0 hjy]; exact (hyb1 _ (List.getElem_mem _)).1
         have hyj_le : y.getD j 0 ≤ y.getD t 0 := by
           rw [List.getD_eq_getElem y 0 hjy, List.getD_eq_getElem y 0 htn]
           have := hySort.antitone_get (show (⟨t, htn⟩ : Fin y.length) ≤ ⟨j, hjy⟩ from hjt)
@@ -392,7 +382,7 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
         omega
       -- syl(t+1) < M throughout the tail
       have hM1 : (0 : ℝ) < (M : ℝ) - 1 := by
-        have : (2 : ℝ) ≤ (M : ℝ) := by exact_mod_cast h.hM
+        have : (2 : ℝ) ≤ (M : ℝ) := by exact_mod_cast hM
         linarith
       have hsyli : (0 : ℝ) < (syl i : ℝ) := by
         have : 0 < syl i := by have := syl_pos (i - 1); omega
@@ -414,7 +404,7 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
             have hjy : j < y.length := by omega
             have hmem : y.getD j 0 ∈ y := by
               rw [List.getD_eq_getElem y 0 hjy]; exact List.getElem_mem _
-            obtain ⟨hx0, hx1⟩ := h.hyb _ hmem
+            obtain ⟨hx0, hx1⟩ := hyb1 _ hmem
             exact wh_tail_le M (syl (t + 1)) _ hx0 hx1 hkM hM1 (hcat_ge j hjmem)
           calc ∑ j ∈ Finset.Ico t n, wh M (y.getD j 0)
               ≤ ∑ j ∈ Finset.Ico t n, (1 + 1 / ((syl (t + 1) : ℝ) + 1)) * (y.getD j 0) :=
@@ -442,7 +432,7 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
           have hjy : j < y.length := by omega
           have hmem : y.getD j 0 ∈ y := by
             rw [List.getD_eq_getElem y 0 hjy]; exact List.getElem_mem _
-          obtain ⟨hx0, hx1⟩ := h.hyb _ hmem
+          obtain ⟨hx0, hx1⟩ := hyb1 _ hmem
           have hcatM : M ≤ rawcat (y.getD j 0) := by have := hcat_ge j hjmem; omega
           have hxM : y.getD j 0 ≤ 1 / (M : ℝ) := by
             obtain ⟨hb1, _⟩ := rawcat_bounds (y.getD j 0) (rawcat (y.getD j 0)) hx0 hx1 rfl
@@ -472,20 +462,19 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
           div_eq_mul_one_div _ _
         linarith [htailsize, hkey, hTid, hbi]
 
-public theorem harmonic_bound (M : ℕ) (y : List ℝ) (h : HarmonicBoundPreconds M y)
+public theorem harmonic_bound (M : ℕ) (y : List ℝ)
+  (hM : M ≥ 2) (hyb : ∀ z ∈ y, 0 < z) (hySum : y.sum ≤ 1)
   : (y.map (wh M)).sum ≤ Q M := by
   classical
-  have hM2 := h.hM
+  have hM2 := hM
   -- Sorting preserves the weight sum, so work with a sorted permutation `y'`.
   set y' := y.mergeSort (fun a b => decide (a ≥ b)) with hy'
   have hperm : List.Perm y' y := List.mergeSort_perm y _
   have hsort : y'.SortedGE := List.sortedGE_mergeSort
   have hsum_eq : (y.map (wh M)).sum = (y'.map (wh M)).sum :=
     (List.Perm.sum_eq (hperm.map (wh M))).symm
-  have h' : HarmonicBoundPreconds M y' :=
-    { hM := h.hM
-      hyb := fun z hz => h.hyb z (hperm.mem_iff.mp hz)
-      hySum := by rw [List.Perm.sum_eq hperm]; exact h.hySum }
+  have hyb' : ∀ z ∈ y', 0 < z := fun z hz => hyb z (hperm.mem_iff.mp hz)
+  have hySum' : y'.sum ≤ 1 := by rw [List.Perm.sum_eq hperm]; exact hySum
   -- `i = syl_inv_fast M` sits in the Sylvester sandwich `syl (i-1) < M ≤ syl i`.
   obtain ⟨hMi, hlt_i⟩ := syl_inv_fast_spec M
   set i := syl_inv_fast M with hi
@@ -509,7 +498,7 @@ public theorem harmonic_bound (M : ℕ) (y : List ℝ) (h : HarmonicBoundPrecond
   have hQcast : ((Q M : ℚ) : ℝ) = (T i : ℝ) + (1 / ((M : ℝ) - 1)) / ((syl i) : ℝ) := by
     unfold Q; rw [← hi]; push_cast; ring
   rw [hsum_eq]
-  refine le_trans (harmonic_bound_helper M i t y' h' hi1 hi2 hsort ht1 ht2 ?_ ?_)
+  refine le_trans (harmonic_bound_helper M i t y' hM hyb' hySum' hi1 hi2 hsort ht1 ht2 ?_ ?_)
     (le_of_eq hQcast.symm)
   · -- ht3 : the first `t` categories match `syl`
     intro j hj
@@ -529,3 +518,20 @@ public theorem harmonic_bound (M : ℕ) (y : List ℝ) (h : HarmonicBoundPrecond
     · subst hjeq
       rw [List.getD_eq_getElem y' 0 (by omega)]
       exact heq
+
+/-- **The harmonic weight function is a weighting** in the sense of `Common`, on
+real-sized items (`β = ℝ`, `size = id`): `wh M` is an `IsWeighting` with per-bin
+bound `Q M`. This is exactly the "weight fact" the weighting engine
+(`length_lt_opt`) consumes, so it plugs directly into an approximation-ratio proof
+for the harmonic algorithm on `ℝ`. (The general `size : β → ℝ` form, should it ever
+be needed, follows by mapping `size` over each bin.)
+
+The positivity hypothesis that `IsWeighting` carries supplies `harmonic_bound`'s
+per-item `0 < ·`, and `binLoad ≤ 1` supplies its `y.sum ≤ 1`. (The per-item
+`· ≤ 1` bound is no longer needed here: `harmonic_bound` derives it internally,
+since each positive size is one summand of a sum that is `≤ 1`.) -/
+public theorem harmonic_isWeighting (M : ℕ) (hM : 2 ≤ M) :
+    IsWeighting (id : ℝ → ℝ) (wh M) ((Q M : ℝ)) := by
+  intro b hpos hload
+  have hsum : b.sum ≤ 1 := by simpa [binLoad] using hload
+  simpa [totalWeight] using harmonic_bound M b hM hpos hsum
