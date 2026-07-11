@@ -183,51 +183,10 @@ theorem sum_bins_weight (size wt : β → α) (s : List β) :
   rw [← totalWeight_flatten, nextFit_flatten]
   simp [totalWeight, List.map_reverse, List.sum_reverse]
 
-/-! ## Per-item category facts (over `ℝ`) -/
+/-! ## Per-item category facts (over `ℝ`)
 
-/-- `⌊1/x⌋.toNat` cast to `ℝ` is `≤ 1/x`, for `0 < x ≤ 1`. -/
-private theorem toNat_floor_le (x : ℝ) (hx0 : 0 < x) (hx1 : x ≤ 1) :
-    ((⌊1 / x⌋).toNat : ℝ) ≤ 1 / x := by
-  have h1x : (1 : ℝ) ≤ 1 / x := by rw [le_div_iff₀ hx0, one_mul]; exact hx1
-  have hfnn : (0 : ℤ) ≤ ⌊1 / x⌋ := by
-    have : (1 : ℤ) ≤ ⌊1 / x⌋ := Int.le_floor.mpr (by exact_mod_cast h1x); omega
-  calc ((⌊1 / x⌋).toNat : ℝ) = (⌊1 / x⌋ : ℝ) := by exact_mod_cast Int.toNat_of_nonneg hfnn
-    _ ≤ 1 / x := Int.floor_le (1 / x)
-
-/-- A "small" category-`k` item (`k < M`) has size `≤ 1/k` and weight exactly `1/k`. -/
-theorem cat_lt_M_facts (M : ℕ) (x : ℝ) (hx0 : 0 < x) (hx1 : x ≤ 1) (k : ℕ)
-    (hk : cat M x = k) (hkM : k < M) :
-    x ≤ 1 / (k : ℝ) ∧ wh M x = 1 / (k : ℝ) := by
-  have h1x : (1 : ℝ) ≤ 1 / x := by rw [le_div_iff₀ hx0, one_mul]; exact hx1
-  have hfloor1 : (1 : ℤ) ≤ ⌊1 / x⌋ := Int.le_floor.mpr (by exact_mod_cast h1x)
-  have hfnn : (0 : ℤ) ≤ ⌊1 / x⌋ := by omega
-  have hrk : (⌊1 / x⌋).toNat = k := by simp only [cat] at hk; omega
-  have hfloork : ⌊1 / x⌋ = (k : ℤ) := by rw [← hrk]; exact (Int.toNat_of_nonneg hfnn).symm
-  have hk1 : 1 ≤ k := by omega
-  have hkR : (0 : ℝ) < (k : ℝ) := by exact_mod_cast hk1
-  have hMpos : (0 : ℝ) < (M : ℝ) := by exact_mod_cast (by omega : 0 < M)
-  obtain ⟨hlo, hhi⟩ := Int.floor_eq_iff.mp hfloork
-  have hloR : (k : ℝ) ≤ 1 / x := by exact_mod_cast hlo
-  have hhiR : 1 / x < (k : ℝ) + 1 := by push_cast at hhi; linarith
-  have hkM1 : (k : ℝ) + 1 ≤ (M : ℝ) := by exact_mod_cast (by omega : k + 1 ≤ M)
-  refine ⟨?_, ?_⟩
-  · rw [le_div_iff₀ hkR]; rw [le_div_iff₀ hx0] at hloR; linarith
-  · have h1xM : 1 / x < (M : ℝ) := by linarith
-    have hxgtM : 1 / (M : ℝ) < x := by
-      rw [div_lt_iff₀ hMpos, mul_comm]; rw [div_lt_iff₀ hx0] at h1xM; exact h1xM
-    rw [wh, if_neg (not_le.mpr hxgtM), hrk]
-
-/-- A "tiny" category-`M` item has size `≤ 1/M` and weight `M/(M-1)·size`. -/
-theorem cat_eq_M_facts (M : ℕ) (hM : 2 ≤ M) (x : ℝ) (hx0 : 0 < x) (hx1 : x ≤ 1)
-    (hk : cat M x = M) :
-    x ≤ 1 / (M : ℝ) ∧ wh M x = (M : ℝ) / ((M : ℝ) - 1) * x := by
-  have hMpos : (0 : ℝ) < (M : ℝ) := by exact_mod_cast (by omega : 0 < M)
-  have hrM : M ≤ (⌊1 / x⌋).toNat := by simp only [cat] at hk; omega
-  have hMle : (M : ℝ) ≤ 1 / x :=
-    le_trans (by exact_mod_cast hrM) (toNat_floor_le x hx0 hx1)
-  have hxM : x ≤ 1 / (M : ℝ) := by
-    rw [le_div_iff₀ hMpos]; rw [le_div_iff₀ hx0] at hMle; linarith
-  exact ⟨hxM, by rw [wh, if_pos hxM]; ring⟩
+`toNat_floor_le`, `cat_lt_M_facts`, `cat_eq_M_facts` now live upstream in
+`BinPack.Harmonic.WeightBound` (imported here). -/
 
 /-! ## The crux: a completed bin of one category weighs `≥ 1` -/
 
