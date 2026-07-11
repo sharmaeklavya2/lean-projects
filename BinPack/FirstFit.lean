@@ -27,10 +27,6 @@ def insertFirst (size : β → α) (x : β) : List (List β) → List (List β)
 def firstFit (size : β → α) (l : List β) : Packing β :=
   l.foldl (fun bins x => insertFirst size x bins) []
 
-theorem firstFit_isPacking (size : β → α) (l : List β) :
-    IsPacking size l (firstFit size l) := by
-  sorry
-
 /-- Implementation view: the caller reads `.id` off the output bins.
 Required for first-fit, whose output order does not recover indices by position. -/
 abbrev firstFitItems : List (Item α) → Packing (Item α) := firstFit Item.size
@@ -39,5 +35,13 @@ abbrev firstFitItems : List (Item α) → Packing (Item α) := firstFit Item.siz
 set_option linter.style.nativeDecide false in
 example : firstFit (fun (i : ℕ) => (i : ℚ) / 10) [6, 7, 4, 3]
     = [[6, 4], [7, 3]] := by native_decide
+
+/-! ## Proof that `firstFit` produces a valid packing -/
+
+omit [IsStrictOrderedRing α] in
+/-- First-fit produces a valid packing on any well-formed instance. -/
+theorem firstFit_isPacking (size : β → α) (l : List β) (hl : ValidInput size l) :
+    IsPacking size l (firstFit size l) := by
+  sorry
 
 end
