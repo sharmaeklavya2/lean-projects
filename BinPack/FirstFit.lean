@@ -117,12 +117,11 @@ theorem foldl_insertFirst_fits (size : β → α) (l : List β) (acc : List (Lis
 
 /-- First-fit produces a valid packing on any well-formed instance. -/
 theorem firstFit_isPacking (size : β → α) (l : List β) (hl : ValidInput size l) :
-    IsPacking size l (firstFit size l) where
-  perm := by
-    have := foldl_insertFirst_flatten_perm size l []
+    IsPacking size l (firstFit size l) := by
+  refine ⟨?_, ?_⟩
+  · have := foldl_insertFirst_flatten_perm size l []
     simpa [firstFit] using this
-  fits := by
-    have := foldl_insertFirst_fits size l [] (by simp) (fun x hx => (hl x hx).2)
+  · have := foldl_insertFirst_fits size l [] (by simp) (fun x hx => (hl x hx).2)
     simpa [firstFit] using this
 
 end
