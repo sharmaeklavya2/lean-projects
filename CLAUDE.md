@@ -23,6 +23,14 @@ When unsure whether a lemma/identifier exists or what it's called, grep the sour
 * **Lean core** (`Init`, core tactics) → `~/.elan/toolchains/*/src/lean/` (home-relative glob; don't hardcode the version — it derives from `/workspace/lean-toolchain`).
 * Recipe: `grep -rn "pattern" --include=*.lean <pkg-dir>` (add `-h` to drop filenames). Point grep at the specific package dir; never scan broadly (no `find /`, `find ~`).
 
+# Reading Lean Files
+
+`scripts/lean-sig.py FILE.lean [FILE.lean …]` prints a Lean file with tactic proofs stripped: every `theorem`/`lemma`/`example` collapses to its signature followed by `:= by sorry /- proof omitted -/`, while `def`/`abbrev`/`instance`/`structure`/`inductive` bodies, docstrings, attributes, `variable`s, imports, and comments are kept verbatim. (Term-mode proofs — `:= <term>`, no `by` — are left intact, since they're usually short.) The output is still syntactically valid Lean.
+
+* **Rationale.** Proofs are often long and rarely relevant when you only need to learn a file's *definitions and theorem statements* (its API surface); reading them raw floods context. Decide per task: if you need the statements/definitions, read via `lean-sig.py`; if you actually need to understand or modify a proof, read the file directly.
+
+* **When explicitly asked to explore a project or subdirectory** (e.g. "explore `BinPack/Harmonic/`"): list its files recursively (`git ls-files 'BinPack/Harmonic/*.lean'` — path scopes it, `*` recurses, gitignored files excluded) and read the `.lean` files via `lean-sig.py`.
+
 # Imports
 
 * Prefer targeted imports (e.g. `import Mathlib.Data.Real.Basic`, `import Mathlib.Tactic.Linarith`) over whole-library `import Mathlib`. `import Mathlib` loads ~1681 MB olean / 8095 modules (~1 min build); a targeted closure is far smaller (e.g. BinPack.lean ~271 MB → ~14s), keeping build-checking viable. On an "Unknown constant", grep `.lake/packages/mathlib` for the lemma's declaring module and add just that import. Statement generality (abstract typeclass vs concrete `ℝ`) usually doesn't change build time.

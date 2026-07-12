@@ -6,7 +6,9 @@
       "Bash(rg:*)",
       "Edit(/**/*.lean)",
       "Write(/**/*.lean)",
-      "Read(~/.elan/toolchains/**)"
+      "Read(~/.elan/toolchains/**)",
+      "Bash(python3 scripts/lean-sig.py:*)",
+      "Bash(./scripts/lean-sig.py:*)"
     ]
   },
   "outputStyle": "Explanatory",
