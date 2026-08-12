@@ -4,7 +4,7 @@ This directory is a personal monorepo of Lean 4 projects. Some of the projects u
 
 # About the Environment
 
-The project's directory is expected to be `/workspace` — absolute paths throughout this file (`/workspace/.lake/packages/…`, `/workspace/lean-toolchain`, etc.) assume it, and the shell starts there.
+The project's directory is expected to be `/workspace`. Absolute paths are used throughout this file (`/workspace/.lake/packages/…`, `/workspace/lean-toolchain`, etc.). The shell starts in `/workspace`.
 
 The `.git` folder is read-only. Read-only commands (like `git status`, `git log`, `git diff`) are fine. Commands that write (like `git commit`, `git checkout`, `git add`) will fail.
 
@@ -12,7 +12,7 @@ The `.git` folder is read-only. Read-only commands (like `git status`, `git log`
 
 # Building and Checking
 
-* Work in a tight edit-rebuild loop: after each change, rebuild the affected module (e.g. `lake build DataMktOligoHard.SpecialPoints`) before moving on. Rebuilds are incremental and typically take seconds.
+* Work in a tight edit-rebuild loop: after each change, rebuild the affected module (e.g. `lake build <ModuleName>`) before moving on. Rebuilds are incremental and typically take seconds.
 * For scratch work / `#print axioms`, put it in `AiScratch.lean` and run `lake build AiScratch`. Its `#print axioms` output appears as `info:` lines.
 
 # Finding Lemmas and APIs
@@ -29,11 +29,11 @@ When unsure whether a lemma/identifier exists or what it's called, grep the sour
 
 * **Rationale.** Proofs are often long and rarely relevant when you only need to learn a file's *definitions and theorem statements* (its API surface); reading them raw floods context. Decide per task: if you need the statements/definitions, read via `lean-sig.py`; if you actually need to understand or modify a proof, read the file directly.
 
-* **When explicitly asked to explore a project or subdirectory** (e.g. "explore `BinPack/Harmonic/`"): list its files recursively (`git ls-files 'BinPack/Harmonic/*.lean'` — path scopes it, `*` recurses, gitignored files excluded) and read the `.lean` files via `lean-sig.py`.
+* **When explicitly asked to explore a project or subdirectory** (e.g. "explore `SimpleExamples`"): list its files recursively (`git ls-files 'SimpleExamples/*.lean'` — path scopes it, `*` recurses, gitignored files excluded) and read the `.lean` files via `lean-sig.py`.
 
 # Imports
 
-* Prefer targeted imports (e.g. `import Mathlib.Data.Real.Basic`, `import Mathlib.Tactic.Linarith`) over whole-library `import Mathlib`. `import Mathlib` loads ~1681 MB olean / 8095 modules (~1 min build); a targeted closure is far smaller (e.g. BinPack.lean ~271 MB → ~14s), keeping build-checking viable. On an "Unknown constant", grep `.lake/packages/mathlib` for the lemma's declaring module and add just that import. Statement generality (abstract typeclass vs concrete `ℝ`) usually doesn't change build time.
+* Prefer targeted imports (e.g. `import Mathlib.Data.Real.Basic`, `import Mathlib.Tactic.Linarith`) over whole-library `import Mathlib`. `import Mathlib` loads ~1681 MB olean / 8095 modules (~1 min build); a targeted closure is far smaller (typically ~300 MB, ~15s), keeping build-checking viable. On an "Unknown constant", grep `.lake/packages/mathlib` for the lemma's declaring module and add just that import. Statement generality (abstract typeclass vs concrete `ℝ`) usually doesn't change build time.
 * **`ℤ`/`ℕ` need Mathlib.** In Mathlib-free files `ℤ` and `ℕ` are undefined (Mathlib-only notation; core carries only a `@[suggest_for …]` hint) — use `Int`/`Nat`, or add `notation "ℤ" => Int` / `notation "ℕ" => Nat`. `autoImplicit` masks the mistake by auto-binding the glyph as a phantom type variable; the error then surfaces later as `failed to synthesize HMul/OfNat`. `set_option autoImplicit false` exposes it immediately as `Unknown identifier`.
 
 # Running Commands and Permissions
