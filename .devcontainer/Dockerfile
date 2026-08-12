@@ -2,8 +2,11 @@ FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Change system encoding from latin1 to UTF-8 (matters for vim)
+ENV LANG=C.utf8
+
 RUN apt-get update && apt-get install -y \
-    curl git build-essential \
+    curl git build-essential vim-tiny \
     nodejs npm python3 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -19,5 +22,7 @@ RUN npm install -g @anthropic-ai/claude-code
 
 # Disable git credential helper to prevent credential leakage into the container
 RUN git config --global credential.helper ""
+
+COPY vimrc /root/.vimrc
 
 WORKDIR /workspace
