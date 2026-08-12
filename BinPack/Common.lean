@@ -1,7 +1,7 @@
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Algebra.Order.BigOperators.Group.List
 
 @[expose] public section

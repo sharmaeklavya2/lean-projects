@@ -1,7 +1,7 @@
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # Data-market oligopoly: inapproximability of approximate Nash equilibria

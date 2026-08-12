@@ -1,7 +1,7 @@
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Floor.Ring
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
