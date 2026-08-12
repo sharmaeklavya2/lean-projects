@@ -309,7 +309,7 @@ theorem harmonic_bound_helper (M i t : ℕ) (y : List ℝ)
       have hrawk : rawcat (y[k]'(by omega)) = syl (k + 1) := ht3 k hk
       have := size_gt (y[k]'(by omega)) (hyb _ (List.getElem_mem _))
         (hyle _ (List.getElem_mem _)) (syl (k + 1)) hrawk
-      push_cast at this ⊢; linarith
+      linarith
     -- Suffix size `≤ 1/syl(t+1)`.
     have hT2simp : (T2 t : ℝ) = 1 - 1 / ((syl (t + 1)) : ℝ) := by
       have h := T2_simp t

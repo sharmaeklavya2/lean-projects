@@ -139,11 +139,11 @@ theorem μ_eq_inf_z (h : Constraints α β n) {p q : ℝ}
   unfold μ
   congr 1
   ext m
-  simp only [Set.mem_setOf_eq, Set.mem_image, Set.mem_Icc]
+  simp only [Set.mem_ofPred_eq, Set.mem_image, Set.mem_Icc]
   constructor
   · rintro ⟨r1, r2, hmem, hm⟩
     rw [hV] at hmem
-    simp only [Set.mem_setOf_eq] at hmem
+    simp only [Set.mem_ofPred_eq] at hmem
     obtain ⟨hle1, hle2, hle3, hle4, hsum⟩ := hmem
     refine ⟨(r1 - r1lo β n p q) / (d β n p q), ⟨?_, ?_⟩, ?_⟩
     · exact div_nonneg (by linarith) hdpos.le
@@ -159,7 +159,7 @@ theorem μ_eq_inf_z (h : Constraints α β n) {p q : ℝ}
     have hzd_nonneg : 0 ≤ z * d β n p q := mul_nonneg hz0 hdpos.le
     refine ⟨r1c β n p q z, r2c β n p q z, ?_, ?_⟩
     · rw [hV]
-      simp only [Set.mem_setOf_eq]
+      simp only [Set.mem_ofPred_eq]
       refine ⟨?_, ?_, ?_, ?_, ?_⟩
       · rw [r1c]; linarith
       · rw [r1c]; linarith [hd_eq]

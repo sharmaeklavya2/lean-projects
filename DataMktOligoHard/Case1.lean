@@ -56,7 +56,7 @@ theorem μ_eq_max_case1 (h : Constraints α β n) {p q : ℝ}
             = {max (ratio (cap α β n) (r1star α β n q) (r1lo β n p q))
                    (ratio (cap α β n) (r2star α n p) (r2hi n p q))} := by
     rw [hV]; ext m
-    simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, Prod.mk.injEq]
+    simp only [Set.mem_ofPred_eq, Set.mem_singleton_iff, Prod.mk.injEq]
     constructor
     · rintro ⟨r1, r2, ⟨rfl, rfl⟩, rfl⟩; rfl
     · rintro rfl; exact ⟨_, _, ⟨rfl, rfl⟩, rfl⟩

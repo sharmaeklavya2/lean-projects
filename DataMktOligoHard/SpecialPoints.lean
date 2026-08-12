@@ -299,7 +299,7 @@ public theorem μ_p1_q1 (h : Constraints α β n) :
             = {μ1 α β n} := by
     rw [hV]
     ext m
-    simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, Prod.mk.injEq]
+    simp only [Set.mem_ofPred_eq, Set.mem_singleton_iff, Prod.mk.injEq]
     constructor
     · rintro ⟨r1, r2, ⟨rfl, rfl⟩, rfl⟩
       rw [ratio1_p1_q1 h, ratio2_p1_q1 h, max_self]
@@ -488,7 +488,7 @@ public theorem μ_p2_q2 (h : Constraints α β n) :
             = {μ2 α β n} := by
     rw [hV]
     ext m
-    simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, Prod.mk.injEq]
+    simp only [Set.mem_ofPred_eq, Set.mem_singleton_iff, Prod.mk.injEq]
     constructor
     · rintro ⟨r1, r2, ⟨rfl, rfl⟩, rfl⟩
       rw [ratio1_β_q2 h, ratio2_β_q2 h, max_self]
@@ -735,7 +735,7 @@ public theorem μ_p3_q3 (h : Constraints α β n) :
             = {μ3 α β n} := by
     rw [hV]
     ext m
-    simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, Prod.mk.injEq]
+    simp only [Set.mem_ofPred_eq, Set.mem_singleton_iff, Prod.mk.injEq]
     constructor
     · rintro ⟨r1, r2, ⟨rfl, rfl⟩, rfl⟩
       rw [ratio1_p3_q1 h, ratio2_p3_q1 h, max_self]
