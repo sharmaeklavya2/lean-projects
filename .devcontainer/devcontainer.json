@@ -14,8 +14,9 @@
   "mounts": [
     "source=${localWorkspaceFolder}/.git,target=/workspace/.git,type=bind,readonly",
     "source=lean-elan,target=/root/.elan,type=volume",
-    "source=lean-projects-lake,target=/workspace/.lake,type=volume",
-    "source=claude-auth,target=/root/.claude,type=volume"
+    "source=lean-mathlib-cache,target=/root/.cache/mathlib,type=volume",
+    "source=claude-auth,target=/root/.claude,type=volume",
+    "source=lake-${localWorkspaceFolderBasename},target=/workspace/.lake,type=volume"
   ],
   "customizations": {
     "vscode": {
