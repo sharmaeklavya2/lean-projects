@@ -1,2 +1,6 @@
+import AxiomCheck
 import SimpleExamples.OddTimesOddIsOdd
 import SimpleExamples.FullBinTree
+
+#check_axioms odd_times_odd_is_odd
+#check_axioms FullBinTree.size_ub_height
