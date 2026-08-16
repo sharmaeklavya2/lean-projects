@@ -1,4 +1,5 @@
 name = "EklavyaLeanProjects"
+defaultTargets = ["AxiomCheck", "SimpleExamples", "Anki", "BinTree", "BinPack", "DataMktOligoHard"]
 
 [leanOptions]
 pp.unicode.fun = true  # pretty-prints `fun a ↦ b`
@@ -14,8 +15,6 @@ rev = "v4.33.0"
 
 [[lean_lib]]
 name = "AxiomCheck"
-[[lean_lib]]
-name = "Root"
 [[lean_lib]]
 name = "Scratch"
 [[lean_lib]]
