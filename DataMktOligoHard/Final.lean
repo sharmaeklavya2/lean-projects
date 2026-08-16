@@ -17,7 +17,7 @@ variable (α β n : ℝ)
 nonnegative price pair has `μ(p,q) ≥ cStar := min_i μᵢ`, so no `(cStar - ε)`-NE exists.
 Together with the `μ_pᵢ_qᵢ` lemmas (which show the bound is attained), this gives
 `inf_{p,q} μ = cStar`. -/
-theorem cStar_le_μ (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
+public theorem cStar_le_μ (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     cStar α β n ≤ μ α β n p q ∧ μ_at_special α β n := by
   refine ⟨?_, μ_p1_q1 h, μ_p2_q2 h, μ_p3_q3 h, μ_p4_q4 h⟩
   unfold cStar
@@ -41,7 +41,7 @@ theorem cStar_le_μ (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0
 for `n = 10` poor buyers and `(α, β) = (0.733157n, 0.860399n)`, Constraints c1–c4 hold
 and `cStar > 1.363964`. Combined with `cStar_le_μ`, this witnesses that no
 `1.363964`-approximate Nash equilibrium exists. -/
-theorem cStar_specific {α β n : ℝ} (hn : n = 10)
+public theorem cStar_specific {α β n : ℝ} (hn : n = 10)
   (hα : α = 0.733157 * n) (hβ : β = 0.860399 * n)
   : Constraints α β n ∧ 1.363964 < cStar α β n := by
   subst hn hα hβ
