@@ -1,4 +1,4 @@
-def Odd (n: Int) : Prop := ∃ k, n = 2 * k + 1
+private def Odd (n: Int) : Prop := ∃ k, n = 2 * k + 1
 
 theorem simplify_product (a b : Int)
     : (2 * a + 1) * (2 * b + 1)
