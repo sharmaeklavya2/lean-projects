@@ -116,4 +116,12 @@ public theorem μ1_le_cap (h : Constraints α β ν) : μ1 α β ν ≤ cap α �
   -- goal: `ĉ₁ ≤ (αβ + ν)·p₁`. Since `p₁ ≥ 1/2`, RHS `≥ (αβ+ν)/2 = αβ/2 + ν/2 > ĉ₁`.
   nlinarith [mul_le_mul_of_nonneg_left hhalf hcap.le, hchat, hν]
 
+/-- `c* ≤ cap`, since `c*` is a minimum of the `μᵢ`, each of which is at most `cap`.
+
+This is what makes `cap` invisible to users of the main result: any `c < c*` is
+automatically within the range where the `x/0 = cap` convention is sound. -/
+public theorem cStar_le_cap (h : Constraints α β ν) : cStar α β ν ≤ cap α β ν := by
+  unfold cStar
+  exact le_trans (min_le_left _ _) (μ1_le_cap h)
+
 end DataMktOligo.MuOpt
