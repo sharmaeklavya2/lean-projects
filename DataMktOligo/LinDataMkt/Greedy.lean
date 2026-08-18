@@ -43,8 +43,21 @@ def Saturated (x : Fin m → ℝ) : Prop :=
   cost p x = mkt.b i ∨ ∀ j, 0 < mkt.τ i j → x j = 1
 
 /-- **Characterization of demand.** An affordable bundle is utility-maximizing exactly when
-it admits no improving swap and leaves no idle budget. -/
-public theorem isDemand_iff (hp : ∀ j, 0 < p j) (x : Fin m → ℝ) :
+it admits no improving swap and leaves no idle budget.
+
+Prices need only be *nonnegative*; what the proof needs instead is a *positive budget*.
+Both hypotheses are necessary. With a negative price the buyer is paid to take a dataset
+and `cost` stops being monotone. With `b i = 0` the characterization is false: one buyer,
+one free dataset (`p = 0`) of value `1`, and `x = ![1/2]` satisfies all three conditions on
+the right — `Saturated` via `cost p x = 0 = b i` — yet buying the whole dataset is
+affordable and strictly better.
+
+Positive budget rules that out: if a valuable dataset `j` is free and `x j < 1`, then
+`Saturated`'s second disjunct fails outright, while its first gives `cost p x = b i > 0`,
+so some `k` has `p k > 0` and `x k > 0`, and `NoImprovingSwap` on `(j, k)` demands
+`τ i j * p k ≤ τ i k * p j = 0` — impossible. Hence free valuable datasets are fully
+bought, and the usual exchange argument applies to the rest. -/
+public theorem isDemand_iff (hp : IsNonnegVector p) (hb : 0 < mkt.b i) (x : Fin m → ℝ) :
     IsDemand mkt p i x ↔
       x ∈ affordableSet mkt p i ∧ NoImprovingSwap mkt p i x ∧ Saturated mkt p i x := by
   sorry
@@ -54,16 +67,23 @@ much of `σ 0` as she can, then as much of `σ 1` as she can, and so on, skippin
 no value to her.
 
 The `min 1 (max 0 ·)` clamps the purchase to `[0,1]`, and the subtracted sum is what she has
-already spent on datasets earlier in the order. -/
+already spent on datasets earlier in the order.
+
+A dataset of no value is skipped. A *free* dataset of positive value is taken in full: the
+division branch would give the wrong answer there, since Lean's `x / 0 = 0` would make the
+buyer skip a dataset that costs her nothing. -/
 def IsGreedy (σ : Equiv.Perm (Fin m)) (x : Fin m → ℝ) : Prop :=
   ∀ j, x (σ j) =
     if 0 < mkt.τ i (σ j) then
-      min 1 (max 0 ((mkt.b i - ∑ k ∈ Finset.univ.filter (· < j), p (σ k) * x (σ k)) / p (σ j)))
+      if p (σ j) = 0 then 1
+      else
+        min 1 (max 0
+          ((mkt.b i - ∑ k ∈ Finset.univ.filter (· < j), p (σ k) * x (σ k)) / p (σ j)))
     else 0
 
 /-- **Greedy is optimal.** If `σ` orders the datasets by non-increasing bang-per-buck, then
 the greedy bundle for `σ` is a demand. -/
-public theorem isDemand_of_isGreedy (hp : ∀ j, 0 < p j) (σ : Equiv.Perm (Fin m))
+public theorem isDemand_of_isGreedy (hp : IsNonnegVector p) (σ : Equiv.Perm (Fin m))
     (hσ : ∀ j k, j ≤ k → bpbLE mkt p i (σ k) (σ j))
     (x : Fin m → ℝ) (hx : IsGreedy mkt p i σ x) :
     IsDemand mkt p i x := by

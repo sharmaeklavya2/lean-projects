@@ -49,6 +49,9 @@ if we change the definition of unitCube. -/
 theorem mem_unitCube_iff {m : ℕ} {z : Fin m → ℝ} :
     z ∈ unitCube m ↔ ∀ j, z j ∈ Set.Icc (0 : ℝ) 1 := Iff.rfl
 
+/-- All components of the vector are nonnegative. Used to say that prices are nonnegative. -/
+def IsNonnegVector {m : ℕ} (p : Fin m → ℝ) : Prop := ∀ j, 0 ≤ p j
+
 variable {n m : ℕ} (mkt : Instance n m) (p : Fin m → ℝ) (i : Fin n)
 
 /-- Buyer `i`'s utility for a bundle `z`. -/

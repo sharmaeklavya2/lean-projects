@@ -48,9 +48,6 @@ if we change the definition of V. -/
 theorem mem_V_iff {r : Fin m → ℝ} :
     r ∈ V mkt p ↔ ∃ x, IsDemandProfile mkt p x ∧ r = revenue mkt p x := Iff.rfl
 
-/-- All components of the vector are nonnegative. Used to say that prices are nonnegative. -/
-def IsNonnegVector : Prop := ∀ j, 0 ≤ p j
-
 /-! ### The pricing game -/
 
 variable (j : Fin m)
