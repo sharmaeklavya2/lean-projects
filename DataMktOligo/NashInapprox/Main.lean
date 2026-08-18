@@ -3,16 +3,16 @@ module
 public import DataMktOligo.LinDataMkt.Revenue
 public import DataMktOligo.NashInapprox.Instance
 public import DataMktOligo.MuOpt.Constants
-import DataMktOligo.NashInapprox.Equilibrium
-import DataMktOligo.MuOpt.Final
+import DataMktOligo.NashInapprox.Bridge
+import DataMktOligo.MuOpt.Main
 import DataMktOligo.MuOpt.Cap
 import Mathlib.Tactic.NormNum
 
 /-!
 # Main result: no approximate Nash equilibrium exists
 
-Composing the bridge of `DataMktOligo.NashInapprox.Equilibrium` with the optimization
-result `DataMktOligo.MuOpt.cStar_le_μ`, we get that the two-seller instance admits no
+Composing the bridge of `DataMktOligo.NashInapprox.Bridge` with the optimization
+result `DataMktOligo.MuOpt.Main.cStar_le_μ`, we get that the two-seller instance admits no
 `c`-approximate Nash equilibrium for **any** `c` below `c*`.
 -/
 

@@ -1,6 +1,6 @@
 module
 
-public import DataMktOligo.MuOpt.Defs
+public import DataMktOligo.MuOpt.Revenue
 public import DataMktOligo.MuOpt.ParamConstraints
 public import DataMktOligo.MuOpt.Constants
 import Mathlib.Tactic.LinearCombination

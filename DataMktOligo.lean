@@ -1,7 +1,7 @@
 module
 
 import AxiomCheck
-import DataMktOligo.MuOpt.Final
+import DataMktOligo.MuOpt.Main
 import DataMktOligo.MuOpt.CstarSpecific
 import DataMktOligo.NashInapprox.Main
 

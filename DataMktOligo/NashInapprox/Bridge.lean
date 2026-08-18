@@ -2,7 +2,7 @@ module
 
 public import DataMktOligo.LinDataMkt.Revenue
 public import DataMktOligo.LinDataMkt.Greedy
-public import DataMktOligo.MuOpt.Defs
+public import DataMktOligo.MuOpt.Revenue
 public import DataMktOligo.NashInapprox.Instance
 import DataMktOligo.NashInapprox.Demand
 import Mathlib.Algebra.BigOperators.Fin

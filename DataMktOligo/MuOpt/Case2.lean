@@ -1,10 +1,10 @@
 module
 
-public import DataMktOligo.MuOpt.Defs
+public import DataMktOligo.MuOpt.Revenue
 public import DataMktOligo.MuOpt.ParamConstraints
 public import DataMktOligo.MuOpt.Constants
 import DataMktOligo.MuOpt.Cap
-import DataMktOligo.MuOpt.SpecialPoints
+import DataMktOligo.MuOpt.SpecialPointsProps
 
 /-!
 # Case 2 of the main reduction (case2.tex)
