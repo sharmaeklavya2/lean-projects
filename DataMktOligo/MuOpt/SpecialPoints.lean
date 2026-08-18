@@ -1,6 +1,8 @@
 module
 
-public import DataMktOligoHard.Defs
+public import DataMktOligo.MuOpt.Defs
+public import DataMktOligo.MuOpt.ParamConstraints
+public import DataMktOligo.MuOpt.Constants
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -26,7 +28,7 @@ These lemmas feed the next 4 subsections and the main claim (`cStar_le_μ`, in
   unneeded downstream.
 -/
 
-namespace DataMktOligoHard
+namespace DataMktOligo.MuOpt
 
 variable {α β ν : ℝ}
 
@@ -756,4 +758,4 @@ theorem thm_p3 (h : Constraints α β ν) :
     μ α β ν (p3 α β ν) (q3 α β ν) = μ3 α β ν :=
   ⟨⟨p3_gt_alpha_q1 h, p3_lt_alpha h⟩, μ_p3_q3 h⟩
 
-end DataMktOligoHard
+end DataMktOligo.MuOpt

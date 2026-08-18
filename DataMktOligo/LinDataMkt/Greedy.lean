@@ -1,6 +1,6 @@
 module
 
-public import LinDataMkt.Defs
+public import DataMktOligo.LinDataMkt.Defs
 
 /-!
 # Demand as fractional knapsack
@@ -12,15 +12,16 @@ of *bang-per-buck* `τ i j / p j`.
 
 ## Main results
 
-* `LinDataMkt.isDemand_iff`: an affordable bundle is a demand iff it admits no improving
-  swap and leaves no idle budget. This is a local, permutation-free characterization.
-* `LinDataMkt.isDemand_of_isGreedy`: consuming greedily in bang-per-buck order, in the
-  sense of `LinDataMkt.IsGreedy`, produces a demand. This is the paper's phrasing.
+* `DataMktOligo.LinDataMkt.isDemand_iff`: an affordable bundle is a demand iff it admits
+  no improving swap and leaves no idle budget. This is a local, permutation-free
+  characterization.
+* `DataMktOligo.LinDataMkt.isDemand_of_isGreedy`: consuming greedily in bang-per-buck order, in the
+  sense of `DataMktOligo.LinDataMkt.IsGreedy`, produces a demand. This is the paper's phrasing.
 -/
 
 @[expose] public section
 
-namespace LinDataMkt
+namespace DataMktOligo.LinDataMkt
 
 variable {n m : ℕ} (mkt : Instance n m) (p : Fin m → ℝ) (i : Fin n)
 
@@ -68,4 +69,4 @@ public theorem isDemand_of_isGreedy (hp : ∀ j, 0 < p j) (σ : Equiv.Perm (Fin 
     IsDemand mkt p i x := by
   sorry
 
-end LinDataMkt
+end DataMktOligo.LinDataMkt

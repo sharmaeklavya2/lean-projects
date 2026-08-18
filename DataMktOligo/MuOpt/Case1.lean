@@ -1,8 +1,10 @@
 module
 
-public import DataMktOligoHard.Defs
-import DataMktOligoHard.SpecialPoints
-import DataMktOligoHard.Cap
+public import DataMktOligo.MuOpt.Defs
+public import DataMktOligo.MuOpt.ParamConstraints
+public import DataMktOligo.MuOpt.Constants
+import DataMktOligo.MuOpt.SpecialPoints
+import DataMktOligo.MuOpt.Cap
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -13,7 +15,7 @@ In this region `V(p,q)` is the singleton `{(r₁⁻, r₂⁺)}`, so
 `μ(p,q) = max(r₁*(q)/r₁⁻, r₂*(p)/r₂⁺)`.
 -/
 
-namespace DataMktOligoHard
+namespace DataMktOligo.MuOpt
 
 variable {α β ν : ℝ}
 
@@ -349,4 +351,4 @@ public theorem thm_1 (h : Constraints α β ν) {p q : ℝ}
     · right ; exact thm_1_2 h hq hpq1 hpaq (le_of_not_ge hpα)
 
 
-end DataMktOligoHard
+end DataMktOligo.MuOpt

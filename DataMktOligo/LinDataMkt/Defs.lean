@@ -14,15 +14,16 @@ an `x` fraction of a dataset priced `p` costs `p * x`.
 
 ## Main definitions
 
-* `LinDataMkt.Instance`: a data market instance.
-* `LinDataMkt.util`: a buyer's (linear) utility for a bundle.
-* `LinDataMkt.affordableSet`: the bundles a buyer is permitted to buy at given prices.
-* `LinDataMkt.IsDemand`: a buyer's demand, i.e. an affordable utility-maximizing bundle.
+* `DataMktOligo.LinDataMkt.Instance`: a data market instance.
+* `DataMktOligo.LinDataMkt.util`: a buyer's (linear) utility for a bundle.
+* `DataMktOligo.LinDataMkt.affordableSet`: the bundles a buyer is permitted to buy at given prices.
+* `DataMktOligo.LinDataMkt.IsDemand`: a buyer's demand, i.e. an affordable
+  utility-maximizing bundle.
 -/
 
 @[expose] public section
 
-namespace LinDataMkt
+namespace DataMktOligo.LinDataMkt
 
 /-- A data marketplace instance with `n` buyers and `m` sellers.
 
@@ -85,4 +86,4 @@ theorem util_nonneg_of_isDemand {z : Fin m → ℝ} (hz : IsDemand mkt p i z) :
     0 ≤ util mkt i z := by
   simpa [util_zero] using hz.2 0 (zero_mem_affordableSet mkt p i)
 
-end LinDataMkt
+end DataMktOligo.LinDataMkt

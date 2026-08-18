@@ -1,7 +1,7 @@
 name = "EklavyaLeanProjects"
 defaultTargets = [
   "AxiomCheck", "SimpleExamples", "Anki", "BinTree", "BinPack",
-  "DataMktOligoHard", "LinDataMkt",
+  "DataMktOligo",
 ]
 
 [leanOptions]
@@ -33,6 +33,4 @@ name = "BinTree"
 [[lean_lib]]
 name = "BinPack"
 [[lean_lib]]
-name = "DataMktOligoHard"
-[[lean_lib]]
-name = "LinDataMkt"
+name = "DataMktOligo"

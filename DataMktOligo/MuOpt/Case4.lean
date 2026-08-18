@@ -1,7 +1,9 @@
 module
 
-public import DataMktOligoHard.Defs
-import DataMktOligoHard.SpecialPoints
+public import DataMktOligo.MuOpt.Defs
+public import DataMktOligo.MuOpt.ParamConstraints
+public import DataMktOligo.MuOpt.Constants
+import DataMktOligo.MuOpt.SpecialPoints
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -21,7 +23,7 @@ infimum. We reuse `Basic`'s revenue bounds `r1lo/r1hi/r2lo/r2hi` (the paper's
 -/
 
 
-namespace DataMktOligoHard
+namespace DataMktOligo.MuOpt
 
 /-! ## Total revenue and gap on `p + q ≥ 1` (revenue.tex observation) -/
 
@@ -562,4 +564,4 @@ public theorem thm_4 (h : Constraints α β ν) {p q : ℝ}
   rw [μ_eq_inf_z h hpaq hpq1, (thm_4_1 h hpaq hpq1).1]
   exact thm_4_2 h hpaq hpq1
 
-end DataMktOligoHard
+end DataMktOligo.MuOpt

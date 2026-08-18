@@ -1,46 +1,15 @@
 module
 
-public import DataMktOligoHard.Defs
-import DataMktOligoHard.SpecialPoints
-import DataMktOligoHard.Case1
-import DataMktOligoHard.Case2
-import DataMktOligoHard.Case3
-import DataMktOligoHard.Case4
+public import DataMktOligo.MuOpt.ParamConstraints
+public import DataMktOligo.MuOpt.Constants
 
 public section
 
-namespace DataMktOligoHard
+namespace DataMktOligo.MuOpt
 
 variable (α β ν : ℝ)
 
-/-- **Main reduction** (thm:pq-redn, lower bound): under Constraints c1–c4, every
-nonnegative price pair has `μ(p,q) ≥ cStar := min_i μᵢ`, so no `(cStar - ε)`-NE exists.
-Together with the `μ_pᵢ_qᵢ` lemmas (which show the bound is attained), this gives
-`inf_{p,q} μ = cStar`. -/
-public theorem cStar_le_μ (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
-    cStar α β ν ≤ μ α β ν p q ∧ μ_at_special α β ν := by
-  refine ⟨?_, μ_p1_q1 h, μ_p2_q2 h, μ_p3_q3 h, μ_p4_q4 h⟩
-  unfold cStar
-  simp only [min_le_iff]
-  by_cases hpq : p + q ≤ 1
-  · have h3 := thm_3 h hp hq hpq
-    simp only [min_le_iff] at h3
-    tauto
-  · push Not at hpq
-    rcases lt_trichotomy (α * q) p with hpaq | hpaq | hpaq
-    · have h1 := thm_1 h hq hpq.le hpaq
-      simp only [min_le_iff] at h1
-      tauto
-    · have h4 := thm_4 h (hpaq.symm) hpq
-      simp only [min_le_iff] at h4
-      tauto
-    · have h2 := thm_2 h hp hq hpaq (hpq.le)
-      left ; assumption
-
-/-- **Headline instability bound** at a near-optimal parameter choice:
-for `ν = 10` poor buyers and `(α, β) = (0.733157ν, 0.860399ν)`, Constraints c1–c4 hold
-and `cStar > 1.363964`. Combined with `cStar_le_μ`, this witnesses that no
-`1.363964`-approximate Nash equilibrium exists. -/
+/-- Evaluating cStar for a particular (α, β, ν). -/
 public theorem cStar_specific {α β ν : ℝ} (hν : ν = 10)
   (hα : α = 0.733157 * ν) (hβ : β = 0.860399 * ν)
   : Constraints α β ν ∧ 1.363964 < cStar α β ν := by
@@ -78,4 +47,4 @@ public theorem cStar_specific {α β ν : ℝ} (hν : ν = 10)
     · -- μ₄ = 1 + βν/L₂ (no square root)
       norm_num [μ4, L2]
 
-end DataMktOligoHard
+end DataMktOligo.MuOpt

@@ -1,30 +1,32 @@
 module
 
-public import LinDataMkt.Defs
+public import DataMktOligo.LinDataMkt.Defs
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 
 /-!
 # Revenue and the sellers' pricing game
 
 Given prices, each buyer picks some element of her demand correspondence, and the sellers
-collect revenue. Since demand is multi-valued, so is revenue: `LinDataMkt.V p` is the set of
-revenue vectors attainable at prices `p`, one for each way the buyers break ties.
+collect revenue. Since demand is multi-valued, so is revenue: `DataMktOligo.LinDataMkt.V p`
+is the set of revenue vectors attainable at prices `p`, one for each way buyers break ties.
 
 The sellers are thereby engaged in a pricing game, whose approximate equilibria are
-`LinDataMkt.IsApproxNE`.
+`DataMktOligo.LinDataMkt.IsApproxNE`.
 
 ## Main definitions
 
-* `LinDataMkt.revenue`: sellers' revenues from a profile of purchases.
-* `LinDataMkt.V`: the set of valid revenue vectors at given prices.
-* `LinDataMkt.feasibleRevenues`: the set of revenue vectors attainable at *some* prices.
-* `LinDataMkt.bestResponseRevenue`: the best revenue a seller can get by unilaterally repricing.
-* `LinDataMkt.IsApproxNE`: approximate Nash equilibrium of the pricing game.
+* `DataMktOligo.LinDataMkt.revenue`: sellers' revenues from a profile of purchases.
+* `DataMktOligo.LinDataMkt.V`: the set of valid revenue vectors at given prices.
+* `DataMktOligo.LinDataMkt.feasibleRevenues`: the set of revenue vectors attainable at
+  *some* prices.
+* `DataMktOligo.LinDataMkt.bestResponseRevenue`: the best revenue a seller can get by
+  unilaterally repricing.
+* `DataMktOligo.LinDataMkt.IsApproxNE`: approximate Nash equilibrium of the pricing game.
 -/
 
 @[expose] public section
 
-namespace LinDataMkt
+namespace DataMktOligo.LinDataMkt
 
 variable {n m : ℕ} (mkt : Instance n m) (p : Fin m → ℝ)
 
@@ -133,4 +135,4 @@ theorem le_bestResponseRevenue_of_mem_V {r : Fin m → ℝ} (hp : IsNonnegVector
   refine le_csSup (bddAbove_deviationRevenues mkt p j hp) ⟨p j, hp j, r, ?_, rfl⟩
   simpa [Function.update_eq_self] using hr
 
-end LinDataMkt
+end DataMktOligo.LinDataMkt

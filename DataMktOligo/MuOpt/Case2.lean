@@ -1,8 +1,10 @@
 module
 
-public import DataMktOligoHard.Defs
-import DataMktOligoHard.Cap
-import DataMktOligoHard.SpecialPoints
+public import DataMktOligo.MuOpt.Defs
+public import DataMktOligo.MuOpt.ParamConstraints
+public import DataMktOligo.MuOpt.Constants
+import DataMktOligo.MuOpt.Cap
+import DataMktOligo.MuOpt.SpecialPoints
 
 /-!
 # Case 2 of the main reduction (case2.tex)
@@ -20,7 +22,7 @@ The `p = 0` and `p ≥ 1` corners (where a seller earns `0`) give `μ = cap` und
 `x/0` convention, but `μ₁ ≤ cap` (`μ1_le_cap`) so the sharp bound `μ₁ ≤ μ` holds there too.
 -/
 
-namespace DataMktOligoHard
+namespace DataMktOligo.MuOpt
 
 variable {α β ν : ℝ}
 
@@ -149,4 +151,4 @@ public theorem thm_2 (h : Constraints α β ν) {p q : ℝ}
             (by nlinarith [p1_pos h, mul_pos hα (by linarith [chat1_gt_one h] :
               (0:ℝ) < chat1 α β ν)] : (0:ℝ) ≤ p1 α β ν + chat1 α β ν * α)]
 
-end DataMktOligoHard
+end DataMktOligo.MuOpt

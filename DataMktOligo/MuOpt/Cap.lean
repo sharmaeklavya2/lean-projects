@@ -1,12 +1,14 @@
 module
 
-public import DataMktOligoHard.Defs
-import DataMktOligoHard.SpecialPoints
+public import DataMktOligo.MuOpt.Defs
+public import DataMktOligo.MuOpt.ParamConstraints
+public import DataMktOligo.MuOpt.Constants
+import DataMktOligo.MuOpt.SpecialPoints
 import Mathlib.Tactic.LinearCombination
 
 /-! ## The candidate values `μᵢ` are below the cap `α·β + ν` -/
 
-namespace DataMktOligoHard
+namespace DataMktOligo.MuOpt
 
 variable {α β ν : ℝ}
 
@@ -114,4 +116,4 @@ public theorem μ1_le_cap (h : Constraints α β ν) : μ1 α β ν ≤ cap α �
   -- goal: `ĉ₁ ≤ (αβ + ν)·p₁`. Since `p₁ ≥ 1/2`, RHS `≥ (αβ+ν)/2 = αβ/2 + ν/2 > ĉ₁`.
   nlinarith [mul_le_mul_of_nonneg_left hhalf hcap.le, hchat, hν]
 
-end DataMktOligoHard
+end DataMktOligo.MuOpt

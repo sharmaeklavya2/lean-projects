@@ -1,10 +1,12 @@
 module
 
-public import DataMktOligoHard.Defs
-import DataMktOligoHard.SpecialPoints
-import DataMktOligoHard.Cap
-import DataMktOligoHard.Case1
-import DataMktOligoHard.Case2
+public import DataMktOligo.MuOpt.Defs
+public import DataMktOligo.MuOpt.ParamConstraints
+public import DataMktOligo.MuOpt.Constants
+import DataMktOligo.MuOpt.SpecialPoints
+import DataMktOligo.MuOpt.Cap
+import DataMktOligo.MuOpt.Case1
+import DataMktOligo.MuOpt.Case2
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -28,7 +30,7 @@ side capped — `min cap (μ x₂ q) ≤ μ x₁ q` — which is honestly true (
 give `μ(x₁,q) ≥ cap ≥ min cap (μ x₂ q)`) and chains the same way downstream.
 -/
 
-namespace DataMktOligoHard
+namespace DataMktOligo.MuOpt
 
 variable {α β ν : ℝ}
 
@@ -374,4 +376,4 @@ public theorem thm_3 (h : Constraints α β ν) {p q : ℝ}
   -- combine with the capped domination `min cap (μ p̂ q̂) ≤ μ(p,q)`.
   exact le_trans (le_min hBcap hstar) hdom
 
-end DataMktOligoHard
+end DataMktOligo.MuOpt
