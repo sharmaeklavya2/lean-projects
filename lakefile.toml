@@ -1,5 +1,8 @@
 name = "EklavyaLeanProjects"
-defaultTargets = ["AxiomCheck", "SimpleExamples", "Anki", "BinTree", "BinPack", "DataMktOligoHard"]
+defaultTargets = [
+  "AxiomCheck", "SimpleExamples", "Anki", "BinTree", "BinPack",
+  "DataMktOligoHard", "LinDataMkt",
+]
 
 [leanOptions]
 pp.unicode.fun = true  # pretty-prints `fun a ↦ b`
@@ -31,3 +34,5 @@ name = "BinTree"
 name = "BinPack"
 [[lean_lib]]
 name = "DataMktOligoHard"
+[[lean_lib]]
+name = "LinDataMkt"
