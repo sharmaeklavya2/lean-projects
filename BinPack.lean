@@ -1,6 +1,9 @@
+module
+
 import BinPack.NextFit
 import BinPack.FirstFit
-import BinPack.Harmonic
+import BinPack.Harmonic.Correctness
+import BinPack.Harmonic.Approx
 import AxiomCheck
 
 section

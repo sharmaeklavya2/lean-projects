@@ -1,4 +1,6 @@
-import Lean.Elab.Command
+module
+
+public meta import Lean.Elab.Command
 
 /-!
 `#print axioms foo` reports its result as an *info* message, so it never fails a build.
@@ -12,14 +14,14 @@ outside the three standard axioms of classical Lean.
 open Lean Elab Command
 
 -- The three axioms of standard classical Lean/Mathlib.
-private def standardAxioms : List Name := [``propext, ``Classical.choice, ``Quot.sound]
+private meta def standardAxioms : List Name := [``propext, ``Classical.choice, ``Quot.sound]
 
 /-- `#check_axioms foo` succeeds silently if `foo` depends only on the standard
 classical axioms, and fails the build otherwise. -/
 syntax (name := checkAxiomsCmd) "#check_axioms " ident : command
 
 @[command_elab checkAxiomsCmd]
-def elabCheckAxioms : CommandElab := fun (stx : Syntax) => do
+public meta def elabCheckAxioms : CommandElab := fun (stx : Syntax) => do
   let ident := stx[1]
   -- `realizeGlobalConstWithInfos` resolves the name *and* registers a hover / go-to-definition link.
   let cs ← liftCoreM (realizeGlobalConstWithInfos ident)
