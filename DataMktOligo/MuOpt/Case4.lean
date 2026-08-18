@@ -7,31 +7,27 @@ import DataMktOligo.MuOpt.SpecialPointsProps
 import Mathlib.Tactic.LinearCombination
 
 /-!
-# Case 4: the knife-edge `p = α·q` and `p + q > 1` (case4.tex)
+# Case 4: the knife-edge `p = α·q` and `p + q > 1`
 
-On this region `V(p,q)` is a *segment*, not a singleton, so `μ` is a genuine
-infimum. We reuse `Basic`'s revenue bounds `r1lo/r1hi/r2lo/r2hi` (the paper's
-`r₁⁻,r₁⁺,r₂⁻,r₂⁺`) with the *same* `(p,q)` parameters, and only add:
+On this region `V(p,q)` is a *segment*, not a singleton, so `μ` is a genuine infimum.
+We define:
 
 * `sSum`, `d`: the sellers' total revenue and the common gap `r₁⁺-r₁⁻ = r₂⁺-r₂⁻`,
-  generalized to all of `p+q ≥ 1` (revenue.tex observation);
+  generalized to all of `p+q ≥ 1`;
 * `r1c/r2c`: the segment's revenues parametrized by `z ∈ [0,1]`;
-* `μz`: the paper's `μ(q,z)`, a reparametrization of `Basic.μ α β ν (α·q) q`;
+* `μz`: the paper's `μ(q,z)`, a reparametrization of `Revenue.μ α β ν (α·q) q`;
 * `zhat/zstar`: the minimizing `z`.
-
-## Status: fully proved (`thm_4` and all supporting lemmas are `sorry`-free).
 -/
-
 
 namespace DataMktOligo.MuOpt
 
-/-! ## Total revenue and gap on `p + q ≥ 1` (revenue.tex observation) -/
+/-! ## Total revenue and gap on `p + q ≥ 1` -/
 
-/-- Paper `s(q)`, generalized: the sellers' total revenue `min(p,β) + ν` on
-`p+q ≥ 1`. By the revenue.tex observation, `r₁⁻+r₂⁺ = r₁⁺+r₂⁻ = s`. -/
+/-- Paper's `s(q)`, generalized: the sellers' total revenue `min(p,β) + ν` on `p+q ≥ 1`.
+We have `r₁⁻+r₂⁺ = r₁⁺+r₂⁻ = s`. -/
 noncomputable def sSum (β ν p : ℝ) : ℝ := min p β + ν
 
-/-- Paper `d(q)`, generalized: the common gap `r₁⁺-r₁⁻ = r₂⁺-r₂⁻`. -/
+/-- Paper's `d(q)`, generalized: the common gap `r₁⁺-r₁⁻ = r₂⁺-r₂⁻`. -/
 noncomputable def d (β ν p q : ℝ) : ℝ := r1hi β ν p q - r1lo β ν p q
 
 /-! ## The segment, parametrized by `z ∈ [0,1]` -/
@@ -43,7 +39,7 @@ noncomputable def r1c (β ν p q z : ℝ) : ℝ := r1lo β ν p q + z * d β ν 
 noncomputable def r2c (β ν p q z : ℝ) : ℝ := r2hi ν p q - z * d β ν p q
 
 /-- Paper's `μ(q,z) = max(r₁*(q)/r₁(q,z), r₂*(p)/r₂(q,z))`, using the `cap`
-convention for `·/0`. On the knife-edge this is `Basic.μ α β ν p q` restricted
+convention for `·/0`. On the knife-edge this is `Revenue.μ α β ν p q` restricted
 to the point of the segment indexed by `z`. -/
 noncomputable def μz (α β ν p q z : ℝ) : ℝ :=
   max (ratio (cap α β ν) (r1star α β ν q) (r1c β ν p q z))
@@ -62,7 +58,7 @@ noncomputable def zstar (α β ν q : ℝ) : ℝ := min 1 (zhat α β ν q)
 
 variable {α β ν : ℝ}
 
-/-- **Observation** (revenue.tex): on `p+q ≥ 1`, `r₁⁻ + r₂⁺ = s`. -/
+/-- **Observation**: when `p+q ≥ 1`, we have `r₁⁻ + r₂⁺ = s`. -/
 theorem r1lo_add_r2hi {p q : ℝ} (hp : 0 ≤ p) (hpq : 1 ≤ p + q) :
     r1lo β ν p q + r2hi ν p q = sSum β ν p := by
   unfold r1lo r2hi sSum
@@ -76,7 +72,7 @@ theorem r1lo_add_r2hi {p q : ℝ} (hp : 0 ≤ p) (hpq : 1 ≤ p + q) :
     rw [← mul_add, key, mul_one]
   linarith [this]
 
-/-- **Observation** (revenue.tex): on `p+q ≥ 1`, `r₁⁺ + r₂⁻ = s`. -/
+/-- **Observation**: when `p+q ≥ 1`, we have `r₁⁺ + r₂⁻ = s`. -/
 theorem r1hi_add_r2lo {p q : ℝ} (hq : 0 ≤ q) (hpq : 1 ≤ p + q) :
     r1hi β ν p q + r2lo ν p q = sSum β ν p := by
   unfold r1hi r2lo sSum
@@ -90,9 +86,9 @@ theorem r1hi_add_r2lo {p q : ℝ} (hq : 0 ≤ q) (hpq : 1 ≤ p + q) :
     rw [← mul_add, key, mul_one]
   linarith [this]
 
-/-- **Observation** (case4.tex l.40): `d(p,q) > 0` on `p+q > 1` (with `0 < p`,
-`0 < ν`). The `p=0,q>1` corner has `d=0`, hence the `0 < p` hypothesis; the
-`q≤0` corner (e.g. `q=0, p>1`) also has `d≤0`, hence the `0 < q` hypothesis
+/-- **Observation**: `d(p,q) > 0` on `p+q > 1` (with `0 < p`, `0 < ν`).
+The `p=0, q>1` corner has `d=0`, hence the `0 < p` hypothesis;
+the `q≤0` corner (e.g. `q=0, p>1`) also has `d≤0`, hence the `0 < q` hypothesis
 (always satisfied downstream, where `q > 1/(α+1) > 0`). -/
 theorem d_pos (hν : 0 < ν) {p q : ℝ} (hp : 0 < p) (hq : 0 < q) (hpq : 1 < p + q) :
     0 < d β ν p q := by
@@ -105,16 +101,15 @@ theorem d_pos (hν : 0 < ν) {p q : ℝ} (hp : 0 < p) (hq : 0 < q) (hpq : 1 < p 
       exact lt_min (by linarith) (by linarith)
   nlinarith [mul_pos hν (sub_pos.mpr h)]
 
-/-- **Observation** (case4.tex l.6): on the knife-edge, `p + q > 1` with
-`p = α·q` gives `q > 1/(α+1)`. -/
+/-- **Observation**: on the knife-edge, `p + q > 1` with `p = α·q` gives `q > 1/(α+1)`. -/
 theorem q_lb (h : Constraints α β ν) {q : ℝ} (hpq : 1 < α * q + q) :
     1 / (α + 1) < q := by
   have ha : 0 < α + 1 := by linarith [h.c1_lo]
   rw [div_lt_iff₀ ha]
   nlinarith [hpq]
 
-/-- **Bridge**: on the knife-edge, `Basic.V α β ν p q` is the image of `[0,1]`
-under `z ↦ (r₁(q,z), r₂(q,z))`, so `Basic.μ = ⨅ z ∈ [0,1], μz`. -/
+/-- **Bridge**: on the knife-edge, `Revenue.V α β ν p q` is the image of `[0,1]`
+under `z ↦ (r₁(q,z), r₂(q,z))`, so `Revenue.μ = ⨅ z ∈ [0,1], μz`. -/
 theorem μ_eq_inf_z (h : Constraints α β ν) {p q : ℝ}
     (hpaq : p = α * q) (hpq1 : 1 < p + q) :
     μ α β ν p q = sInf (Set.image (μz α β ν p q) (Set.Icc 0 1)) := by
@@ -170,7 +165,7 @@ theorem μ_eq_inf_z (h : Constraints α β ν) {p q : ℝ}
       · rw [r1c, r2c]; linarith [hsum1]
     · exact hm.symm
 
-/-! ### Knife-edge observations (case4.tex l.32) -/
+/-! ### Knife-edge observations -/
 
 /-- On the knife-edge `p = α·q` with `q > 1/(α+1)`, `r₂⁺(q) = r₂*(p)`. -/
 theorem knife_r2hi_eq (h : Constraints α β ν) {p q : ℝ} (hpaq : p = α * q)
@@ -186,7 +181,7 @@ theorem knife_r2hi_eq (h : Constraints α β ν) {p q : ℝ} (hpaq : p = α * q)
   · rw [min_eq_right hq1, min_eq_left hq1,
       max_eq_right (by nlinarith [mul_nonneg hα0.le (by linarith : (0:ℝ) ≤ q)])]
 
-/-- On the knife-edge `p = α·q`, `r₁⁺(q) ≤ r₁*(q)` (the paper's `r₁*(q) ≥ r₁⁺(q)`). -/
+/-- On the knife-edge `p = α·q`, we get `r₁⁺(q) ≤ r₁*(q)` (the paper's `r₁*(q) ≥ r₁⁺(q)`). -/
 theorem knife_r1hi_le {p q : ℝ} (hpaq : p = α * q) :
     r1hi β ν p q ≤ r1star α β ν q := by
   rw [hpaq, r1hi, r1star, min_comm (α * q) β, min_comm (α * q) 1]
@@ -283,7 +278,7 @@ private lemma cap_corner_bound {A B ν α β s : ℝ} (hA : A ≤ β + ν) (hB :
     mul_nonneg (by linarith : (0:ℝ) ≤ β) (by linarith : (0:ℝ) ≤ α - 1),
     mul_nonneg hν.le (by nlinarith : (0:ℝ) ≤ α * β - 1), sq_nonneg ν, hA, hB]
 
-/-- **thm:4.1** (closed form of the infimum over `z`). -/
+/-- **thm:lne-cex:4.1** (closed form of the infimum over `z`). -/
 theorem thm_4_1 (h : Constraints α β ν) {p q : ℝ}
     (hpaq : p = α * q) (hpq1 : 1 < p + q) :
     sInf (Set.image (μz α β ν p q) (Set.Icc 0 1)) = μz α β ν p q (zstar α β ν q)
@@ -417,7 +412,7 @@ theorem thm_4_1 (h : Constraints α β ν) {p q : ℝ}
     · rintro y ⟨z, hz, rfl⟩; rw [hVal]; exact hLBval z hz
   exact hLeast.csInf_eq
 
-/-- **thm:mu4**: at the special point `(p₄,q₄) = (α·q₁, q₁)`, the case-4 value is `μ₄`. -/
+/-- **thm:lne-cex:mu4**: at the special point `(p₄,q₄) = (α·q₁, q₁)`, the case-4 value is `μ₄`. -/
 theorem thm_mu4 (h : Constraints α β ν) :
     μz α β ν (p4 α β ν) (q4 α β ν) (zstar α β ν (q4 α β ν)) = μ4 α β ν := by
   have hα := alpha_pos h
@@ -464,7 +459,7 @@ public theorem μ_p4_q4 (h : Constraints α β ν) :
     rw [p4, q4]; nlinarith [one_lt_alpha_mul_q1 h, q1_pos h]
   rw [μ_eq_inf_z h hpaq hpq1, (thm_4_1 h hpaq hpq1).1, thm_mu4 h]
 
-/-- **thm:4.2** (the case-4 lower bound): on the knife-edge with `p+q>1`,
+/-- **thm:lne-cex:4.2** (the case-4 lower bound): on the knife-edge with `p+q>1`,
 `inf_z μ(q,z) ≥ min(μ₂, μ₄)`. -/
 theorem thm_4_2 (h : Constraints α β ν) {p q : ℝ}
     (hpaq : p = α * q) (hpq1 : 1 < p + q) :
@@ -554,8 +549,8 @@ theorem thm_4_2 (h : Constraints α β ν) {p q : ℝ}
           rw [div_le_div_iff₀ hmn hmn]
           nlinarith [mul_le_mul_of_nonneg_right hr1lbC hmn.le]
 
-/-- **thm:4** (paper-facing, `z`-free — same shape as `thm_2`/`thm_3`): on the
-knife-edge `p = α·q` with `p + q > 1` (and `0 ≤ p, q`), `μ(p,q) ≥ min(μ₂,μ₄)`.
+/-- **thm:lne-cex:4** (paper-facing, `z`-free — same shape as `thm_2`/`thm_3`):
+on the knife-edge `p = α·q` with `p + q > 1` (and `0 ≤ p, q`), `μ(p,q) ≥ min(μ₂,μ₄)`.
 The `min cap` handles the `x/0` corners of the `cap` convention; downstream
 `cStar ≤ cap` recovers `cStar ≤ μ`. Proved from `thm_4_2` via `μ_eq_inf_z`. -/
 public theorem thm_4 (h : Constraints α β ν) {p q : ℝ}

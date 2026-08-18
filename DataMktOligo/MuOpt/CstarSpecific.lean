@@ -3,11 +3,7 @@ module
 public import DataMktOligo.MuOpt.ParamConstraints
 public import DataMktOligo.MuOpt.Constants
 
-public section
-
 namespace DataMktOligo.MuOpt
-
-variable (α β ν : ℝ)
 
 /-- Evaluating cStar for a particular (α, β, ν). -/
 public theorem cStar_specific {α β ν : ℝ} (hν : ν = 10)

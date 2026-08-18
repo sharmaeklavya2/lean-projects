@@ -6,26 +6,16 @@ public import DataMktOligo.MuOpt.Constants
 import Mathlib.Tactic.LinearCombination
 
 /-!
-# Properties of the special points (sp-props.tex)
+# Properties of the special points (pᵢ, qᵢ)
 
-This file corresponds to the "Properties of the Special Points" subsection.
 It establishes the interval bounds and defining identities of the special points
 `(pᵢ, qᵢ)` and proves `μ(pᵢ, qᵢ) = μᵢ` for `i ∈ {1, 2, 3}`.
 (The `i = 4` case is on the knife-edge `p = α·q` and is deferred to the case-4 file.)
 
-(Notation: this section transcribes old-paper text, where the poor-buyer count is
-written `ν - 1`; that is our Lean `ν`. In particular the paper's `ν·ĉ₁` is our
-`(ν + 1)·chat1 = ν + α·q1`.)
-
-## Omitted results
-
-These lemmas feed the next 4 subsections and the main claim (`cStar_le_μ`, in
-`Pending`), so omissions are tracked here explicitly. Add back if later needed.
-
-* Uniqueness of the positive roots of the defining quadratics for `p₁` (thm:p1),
-  `q₂` (thm:q2), `μ₃` (thm:mu3). We formalize only *existence* (that the point
-  satisfies its equation), which is all that `μ(pᵢ,qᵢ) = μᵢ` requires. Believed
-  unneeded downstream.
+The paper proves uniqueness of the positive roots of the defining quadratics
+for `p₁` (thm:lne-cex:p1), `q₂` (thm:lne-cex:q2), and `μ₃` (thm:lne-cex:mu3).
+Those results are omitted here; we formalize only *existence*
+(that the point satisfies its equation), which is all that `μ(pᵢ,qᵢ) = μᵢ` requires.
 -/
 
 namespace DataMktOligo.MuOpt
@@ -44,7 +34,7 @@ public theorem nu_pos (h : Constraints α β ν) : 0 < ν := by linarith [h.c1_m
 public theorem alpha_add_nu_pos (h : Constraints α β ν) : 0 < α + ν := by
   linarith [alpha_pos h, nu_pos h]
 
-/-! ## Properties of `q₁` (thm:q1) -/
+/-! ## Properties of `q₁` (thm:lne-cex:q1) -/
 
 /-- `q₁ < 1`, from Constraint c1 (`β < α + ν`). -/
 public theorem q1_lt_one (h : Constraints α β ν) : q1 α β ν < 1 := by
@@ -80,14 +70,16 @@ public theorem g2_q1 (h : Constraints α β ν) :
       min_eq_left (le_of_lt (one_lt_alpha_mul_q1 h))]
   ring
 
-/-- `r₁*(q₁) = ν + α·q₁` (thm:q1). Both `max` branches evaluate to this common value. -/
+/-- `r₁*(q₁) = ν + α·q₁` (thm:lne-cex:q1).
+Both `max` branches evaluate to this common value. -/
 public theorem r1star_q1 (h : Constraints α β ν) :
     r1star α β ν (q1 α β ν) = ν + α * q1 α β ν := by
   unfold r1star
   rw [g1_q1 h, g2_q1 h, max_self]
 
-/-- `r₁*(q) ≥ ν + α·q₁` for all `q` (thm:q1). For `q ≤ q₁` the non-increasing first
-branch `g₁` dominates; for `q ≥ q₁` the non-decreasing second branch `g₂` does. -/
+/-- `r₁*(q) ≥ ν + α·q₁` for all `q` (thm:lne-cex:q1).
+For `q ≤ q₁` the non-increasing first branch `g₁` dominates;
+for `q ≥ q₁` the non-decreasing second branch `g₂` does. -/
 public theorem r1star_ge (h : Constraints α β ν) (q : ℝ) :
     ν + α * q1 α β ν ≤ r1star α β ν q := by
   have hν : (0:ℝ) < ν := nu_pos h
@@ -109,13 +101,12 @@ public theorem r1star_ge (h : Constraints α β ν) (q : ℝ) :
     have := mul_le_mul_of_nonneg_left hm2 hν.le
     linarith
 
-/-- `1/α < q₁` (thm:q1), the lower end of `q₁ ∈ (1/α, 1)`. -/
+/-- `1/α < q₁` (thm:lne-cex:q1), the lower end of `q₁ ∈ (1/α, 1)`. -/
 public theorem one_div_alpha_lt_q1 (h : Constraints α β ν) : 1 / α < q1 α β ν := by
   rw [div_lt_iff₀ (alpha_pos h)]
   nlinarith [one_lt_alpha_mul_q1 h]
 
-/-- `r₁*(q₁) = (ν+1)·ĉ₁`, i.e. the paper's `ν·ĉ₁` (paper's total-buyer count `ν`
-is our `ν + 1`). -/
+/-- `r₁*(q₁) = (ν+1)·ĉ₁`. -/
 public theorem r1star_q1' (h : Constraints α β ν) :
     r1star α β ν (q1 α β ν) = (ν + 1) * chat1 α β ν := by
   have hν1 : (ν:ℝ) + 1 ≠ 0 := by linarith [nu_pos h]
@@ -123,18 +114,11 @@ public theorem r1star_q1' (h : Constraints α β ν) :
   simp only [chat1]
   field_simp
 
-/-! ### Paper-facing statement of thm:q1
-
-The theorem below transcribes thm:q1 verbatim; its proof only assembles the helper
-lemmas above. A verifier checks *this statement* against the paper, and
-`#print axioms thm_q1` to confirm it rests on no `sorry`. -/
-
-/-- **thm:q1**:
+/-- **Paper-facing statement of \cref{thm:lne-cex:q1}**:
 1.  `q₁ ∈ (1/α, 1)`,
 2.  `r₁*(q₁) = ν·ĉ₁`,
-3.  `r₁*(q) ≥ ν·ĉ₁` for all `q ≥ 0`.
-Here the paper's `ν·ĉ₁` is our `(ν + 1)·chat1` (paper's total-buyer count `ν` is our `ν + 1`);
-we prove the last part for *all* `q`, not just `q ≥ 0`. -/
+3.  `r₁*(q) ≥ ν·ĉ₁`.
+-/
 theorem thm_q1 (h : Constraints α β ν) :
     q1 α β ν ∈ Set.Ioo (1 / α) 1 ∧
     r1star α β ν (q1 α β ν) = (ν + 1) * chat1 α β ν ∧
@@ -144,9 +128,9 @@ theorem thm_q1 (h : Constraints α β ν) :
   refine ⟨⟨one_div_alpha_lt_q1 h, q1_lt_one h⟩, r1star_q1' h, fun q _ => ?_⟩
   rw [hnc]; exact r1star_ge h q
 
-/-! ## Properties of `ĉ₁` and `p₁` (thm:p1) -/
+/-! ## Properties of `ĉ₁` and `p₁` (thm:lne-cex:p1) -/
 
-/-- `ĉ₁ > 1` (thm:p1): since `ĉ₁ = (ν + α·q₁)/(ν + 1)` and `α·q₁ > 1`. -/
+/-- `ĉ₁ > 1` (thm:lne-cex:p1): since `ĉ₁ = (ν + α·q₁)/(ν + 1)` and `α·q₁ > 1`. -/
 public theorem chat1_gt_one (h : Constraints α β ν) : 1 < chat1 α β ν := by
   have hν1 : (0:ℝ) < ν + 1 := by linarith [nu_pos h]
   simp only [chat1]
@@ -161,7 +145,7 @@ public theorem alpha_mul_chat1_pos (h : Constraints α β ν) : 0 < α * chat1 �
 public theorem p1_pos (_h : Constraints α β ν) : 0 < p1 α β ν := by
   simp only [p1]; positivity
 
-/-- `p₁ < 1` (thm:p1), since the square root exceeds `1`. -/
+/-- `p₁ < 1` (thm:lne-cex:p1), since the square root exceeds `1`. -/
 theorem p1_lt_one (h : Constraints α β ν) : p1 α β ν < 1 := by
   have hk : 0 < α * chat1 α β ν := alpha_mul_chat1_pos h
   have hr1 : 1 < 1 + 4 / (α * chat1 α β ν) := by
@@ -174,9 +158,9 @@ theorem p1_lt_one (h : Constraints α β ν) : p1 α β ν < 1 := by
   rw [div_lt_one (by positivity)]
   linarith
 
-/-- The defining identity `p₁² = α·ĉ₁·(1 - p₁)` (thm:p1): `p₁` solves
-`ĉ₁/x = x/(α(1-x))`, i.e. `x² + α·ĉ₁·x - α·ĉ₁ = 0`. Reduces to `k(s² - 1) = 4`
-where `k = α·ĉ₁`, `s = √(1 + 4/k)`. -/
+/-- The defining identity `p₁² = α·ĉ₁·(1 - p₁)` (thm:lne-cex:p1):
+`p₁` solves `ĉ₁/x = x/(α(1-x))`, i.e. `x² + α·ĉ₁·x - α·ĉ₁ = 0`.
+Reduces to `k(s² - 1) = 4` where `k = α·ĉ₁`, `s = √(1 + 4/k)`. -/
 public theorem p1_quadratic (h : Constraints α β ν) :
     p1 α β ν ^ 2 = α * chat1 α β ν * (1 - p1 α β ν) := by
   have hk : 0 < α * chat1 α β ν := alpha_mul_chat1_pos h
@@ -193,8 +177,8 @@ public theorem p1_quadratic (h : Constraints α β ν) :
   have expand : (1 + s) * k * (1 + s - 2) = k * s ^ 2 - k := by ring
   rw [expand, hkey]; ring
 
-/-- `α·(1 - p₁) < p₁`, i.e. `1 - p₁ < p₁/α` (thm:p1 line 68). Chain:
-`α(1-p₁) < α·ĉ₁·(1-p₁) = p₁² < p₁`, using `ĉ₁ > 1` and `0 < p₁ < 1`. -/
+/-- `α·(1 - p₁) < p₁`, i.e. `1 - p₁ < p₁/α` (thm:lne-cex:p1).
+Chain: `α(1-p₁) < α·ĉ₁·(1-p₁) = p₁² < p₁`, using `ĉ₁ > 1` and `0 < p₁ < 1`. -/
 theorem alpha_mul_one_sub_p1_lt_p1 (h : Constraints α β ν) :
     α * (1 - p1 α β ν) < p1 α β ν := by
   have hq := p1_quadratic h
@@ -205,12 +189,11 @@ theorem alpha_mul_one_sub_p1_lt_p1 (h : Constraints α β ν) :
   nlinarith [hq, mul_pos (sub_pos.mpr hp1_lt) hp1_pos,
     mul_pos (mul_pos hα (sub_pos.mpr hp1_lt)) (sub_pos.mpr hc)]
 
-/-- `p₁ < α·q₁` (thm:p1 line 68): since `p₁ < 1 < α·q₁`. -/
+/-- `p₁ < α·q₁` (thm:lne-cex:p1): since `p₁ < 1 < α·q₁`. -/
 theorem p1_lt_alpha_mul_q1 (h : Constraints α β ν) : p1 α β ν < α * q1 α β ν := by
   linarith [p1_lt_one h, one_lt_alpha_mul_q1 h]
 
-/-- `1 < p₁ + q₁` (thm:p1 line 68): since `1 - p₁ < 1/α < q₁`
-(from `α(1-p₁) < 1 < α·q₁`). -/
+/-- `1 < p₁ + q₁` (thm:lne-cex:p1): since `1 - p₁ < 1/α < q₁` (from `α(1-p₁) < 1 < α·q₁`). -/
 theorem one_lt_p1_add_q1 (h : Constraints α β ν) : 1 < p1 α β ν + q1 α β ν := by
   have h1 := alpha_mul_one_sub_p1_lt_p1 h
   have h2 := p1_lt_one h
@@ -220,7 +203,7 @@ theorem one_lt_p1_add_q1 (h : Constraints α β ν) : 1 < p1 α β ν + q1 α β
   have := lt_of_mul_lt_mul_left hstep hα.le
   linarith
 
-/-- `α/(α+1) < p₁` (thm:p1 line 47), the lower end of `p₁ ∈ (α/(α+1), 1)`.
+/-- `α/(α+1) < p₁` (thm:lne-cex:p1), the lower end of `p₁ ∈ (α/(α+1), 1)`.
 Equivalent to `α(1-p₁) < p₁`. -/
 public theorem p1_gt_ratio (h : Constraints α β ν) : α / (α + 1) < p1 α β ν := by
   have hα := alpha_pos h
@@ -254,8 +237,8 @@ theorem r2star_p1 (h : Constraints α β ν) :
   simp only [r2star]
   rw [min_eq_right hp1_div_le, max_eq_right h1p_le]
 
-/-- Seller 1's ratio at `(p₁,q₁)` equals `μ₁`: `(ν+α·q₁)/(p₁(1+ν)) = ĉ₁/p₁`,
-using `ν + α·q₁ = ĉ₁·(ν+1)`. -/
+/-- Seller 1's ratio at `(p₁,q₁)` equals `μ₁`:
+`(ν+α·q₁)/(p₁(1+ν)) = ĉ₁/p₁` using `ν + α·q₁ = ĉ₁·(ν+1)`. -/
 theorem ratio1_p1_q1 (h : Constraints α β ν) :
     ratio (cap α β ν) (r1star α β ν (q1 α β ν)) (r1hi β ν (p1 α β ν) (q1 α β ν)) = μ1 α β ν := by
   have hp1_pos := p1_pos h
@@ -268,8 +251,8 @@ theorem ratio1_p1_q1 (h : Constraints α β ν) :
   congr 1
   ring
 
-/-- Seller 2's ratio at `(p₁,q₁)` equals `μ₁`: `(p₁/α)/(1-p₁) = ĉ₁/p₁`,
-using the quadratic `p₁² = α·ĉ₁·(1-p₁)`. -/
+/-- Seller 2's ratio at `(p₁,q₁)` equals `μ₁`:
+`(p₁/α)/(1-p₁) = ĉ₁/p₁` using the quadratic `p₁² = α·ĉ₁·(1-p₁)`. -/
 theorem ratio2_p1_q1 (h : Constraints α β ν) :
     ratio (cap α β ν) (r2star α ν (p1 α β ν)) (r2lo ν (p1 α β ν) (q1 α β ν)) = μ1 α β ν := by
   have hα := alpha_pos h
@@ -285,7 +268,7 @@ theorem ratio2_p1_q1 (h : Constraints α β ν) :
   have hpp : p1 α β ν * p1 α β ν = p1 α β ν ^ 2 := by ring
   rw [hpp, p1_quadratic h]; ring
 
-/-- `μ(p₁, q₁) = μ₁` (thm:p1). Here `p₁ < α·q₁`, so `V` is the singleton
+/-- `μ(p₁, q₁) = μ₁` (thm:lne-cex:p1). Here `p₁ < α·q₁`, so `V` is the singleton
 `{(r₁⁺, r₂⁻)}` and both best-response ratios equal `μ₁`. -/
 public theorem μ_p1_q1 (h : Constraints α β ν) :
     μ α β ν (p1 α β ν) (q1 α β ν) = μ1 α β ν := by
@@ -310,9 +293,7 @@ public theorem μ_p1_q1 (h : Constraints α β ν) :
   unfold μ
   rw [hset, csInf_singleton]
 
-/-! ### Paper-facing statement of thm:p1 -/
-
-/-- **thm:p1**:
+/-- **Paper-facing statement of \cref{thm:lne-cex:p1}**:
 1.  `p₁ ∈ (α/(α+1), 1)`,
 2.  `ĉ₁ > 1`,
 3.  `p₁` solves its defining equation `ĉ₁/p₁ = p₁/(α(1-p₁))`
@@ -327,7 +308,7 @@ theorem thm_p1 (h : Constraints α β ν) :
     μ α β ν (p1 α β ν) (q1 α β ν) = μ1 α β ν :=
   ⟨⟨p1_gt_ratio h, p1_lt_one h⟩, chat1_gt_one h, p1_quadratic h, μ_p1_q1 h⟩
 
-/-! ## Properties of `q₂` (thm:q2) -/
+/-! ## Properties of `q₂` (thm:lne-cex:q2) -/
 
 /-- `0 < L₂ = ν² + αν + αβ`. -/
 public theorem L2_pos (h : Constraints α β ν) : 0 < L2 α β ν := by
@@ -345,8 +326,8 @@ public theorem q2_pos (h : Constraints α β ν) : 0 < q2 α β ν := by
   apply div_pos (by linarith)
   linarith [Real.sqrt_nonneg (L2 α β ν)]
 
-/-- `α·q₂ = √L₂ - ν` (the convenient closed form for `q₂`, since
-`α(ν+β) = (√L₂-ν)(√L₂+ν) = L₂ - ν²`). -/
+/-- `α·q₂ = √L₂ - ν` (the convenient closed form for `q₂`,
+since `α(ν+β) = (√L₂-ν)(√L₂+ν) = L₂ - ν²`). -/
 theorem alpha_mul_q2 (h : Constraints α β ν) :
     α * q2 α β ν = Real.sqrt (L2 α β ν) - ν := by
   have hν := nu_pos h
@@ -359,8 +340,9 @@ theorem alpha_mul_q2 (h : Constraints α β ν) :
   simp only [L2] at hs2
   linear_combination -hs2  -- α·(ν+β) = (s-ν)(ν+s) = s² - ν², using s² = L₂
 
-/-- The defining quadratic `α·q₂² + 2ν·q₂ = ν + β` (thm:q2): `q₂` solves
-`(αx+ν)/(β+ν(1-x)) = 1/x`. Derived from `α·q₂ + ν = √L₂` (`alpha_mul_q2`). -/
+/-- The defining quadratic `α·q₂² + 2ν·q₂ = ν + β` (thm:lne-cex:q2):
+`q₂` solves `(αx+ν)/(β+ν(1-x)) = 1/x`.
+Derived from `α·q₂ + ν = √L₂` (`alpha_mul_q2`). -/
 public theorem q2_quadratic (h : Constraints α β ν) :
     α * (q2 α β ν) ^ 2 + 2 * ν * (q2 α β ν) = ν + β := by
   have hα := alpha_pos h
@@ -376,13 +358,14 @@ public theorem q2_quadratic (h : Constraints α β ν) :
     linear_combination hsq + hL2
   exact mul_left_cancel₀ hαne hcancel
 
-/-- `q₂ < 1` (thm:q2). Root-sign: `f(1) = α + ν - β > 0` for the upward parabola
-`f(x) = αx² + 2νx - (ν+β)` with `f(q₂) = 0`. -/
+/-- `q₂ < 1` (thm:lne-cex:q2). Root-sign: `f(1) = α + ν - β > 0` for
+the upward parabola `f(x) = αx² + 2νx - (ν+β)` with `f(q₂) = 0`. -/
 public theorem q2_lt_one (h : Constraints α β ν) : q2 α β ν < 1 := by
   nlinarith [q2_quadratic h, h.c1_hi, alpha_pos h, nu_pos h, q2_pos h,
     mul_pos (alpha_pos h) (q2_pos h)]
 
-/-- `1 < α·q₂`, i.e. `q₂ > 1/α` (thm:q2). Uses `α·q₂ = √L₂ - ν` and `(ν+1)² < L₂`
+/-- `1 < α·q₂`, i.e. `q₂ > 1/α` (thm:lne-cex:q2).
+Uses `α·q₂ = √L₂ - ν` and `(ν+1)² < L₂`
 (equivalently `2ν + 1 < α(ν+β)`, from `α ≥ 2 ≤ β`). -/
 public theorem one_lt_alpha_mul_q2 (h : Constraints α β ν) : 1 < α * q2 α β ν := by
   have hν := nu_pos h
@@ -401,7 +384,7 @@ theorem one_div_alpha_lt_q2 (h : Constraints α β ν) : 1 / α < q2 α β ν :=
   rw [div_lt_iff₀ (alpha_pos h)]
   nlinarith [one_lt_alpha_mul_q2 h]
 
-/-- `α·q₂ < β` (thm:q2 line 101), since `α·q₂ < α ≤ β` (uses `q₂ < 1`). -/
+/-- `α·q₂ < β` (thm:lne-cex:q2), since `α·q₂ < α ≤ β` (uses `q₂ < 1`). -/
 public theorem alpha_mul_q2_lt_beta (h : Constraints α β ν) : α * q2 α β ν < β := by
   have h1 : α * q2 α β ν < α * 1 := mul_lt_mul_of_pos_left (q2_lt_one h) (alpha_pos h)
   rw [mul_one] at h1
@@ -471,7 +454,7 @@ theorem ratio1_β_q2 (h : Constraints α β ν) :
   rw [div_eq_div_iff (ne_of_gt hA_pos) (ne_of_gt hq2)]
   linear_combination q2_quadratic h
 
-/-- `μ(p₂, q₂) = μ₂` (thm:q2), where `p₂ = β`. Here `p₂ > α·q₂`, so `V` is the
+/-- `μ(p₂, q₂) = μ₂` (thm:lne-cex:q2), where `p₂ = β`. Here `p₂ > α·q₂`, so `V` is the
 singleton `{(r₁⁻, r₂⁺)}` and both best-response ratios equal `μ₂`. -/
 public theorem μ_p2_q2 (h : Constraints α β ν) :
     μ α β ν (p2 β) (q2 α β ν) = μ2 α β ν := by
@@ -499,9 +482,7 @@ public theorem μ_p2_q2 (h : Constraints α β ν) :
   unfold μ
   rw [hset, csInf_singleton]
 
-/-! ### Paper-facing statement of thm:q2 -/
-
-/-- **thm:q2**:
+/-- **Paper-facing statement of \cref{thm:lne-cex:q2}**:
 1.  `q₂ ∈ (1/α, 1)`
 2.  `μ(β, q₂) = μ₂`.
 3.  `q₂` solves `α·x² + 2ν·x = ν + β`, derived from `(αx+ν)/(β+ν(1-x)) = 1/x`.
@@ -514,7 +495,7 @@ theorem thm_q2 (h : Constraints α β ν) :
     α * (q2 α β ν) ^ 2 + 2 * ν * (q2 α β ν) = ν + β :=
   ⟨⟨one_div_alpha_lt_q2 h, q2_lt_one h⟩, μ_p2_q2 h, q2_quadratic h⟩
 
-/-! ## Properties of `μ₃` (thm:mu3)
+/-! ## Properties of `μ₃` (thm:lne-cex:mu3)
 
 `μ₃` is the positive root of the quadratic `αβx² + ν·L₁·x - L₂ = 0`
 (paper: `αβx² + (ν-1)(ν-1+α-β)x - ((ν-1)²+(ν-1)α+αβ) = 0`). -/
@@ -535,7 +516,7 @@ theorem mu3_disc_nonneg (h : Constraints α β ν) :
   have hL2 := L2_pos h
   nlinarith [sq_nonneg (ν * L1 α β ν), mul_pos (mul_pos hα hβ) hL2]
 
-/-- `μ₃` satisfies its defining quadratic `αβ·μ₃² + ν·L₁·μ₃ - L₂ = 0` (thm:mu3).
+/-- `μ₃` satisfies its defining quadratic `αβ·μ₃² + ν·L₁·μ₃ - L₂ = 0` (thm:lne-cex:mu3).
 Proof: `2αβ·μ₃ + L₁·ν = √D`; squaring kills the root and, after clearing `4αβ`,
 leaves the quadratic. -/
 public theorem mu3_quadratic (h : Constraints α β ν) :
@@ -554,7 +535,7 @@ public theorem mu3_quadratic (h : Constraints α β ν) :
   have h4ne : (4 * α * β : ℝ) ≠ 0 := ne_of_gt (by nlinarith [mul_pos hα hβ])
   exact (mul_eq_zero.mp key).resolve_left h4ne
 
-/-- `0 < μ₃` (thm:mu3): the numerator `√D - L₁ν > 0` since `D > (L₁ν)²`. -/
+/-- `0 < μ₃` (thm:lne-cex:mu3): the numerator `√D - L₁ν > 0` since `D > (L₁ν)²`. -/
 public theorem mu3_pos (h : Constraints α β ν) : 0 < μ3 α β ν := by
   have hα := alpha_pos h
   have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
@@ -571,8 +552,9 @@ public theorem mu3_pos (h : Constraints α β ν) : 0 < μ3 α β ν := by
   simp only [μ3]
   apply div_pos (by linarith [h2]) (by nlinarith [mul_pos hα hβ])
 
-/-- `1 < μ₃` (thm:mu3): `f(1) = -βν < 0` for the upward parabola `f`, so its
-positive root `μ₃` exceeds `1`. Concretely `(μ₃-1)(αβ(μ₃+1)+νL₁) = βν > 0`. -/
+/-- `1 < μ₃` (thm:lne-cex:mu3): `f(1) = -βν < 0` for the upward parabola `f`,
+so its positive root `μ₃` exceeds `1`.
+Concretely `(μ₃-1)(αβ(μ₃+1)+νL₁) = βν > 0`. -/
 public theorem one_lt_mu3 (h : Constraints α β ν) : 1 < μ3 α β ν := by
   have hα := alpha_pos h
   have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
@@ -586,8 +568,8 @@ public theorem one_lt_mu3 (h : Constraints α β ν) : 1 < μ3 α β ν := by
     simp only [L1, L2] at hquad ⊢; linear_combination hquad
   nlinarith [hfact, hbr, mul_pos hβ hν]
 
-/-- `β·μ₃ < α + ν` (thm:mu3, the bound `μ₃ < 1/q₁`): `f(1/q₁) > 0` is Constraint c3,
-so the positive root `μ₃` is below `1/q₁`, i.e. `β·μ₃ < α+ν`. -/
+/-- `β·μ₃ < α + ν` (thm:lne-cex:mu3, the bound `μ₃ < 1/q₁`): `f(1/q₁) > 0` is Constraint c3,
+so the positive root `μ₃` is below `1/q₁`, i.e., `β·μ₃ < α+ν`. -/
 theorem beta_mul_mu3_lt (h : Constraints α β ν) : β * μ3 α β ν < α + ν := by
   have hα := alpha_pos h
   have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
@@ -604,24 +586,21 @@ theorem beta_mul_mu3_lt (h : Constraints α β ν) : β * μ3 α β ν < α + ν
   have hHA : 0 < (α + ν) ^ 3 - β * (α * β + 2 * ν * (α + ν)) := by linarith [h.c3]
   nlinarith [hfact, hbr, hHA]
 
-/-- `q₁·μ₃ < 1` (thm:mu3), equivalent to `β·μ₃ < α+ν`; used to place `p₃ < α`. -/
+/-- `q₁·μ₃ < 1` (thm:lne-cex:mu3), equivalent to `β·μ₃ < α+ν`; used to place `p₃ < α`. -/
 theorem q1_mul_mu3_lt_one (h : Constraints α β ν) : q1 α β ν * μ3 α β ν < 1 := by
   have hA := alpha_add_nu_pos h
   simp only [q1]
   rw [div_mul_eq_mul_div, div_lt_one hA]
   linarith [beta_mul_mu3_lt h]
 
-/-- `μ₃ < 1/q₁` (thm:mu3), the upper end of `μ₃ ∈ (1, 1/q₁)`. -/
+/-- `μ₃ < 1/q₁` (thm:lne-cex:mu3), the upper end of `μ₃ ∈ (1, 1/q₁)`. -/
 public theorem mu3_lt_one_div_q1 (h : Constraints α β ν) : μ3 α β ν < 1 / q1 α β ν := by
   rw [lt_div_iff₀ (q1_pos h), mul_comm]
   exact q1_mul_mu3_lt_one h
 
-/-! ### Paper-facing statement of thm:mu3 -/
-
-/-- **thm:mu3**:
+/-- **Paper-facing statement of \cref{thm:lne-cex:mu3}**:
 1.  `1 < μ₃ < 1/q₁`,
-2.  `μ₃` solves the quadratic `αβx² + ν(ν+α-β)x - (ν²+να+αβ) = 0`
-    (paper's `n-1` is our `ν`; `ν+α-β = L₁`, `ν²+να+αβ = L₂`).
+2.  `μ₃` solves the quadratic `αβx² + ν(ν+α-β)x - (ν²+να+αβ) = 0`.
 Not formalized: that `μ₃` is the *unique* positive root. -/
 theorem thm_mu3 (h : Constraints α β ν) :
     1 < μ3 α β ν ∧ μ3 α β ν < 1 / q1 α β ν ∧
@@ -631,7 +610,7 @@ theorem thm_mu3 (h : Constraints α β ν) :
   simp only [L1, L2] at this
   linear_combination this
 
-/-! ## Properties of `p₃` (thm:p3)
+/-! ## Properties of `p₃` (thm:lne-cex:p3)
 
 `q₃ = q₁` and `p₃ = α·q₁·μ₃`. Since `μ₃ ∈ (1, 1/q₁)`, we get `p₃ ∈ (α·q₁, α)`,
 so `p₃ > α·q₃`: `V` is the singleton `{(r₁⁻, r₂⁺)}` and both ratios equal `μ₃`.
@@ -718,7 +697,7 @@ theorem ratio1_p3_q1 (h : Constraints α β ν) :
   field_simp at hquad ⊢
   linear_combination -hquad
 
-/-- `μ(p₃, q₃) = μ₃` (thm:p3). Here `p₃ > α·q₃`, so `V` is the singleton
+/-- `μ(p₃, q₃) = μ₃` (thm:lne-cex:p3). Here `p₃ > α·q₃`, so `V` is the singleton
 `{(r₁⁻, r₂⁺)}` and both best-response ratios equal `μ₃`. -/
 public theorem μ_p3_q3 (h : Constraints α β ν) :
     μ α β ν (p3 α β ν) (q3 α β ν) = μ3 α β ν := by
@@ -746,9 +725,7 @@ public theorem μ_p3_q3 (h : Constraints α β ν) :
   unfold μ
   rw [hset, csInf_singleton]
 
-/-! ### Paper-facing statement of thm:p3 -/
-
-/-- **thm:p3**:
+/-- **Paper-facing statement of \cref{thm:lne-cex:p3}**:
 1.  `p₃ ∈ (α·q₃, α)`,
 2.  `μ(p₃, q₃) = μ₃`.
 The paper's ratio equalities `r₁*(q₃)/r₁ = r₂*(p₃)/r₂ = μ₃` are `ratio1_p3_q1` and

@@ -9,8 +9,6 @@ import DataMktOligo.MuOpt.Case2
 import DataMktOligo.MuOpt.Case3
 import DataMktOligo.MuOpt.Case4
 
-public section
-
 namespace DataMktOligo.MuOpt
 
 variable (α β ν : ℝ)
@@ -21,7 +19,7 @@ public def μ_at_special : Prop :=
   ∧ μ α β ν (p3 α β ν) (q3 α β ν) = μ3 α β ν
   ∧ μ α β ν (p4 α β ν) (q4 α β ν) = μ4 α β ν
 
-/-- **Main reduction** (thm:pq-redn, lower bound): under Constraints c1–c4, every
+/-- **Main reduction** (thm:lne-cex:pq-redn, lower bound): under Constraints c1–c4, every
 nonnegative price pair has `μ(p,q) ≥ cStar := min_i μᵢ`, so no `(cStar - ε)`-NE exists.
 Together with the `μ_pᵢ_qᵢ` lemmas (which show the bound is attained), this gives
 `inf_{p,q} μ = cStar`. -/

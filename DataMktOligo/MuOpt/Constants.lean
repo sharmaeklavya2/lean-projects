@@ -3,9 +3,7 @@ module
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Analysis.Real.Sqrt
 
-/-!
-# Constants used in the inapproximability factor
--/
+/-! # Constants used in the inapproximability factor -/
 
 @[expose] public section
 

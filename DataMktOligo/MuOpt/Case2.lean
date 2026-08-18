@@ -7,16 +7,15 @@ import DataMktOligo.MuOpt.Cap
 import DataMktOligo.MuOpt.SpecialPointsProps
 
 /-!
-# Case 2 of the main reduction (case2.tex)
+# Case 2: `p < α·q` and `p + q ≥ 1`
 
-This file corresponds to the "Case 2: `p < α·q` and `p + q ≥ 1`" subsection.
 In this region `V(p,q)` is the singleton `{(r₁⁺, r₂⁻)}`, so
 `μ(p,q) = max(r₁*(q)/r₁⁺, r₂*(p)/r₂⁻)`.
 
-The paper's proof (thm:2) is a dichotomy at `p₁`:
+The paper's proof (thm:lne-cex:2) is a dichotomy at `p₁`:
 * `p ≥ p₁`: seller 2's ratio `p/(α(1-p))` is increasing, so it is `≥ μ₁` (its value at `p₁`).
 * `p ≤ p₁`: seller 1's ratio `r₁*(q)/(ν·p)` is `≥ μ₁`, using the global bound
-  `r₁*(q) ≥ r₁*(q₁) = (ν+1)·ĉ₁` (thm:q1) and `p ≤ p₁`.
+  `r₁*(q) ≥ r₁*(q₁) = (ν+1)·ĉ₁` (thm:lne-cex:q1) and `p ≤ p₁`.
 
 The `p = 0` and `p ≥ 1` corners (where a seller earns `0`) give `μ = cap` under Lean's
 `x/0` convention, but `μ₁ ≤ cap` (`μ1_le_cap`) so the sharp bound `μ₁ ≤ μ` holds there too.
@@ -25,8 +24,6 @@ The `p = 0` and `p ≥ 1` corners (where a seller earns `0`) give `μ = cap` und
 namespace DataMktOligo.MuOpt
 
 variable {α β ν : ℝ}
-
-/-! ## `μ` as a max in the case-2 region -/
 
 /-- In the case-2 region (`p < α·q` and `p + q ≥ 1`, with `0 ≤ p`), `V` is the
 singleton `{(r₁⁺, r₂⁻)}`, so `μ(p,q) = max(r₁*(q)/r₁⁺, r₂*(p)/r₂⁻)`.
@@ -66,9 +63,7 @@ theorem μ_eq_max_case2 (h : Constraints α β ν) {p q : ℝ}
     · rintro rfl; exact ⟨_, _, ⟨rfl, rfl⟩, rfl⟩
   unfold μ; rw [hset, csInf_singleton]
 
-/-! ### thm:2 -/
-
-/-- **thm:2**: if `p < α·q` and `p + q ≥ 1` (with `0 ≤ p`, `0 ≤ q`), then
+/-- **thm:lne-cex:2**: if `p < α·q` and `p + q ≥ 1` (with `0 ≤ p`, `0 ≤ q`), then
 `μ(p,q) ≥ μ₁`. At the `0`-revenue corners `p = 0` and `p ≥ 1` Lean's `x/0` convention
 gives `μ = cap`, and `μ₁ ≤ cap` (`μ1_le_cap`) closes those.
 

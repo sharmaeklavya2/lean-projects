@@ -1,20 +1,15 @@
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Analysis.Real.Sqrt
 
-/-!
-# Constraints on parameters used in the example instance
--/
-
-@[expose] public section
+/-! # Constraints on parameters used in the example instance -/
 
 namespace DataMktOligo.MuOpt
 
 variable (α β ν : ℝ)
 
 /-- The four constraints on α, β, and ν (items c1–c4). -/
-structure Constraints (α β ν : ℝ) : Prop where
+public structure Constraints (α β ν : ℝ) : Prop where
   /-- c1: `2 ≤ α ≤ β < α + ν`. -/
   c1_lo : 2 ≤ α
   c1_mid : α ≤ β

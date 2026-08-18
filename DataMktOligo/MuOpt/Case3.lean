@@ -10,16 +10,15 @@ import DataMktOligo.MuOpt.Case2
 import Mathlib.Tactic.LinearCombination
 
 /-!
-# Case 3 of the main reduction (case3.tex)
+# Case 3: `p + q ≤ 1`
 
-This file corresponds to the "Case 3: `p + q ≤ 1`" subsection.
 In this region `V(p,q)` is the singleton `{(r₁⁻, r₂⁻)}`, so
 `μ(p,q) = max(r₁*(q)/r₁⁻, r₂*(p)/r₂⁻)`.
 
 Writing `p' := α/(α+1)`, the paper first proves two monotonicity lemmas:
-`μ(·,q)` is decreasing in `p` for `p ≤ min(p', 1-q)` (thm:mu-dec-p), and `μ(p,·)`
-is decreasing in `q` for `q ≤ min(q₁, 1-p)` (thm:mu-dec-q). This file starts with
-the first one.
+`μ(·,q)` is decreasing in `p` for `p ≤ min(p', 1-q)` (thm:lne-cex:mu-dec-p),
+and `μ(p,·)` is decreasing in `q` for `q ≤ min(q₁, 1-p)` (thm:lne-cex:mu-dec-q).
+This file starts with the first one.
 
 ## The `min cap` workaround
 
@@ -91,10 +90,10 @@ theorem μ_eq_max_case3 (h : Constraints α β ν) {p q : ℝ}
   simp only [ratio]
   rw [if_neg hd1, if_neg hd2, mul_div_mul_left _ _ (ne_of_gt hν)]
 
-/-! ### thm:mu-dec-p -/
+/-! ### thm:lne-cex:mu-dec-p -/
 
-/-- **thm:mu-dec-p**: with `p' = α/(α+1)`, for `0 ≤ x₁ ≤ x₂ ≤ min(p', 1-q)` (which
-forces `q ≤ 1`), `μ(·,q)` is decreasing: `min cap (μ x₂ q) ≤ μ x₁ q`.
+/-- **thm:lne-cex:mu-dec-p**: with `p' = α/(α+1)`, for `0 ≤ x₁ ≤ x₂ ≤ min(p', 1-q)`
+(which forces `q ≤ 1`), `μ(·,q)` is decreasing: `min cap (μ x₂ q) ≤ μ x₁ q`.
 
 The `min cap` is the `thm_2` workaround: the paper's `μ(x₁,q) ≥ μ(x₂,q)` fails at
 the `0`-revenue corners `x₁ = 0` / `q = 0` (where `μ(x₁,q) = cap`), but there
@@ -154,9 +153,10 @@ theorem mu_dec_p (h : Constraints α β ν) {q x1 x2 : ℝ}
 
 /-! ## `μ` as a max in the case-3 region, decomposed for `q`-monotonicity -/
 
-/-- Branch selection for `r₁*` (paper: `β + ν(1-q) ≥ g₂(q) ⟺ q ≤ q₁`; we need only
-`⟸`): for `q ≤ 1` and `q ≤ q₁`, the non-increasing first branch dominates, so
-`r₁*(q) = β + ν(1-q)`. Uses the crossing value `g₁(q₁) = g₂(q₁) = ν + α·q₁`. -/
+/-- Branch selection for `r₁*` (paper: `β + ν(1-q) ≥ g₂(q) ⟺ q ≤ q₁`;
+we need only `⟸`): for `q ≤ 1` and `q ≤ q₁`,
+the non-increasing first branch dominates, so `r₁*(q) = β + ν(1-q)`.
+Uses the crossing value `g₁(q₁) = g₂(q₁) = ν + α·q₁`. -/
 theorem r1star_eq_of_le_q1 (h : Constraints α β ν) {q : ℝ}
     (hq1 : q ≤ 1) (hqq1 : q ≤ q1 α β ν) :
     r1star α β ν q = β + ν * (1 - q) := by
@@ -178,9 +178,9 @@ theorem r1star_eq_of_le_q1 (h : Constraints α β ν) {q : ℝ}
   rw [hmax0, max_eq_left (by linarith [hg2mono, hg1])]
 
 /-- Closed form of `μ` in the case-3 sub-region `0 < p`, `0 < q`, `q ≤ 1-p`,
-`q ≤ q₁`. Here `r₁⁻ = p(ν+1)`, `r₂⁻ = nq`, and `r₁*(q) = β + ν(1-q)` (branch
-selection), giving `μ(p,q) = max((β+ν(1-q))/(p(ν+1)), r₂*(p)/(nq))`. The
-`r₂*(p)` numerator is left abstract — it is independent of `q`. -/
+`q ≤ q₁`. Here `r₁⁻ = p(ν+1)`, `r₂⁻ = nq`, and `r₁*(q) = β + ν(1-q)`
+(branch selection), giving `μ(p,q) = max((β+ν(1-q))/(p(ν+1)), r₂*(p)/(nq))`.
+The `r₂*(p)` numerator is left abstract — it is independent of `q`. -/
 theorem μ_eq_max_case3_q (h : Constraints α β ν) {p q : ℝ}
     (hp : 0 < p) (hq : 0 < q) (hqp : q ≤ 1 - p) (hqq1 : q ≤ q1 α β ν) :
     μ α β ν p q = max ((β + ν * (1 - q)) / (p * (ν + 1))) (r2star α ν p / (ν * q)) := by
@@ -205,10 +205,10 @@ theorem μ_eq_max_case3_q (h : Constraints α β ν) {p q : ℝ}
   simp only [ratio]
   rw [if_neg hd1, if_neg hd2]
 
-/-! ### thm:mu-dec-q -/
+/-! ### thm:lne-cex:mu-dec-q -/
 
-/-- **thm:mu-dec-q**: for `0 ≤ p` and `0 ≤ y₁ ≤ y₂ ≤ min(q₁, 1-p)`, `μ(p,·)` is
-decreasing: `min cap (μ p y₂) ≤ μ p y₁`.
+/-- **thm:lne-cex:mu-dec-q**: for `0 ≤ p` and `0 ≤ y₁ ≤ y₂ ≤ min(q₁, 1-p)`,
+`μ(p,·)` is decreasing: `min cap (μ p y₂) ≤ μ p y₁`.
 
 Same `min cap` workaround as `mu_dec_p`: at the `0`-revenue corners `p = 0` /
 `y₁ = 0` the paper's `μ(p,y₁) ≥ μ(p,y₂)` fails, but there `μ(p,y₁) ≥ cap`. Away
@@ -266,9 +266,9 @@ theorem mu_dec_q (h : Constraints α β ν) {p y1 y2 : ℝ}
           (mul_le_mul_of_nonneg_left hy12 hν.le) hr2s_nonneg
       exact le_trans (min_le_right _ _) (max_le_max hA hB)
 
-/-! ### thm:pq-dom -/
+/-! ### thm:lne-cex:pq-dom -/
 
-/-- **thm:pq-dom**: for `(p,q)` with `p + q ≤ 1`, there is a point `(p̂,q̂)` on the
+/-- **thm:lne-cex:pq-dom**: for `(p,q)` with `p + q ≤ 1`, there is a point `(p̂,q̂)` on the
 line `p̂ + q̂ = 1` with `p̂ ≥ p`, `q̂ ≥ q`, and `min cap (μ p̂ q̂) ≤ μ(p,q)`
 (the paper's `μ(p̂,q̂) ≤ μ(p,q)`, with the `min cap` workaround inherited from the
 two monotonicity lemmas).
@@ -307,9 +307,9 @@ theorem thm_pq_dom (h : Constraints α β ν) {p q : ℝ}
         mu_dec_q h hpppos.le hq (by linarith) (le_min h1mpp.le le_rfl)
       exact le_trans (le_min (min_le_left _ _) hB) hA
 
-/-! ### thm:3 -/
+/-! ### thm:lne-cex:3 -/
 
-/-- **thm:3**: if `p + q ≤ 1`, then `μ(p,q) ≥ min(μ₁, μ₂, μ₃)`.
+/-- **thm:lne-cex:3**: if `p + q ≤ 1`, then `μ(p,q) ≥ min(μ₁, μ₂, μ₃)`.
 
 By `thm_pq_dom` reduce to a point `(p̂,q̂)` on the line `p̂+q̂=1`. That reduction is
 still capped (`min cap (μ p̂ q̂) ≤ μ(p,q)`, genuinely necessary at the `0`-revenue

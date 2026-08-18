@@ -8,12 +8,10 @@ import DataMktOligo.MuOpt.Cap
 import Mathlib.Tactic.LinearCombination
 
 /-!
-# Case 1 of the main reduction (case1.tex)
+# Case 1: `p > α·q` and `p + q ≥ 1`
 
-This file corresponds to the "Case 1: `p > α·q` and `p + q ≥ 1`" subsection.
 In this region `V(p,q)` is the singleton `{(r₁⁻, r₂⁺)}`, so
-`μ(p,q) = max(r₁*(q)/r₁⁻, r₂*(p)/r₂⁺)`.
--/
+`μ(p,q) = max(r₁*(q)/r₁⁻, r₂*(p)/r₂⁺)`. -/
 
 namespace DataMktOligo.MuOpt
 
@@ -31,10 +29,10 @@ theorem r2star_eq_nu (h : Constraints α β ν) {p : ℝ} (hpα : α ≤ p) :
   simp only [r2star]
   rw [min_eq_left h1, max_eq_right h2, mul_one]
 
-/-- In the case-1 region (`p > α·q` and `p + q ≥ 1`, with `0 ≤ q`), `V` is the
-singleton `{(r₁⁻, r₂⁺)}`, so `μ(p,q) = max(r₁*(q)/r₁⁻, r₂*(p)/r₂⁺)`.
-At the boundary `p + q = 1`, `V` takes its `{(r₁⁻, r₂⁻)}` branch instead, but there
-`r₂⁻ = r₂⁺` (since `1 - p = q ≤ 1`), so the singleton is the same. -/
+/-- In the case-1 region (`p > α·q` and `p + q ≥ 1`, with `0 ≤ q`),
+`V` is the singleton `{(r₁⁻, r₂⁺)}`, so `μ(p,q) = max(r₁*(q)/r₁⁻, r₂*(p)/r₂⁺)`.
+At the boundary `p + q = 1`, `V` takes its `{(r₁⁻, r₂⁻)}` branch instead,
+but there `r₂⁻ = r₂⁺` (since `1 - p = q ≤ 1`), so the singleton is the same. -/
 theorem μ_eq_max_case1 (h : Constraints α β ν) {p q : ℝ}
     (hq : 0 ≤ q) (hpq1 : 1 ≤ p + q) (hpaq : α * q < p) :
     μ α β ν p q = max (ratio (cap α β ν) (r1star α β ν q) (r1lo β ν p q))
@@ -64,13 +62,12 @@ theorem μ_eq_max_case1 (h : Constraints α β ν) {p q : ℝ}
     · rintro rfl; exact ⟨_, _, ⟨rfl, rfl⟩, rfl⟩
   unfold μ; rw [hset, csInf_singleton]
 
-/-! ### thm:1.1 -/
+/-- **thm:lne-cex:1.1**: if `p > α·q` and `p ≥ α`, then `μ(p,q) ≥ μ₂`.
+At the `q = 0` corner seller 2 earns `0`, so `μ = cap`,
+and `μ₂ ≤ cap` (`μ2_le_cap`) closes it.
 
-/-- **thm:1.1**: if `p > α·q` and `p ≥ α`, then `μ(p,q) ≥ μ₂`. At the `q = 0` corner
-seller 2 earns `0`, so `μ = cap`, and `μ₂ ≤ cap` (`μ2_le_cap`) closes it.
-
-The paper also lists `p + q ≥ 1` (it defines the whole Case-1 region), but here that
-hypothesis is redundant: with the standing price assumption `0 ≤ q` and `p ≥ α ≥ 2`
+The paper also lists `p + q ≥ 1` as a hypothesis (it defines the whole Case-1 region),
+but here that is redundant: with the standing price assumption `0 ≤ q` and `p ≥ α ≥ 2`
 (c1) we already get `p + q ≥ 2 > 1`.
 
 For `q ≤ q₂` seller 2's ratio `1/q ≥ 1/q₂ = μ₂` already suffices (with the `q = 0`
@@ -149,9 +146,7 @@ public theorem thm_1_1 (h : Constraints α β ν) {p q : ℝ}
       mul_le_mul_of_nonneg_left hM (q2_pos h).le
     nlinarith [hr1lo_ub, hchain, hstep]
 
-/-! ### thm:mu3-2 -/
-
-/-- **thm:mu3-2**: `μ₃ < 1 + β/ν` (paper's `1 + β/(ν-1)`; our `ν` is the paper's `ν-1`).
+/-- **thm:lne-cex:mu3-2**: `μ₃ < 1 + β/ν`.
 
 `f(1 + β/ν) > 0` is Constraint c4, and since `μ₃` is the positive root of the upward
 parabola `f(x) = αβx² + ν·L₁·x - L₂`, this places `μ₃` below `1 + β/ν`. Concretely,
@@ -185,7 +180,7 @@ theorem thm_mu3_2 (h : Constraints α β ν) : μ3 α β ν < 1 + β / ν := by
   rw [← sub_pos, hrw]
   exact div_pos hX hν
 
-/-! ### thm:1.2
+/-! ### thm:lne-cex:1.2
 
 The `p ≤ α` sub-case. Both of the paper's contradiction branches reduce to the same
 identity `f(μ₃) = 0`, read against a different lower bound of `r₁*(q)`. We package the
@@ -193,7 +188,7 @@ two "slope" quantities `K := αμ₃² - νμ₃ + ν` and `M := α + νμ₃ - 
 positive — these are the coefficients that make the monotone comparisons go through. -/
 
 /-- `K := α·μ₃² - ν·μ₃ + ν > 0`. From `β·K = (α+ν)(β + ν - ν·μ₃)` (the quadratic) with
-`β + ν - ν·μ₃ > 0` (thm:mu3-2). -/
+`β + ν - ν·μ₃ > 0` (thm:lne-cex:mu3-2). -/
 theorem mu3_K_pos (h : Constraints α β ν) :
     0 < α * (μ3 α β ν) ^ 2 - ν * μ3 α β ν + ν := by
   have hα := alpha_pos h
@@ -212,7 +207,7 @@ theorem mu3_K_pos (h : Constraints α β ν) :
   nlinarith [hE, mul_pos (alpha_add_nu_pos h) hbn, hβ]
 
 /-- `M := α + ν·μ₃ - α·μ₃² > 0`. From `β·M = (α+ν)·ν·(μ₃ - 1)` (the quadratic) with
-`μ₃ > 1` (thm:mu3). -/
+`μ₃ > 1` (thm:lne-cex:mu3). -/
 theorem mu3_M_pos (h : Constraints α β ν) :
     0 < α + ν * μ3 α β ν - α * (μ3 α β ν) ^ 2 := by
   have hα := alpha_pos h
@@ -227,7 +222,7 @@ theorem mu3_M_pos (h : Constraints α β ν) :
   nlinarith [hM, mul_pos (mul_pos (alpha_add_nu_pos h) hν)
     (show (0:ℝ) < μ3 α β ν - 1 by linarith), hβ]
 
-/-- **thm:1.2**: if `p + q ≥ 1`, `p > α·q`, and `p ≤ α`, then `μ(p,q) ≥ μ₃`. At the
+/-- **thm:lne-cex:1.2**: if `p + q ≥ 1`, `p > α·q`, and `p ≤ α`, then `μ(p,q) ≥ μ₃`. At the
 `q = 0` corner seller 2 earns `0`, so `μ = cap`, and `μ₃ ≤ cap` (`μ3_le_cap`) closes it.
 
 At `q = 0` seller 2 earns `0`, so `ratio₂ = cap ≥ μ₃`. For `q > 0`, seller 2's
