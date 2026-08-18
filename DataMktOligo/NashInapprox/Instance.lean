@@ -28,16 +28,12 @@ variable {α β ν : ℝ}
 /-! ### Nonnegativity facts extracted from `Constraints` -/
 
 theorem alpha_nonneg (h : Constraints α β ν) : 0 ≤ α := by linarith [h.c1_lo]
-
 theorem beta_nonneg (h : Constraints α β ν) : 0 ≤ β := by linarith [h.c1_lo, h.c1_mid]
-
 theorem nu_nonneg (h : Constraints α β ν) : 0 ≤ ν := by linarith [h.c1_mid, h.c1_hi]
 
 /-! ### The instance -/
 
-/-- The two-seller instance of `sec:intro`.
-
-It is parameterized by a proof of `Constraints` only to discharge the nonnegativity fields.
+/-- It is parameterized by a proof of `Constraints` only to discharge the nonnegativity fields.
 Since `Constraints` is a `Prop`, proof irrelevance makes `inst h₁` and `inst h₂`
 definitionally equal, so the choice of proof never matters downstream. -/
 noncomputable def inst (h : Constraints α β ν) : Instance 2 2 where
@@ -59,8 +55,8 @@ noncomputable def inst (h : Constraints α β ν) : Instance 2 2 where
     · simpa using nu_nonneg h
     · norm_num
 
-/-- Prices are written as the vector literal `![p, q]`: seller `0` charges `p` and seller
-`1` charges `q`. -/
+/-- Prices are written as the vector literal `![p, q]`:
+seller `0` charges `p` and seller `1` charges `q`. -/
 theorem isNonnegVector_prices {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     IsNonnegVector ![p, q] := by
   intro j; fin_cases j
@@ -82,8 +78,7 @@ Stated so that later files never unfold `inst` directly. -/
 @[simp] theorem inst_w_poor (h : Constraints α β ν) : (inst h).w 0 = ν := rfl
 @[simp] theorem inst_w_rich (h : Constraints α β ν) : (inst h).w 1 = 1 := rfl
 
-/-- Both buyers have strictly positive budgets, so `LinDataMkt.isDemand_iff` applies at
-*every* nonnegative price vector — including the corners `p = 0` and `q = 0`. -/
+/-- Both buyers have strictly positive budgets. -/
 theorem inst_b_pos (h : Constraints α β ν) (i : Fin 2) : 0 < (inst h).b i := by
   fin_cases i
   · norm_num

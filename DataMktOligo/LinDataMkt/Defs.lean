@@ -17,7 +17,7 @@ an `x` fraction of a dataset priced `p` costs `p * x`.
 * `DataMktOligo.LinDataMkt.Instance`: a data market instance.
 * `DataMktOligo.LinDataMkt.util`: a buyer's (linear) utility for a bundle.
 * `DataMktOligo.LinDataMkt.affordableSet`: the bundles a buyer is permitted to buy at given prices.
-* `DataMktOligo.LinDataMkt.IsDemand`: a buyer's demand, i.e. an affordable
+* `DataMktOligo.LinDataMkt.IsDemand`: a buyer's demand, i.e., an affordable
   utility-maximizing bundle.
 -/
 

@@ -28,9 +28,8 @@ variable {α β ν : ℝ}
 For any nonnegative prices `(p, q)` and any `c < c*`, the prices `![p, q]` are not a
 `c`-approximate Nash equilibrium of the sellers' pricing game.
 
-`c*` is the optimization bound `DataMktOligo.MuOpt.cStar`.
-(The `cap` used inside `DataMktOligo.MuOpt.μ` to stand in for `∞` does not appear,
-since `c < c* ≤ cap`.) -/
+`c*` is the optimization bound `DataMktOligo.MuOpt.cStar`. (The `cap` used inside
+`DataMktOligo.MuOpt.μ` to stand in for `∞` does not appear, since `c < c* ≤ cap`.) -/
 public theorem no_approxNE (h : Constraints α β ν) {p q c : ℝ}
     (hp : 0 ≤ p) (hq : 0 ≤ q) (hc : c < cStar α β ν) :
     ¬ LinDataMkt.IsApproxNE (inst h) ![p, q] c :=

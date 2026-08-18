@@ -1,10 +1,10 @@
 module
 
-public import DataMktOligo.NashInapprox.Instance
-public import DataMktOligo.NashInapprox.Demand
 public import DataMktOligo.LinDataMkt.Revenue
 public import DataMktOligo.LinDataMkt.Greedy
 public import DataMktOligo.MuOpt.Defs
+public import DataMktOligo.NashInapprox.Instance
+import DataMktOligo.NashInapprox.Demand
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
@@ -12,28 +12,23 @@ import Mathlib.Tactic.Linarith
 /-!
 # The bridge: market revenue vs. the closed forms of `MuOpt`
 
-`DataMktOligo.MuOpt` *stipulates* closed forms for the sellers' revenues, their best
-responses, and the instability ratio `μ`. This file states that those stipulations are
-correct: they agree with what the market of `DataMktOligo.LinDataMkt` actually produces for
+`DataMktOligo.MuOpt` *stipulates* closed forms for the sellers' revenues, their best responses,
+and the instability ratio `μ`. This file states that those stipulations are correct:
+they agree with what the market of `DataMktOligo.LinDataMkt` actually produces for
 the instance of `DataMktOligo.NashInapprox.Instance`.
-
-Everything here is stated but not yet proved.
 
 ## Main results
 
-* `V_nonempty`: some revenue vector is attainable, i.e. buyers do have demands.
+* `V_nonempty`: some revenue vector is attainable.
 * `mem_V_iff_mem_muOptV`: the market's valid-revenue set is `MuOpt.V`.
-* `bestResponseRevenue_seller0`, `bestResponseRevenue_seller1`: the sellers' best-response
-  revenues are `MuOpt.r1star` and `MuOpt.r2star`.
+* `bestResponseRevenue_seller0`, `bestResponseRevenue_seller1`:
+  the sellers' best-response revenues are `MuOpt.r1star` and `MuOpt.r2star`.
 * `not_isApproxNE_of_lt_μ`: if `μ(p,q)` exceeds `c`, then `(p,q)` is not a `c`-approximate
   Nash equilibrium. This is the direction the main result needs.
 
-## The `cap` convention
-
-`MuOpt.μ` uses a finite `cap` in place of `∞` for the `x/0` convention, whereas
-`LinDataMkt.IsApproxNE` is stated multiplicatively and never divides. The two agree only
-for `c < cap`, which is why `not_isApproxNE_of_lt_μ` carries that hypothesis; it is the
-same soundness restriction already documented in `DataMktOligo.MuOpt.Cap`.
+**The `cap` convention**: `MuOpt.μ` uses a finite `cap` in place of `∞` for the `x/0` convention,
+whereas `LinDataMkt.IsApproxNE` is stated multiplicatively and never divides.
+The two agree only for `c < cap`, which is why `not_isApproxNE_of_lt_μ` carries that hypothesis.
 -/
 
 @[expose] public section
@@ -46,14 +41,10 @@ variable {α β ν : ℝ}
 
 /-! ### Demands exist -/
 
-/-- Every buyer has at least one demand at nonnegative prices, so the set of valid revenue
-vectors is nonempty.
-
-This matters for the `μ` comparison: `LinDataMkt.IsApproxNE` quantifies over `r ∈ V`, so an
-empty `V` would make every price vector vacuously an equilibrium, while `MuOpt.μ` is an
-`sInf`, which returns `0` on the empty set. A witness comes from
-`LinDataMkt.isDemand_of_isGreedy`. -/
-theorem V_nonempty (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
+/-- Every buyer has at least one demand at nonnegative prices,
+so the set of valid revenue vectors is nonempty.
+A witness comes from `LinDataMkt.isDemand_of_isGreedy`. -/
+public theorem V_nonempty (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     (LinDataMkt.V (inst h) ![p, q]).Nonempty := by
   classical
   have hP : LinDataMkt.IsNonnegVector ![p, q] := isNonnegVector_prices hp hq
@@ -64,18 +55,16 @@ theorem V_nonempty (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ p) (hq : 0
 /-! ### The valid-revenue set -/
 
 /-- Seller revenues from a purchase profile, with the poor buyer counted `ν` times. -/
-theorem revenue_two (h : Constraints α β ν) (p q : ℝ) (x : Fin 2 → Fin 2 → ℝ) :
+private theorem revenue_two (h : Constraints α β ν) (p q : ℝ) (x : Fin 2 → Fin 2 → ℝ) :
     LinDataMkt.revenue (inst h) ![p, q] x 0 = ν * (p * x 0 0) + p * x 1 0 ∧
     LinDataMkt.revenue (inst h) ![p, q] x 1 = ν * (q * x 0 1) + q * x 1 1 := by
   constructor <;> simp [LinDataMkt.revenue, Fin.sum_univ_succ, inst]
 
-/-- **The closed form for `V` is correct.** A pair of seller revenues is attainable in the
-market exactly when it lies in `MuOpt.V`.
-
-Stated componentwise rather than as an equality of sets: the market's revenue vectors live
-in `Fin 2 → ℝ` and `MuOpt.V`'s live in `ℝ × ℝ`, and every downstream use has a concrete `r`
-in hand and wants its two components. -/
-theorem mem_V_iff_mem_muOptV (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q)
+/-- **The closed form for `V` is correct**:
+A pair of seller revenues is attainable in the market exactly when it lies in `MuOpt.V`.
+Stated componentwise rather than as an equality of sets because
+the market's revenue vectors live in `Fin 2 → ℝ` and `MuOpt.V`'s live in `ℝ × ℝ`. -/
+public theorem mem_V_iff_mem_muOptV (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q)
     {r : Fin 2 → ℝ} :
     r ∈ LinDataMkt.V (inst h) ![p, q] ↔ (r 0, r 1) ∈ DataMktOligo.MuOpt.V α β ν p q := by
   have hν : 0 < ν := by linarith [h.c1_mid, h.c1_hi]
@@ -234,13 +223,13 @@ theorem mem_V_iff_mem_muOptV (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ 
 
 /-! Deviating changes exactly one coordinate of the price vector. -/
 
-theorem update_prices_one (p q q' : ℝ) : Function.update ![p, q] 1 q' = ![p, q'] := by
+private theorem update_prices_one (p q q' : ℝ) : Function.update ![p, q] 1 q' = ![p, q'] := by
   funext j; fin_cases j <;> simp [Function.update]
 
-theorem update_prices_zero (p q p' : ℝ) : Function.update ![p, q] 0 p' = ![p', q] := by
+private theorem update_prices_zero (p q p' : ℝ) : Function.update ![p, q] 0 p' = ![p', q] := by
   funext j; fin_cases j <;> simp [Function.update]
 
-theorem mem_deviation_one (h : Constraints α β ν) {p q y : ℝ} :
+private theorem mem_deviation_one (h : Constraints α β ν) {p q y : ℝ} :
     y ∈ LinDataMkt.deviationRevenues (inst h) ![p, q] 1 ↔
       ∃ q' : ℝ, 0 ≤ q' ∧ ∃ r ∈ LinDataMkt.V (inst h) ![p, q'], y = r 1 := by
   constructor
@@ -249,7 +238,7 @@ theorem mem_deviation_one (h : Constraints α β ν) {p q y : ℝ} :
   · rintro ⟨q', hq', r, hr, rfl⟩
     exact ⟨q', hq', r, by rwa [update_prices_one], rfl⟩
 
-theorem mem_deviation_zero (h : Constraints α β ν) {p q y : ℝ} :
+private theorem mem_deviation_zero (h : Constraints α β ν) {p q y : ℝ} :
     y ∈ LinDataMkt.deviationRevenues (inst h) ![p, q] 0 ↔
       ∃ p' : ℝ, 0 ≤ p' ∧ ∃ r ∈ LinDataMkt.V (inst h) ![p', q], y = r 0 := by
   constructor
@@ -262,7 +251,7 @@ theorem mem_deviation_zero (h : Constraints α β ν) {p q y : ℝ} :
 
 /-- Seller `1` never earns more than `ν·min(q', 1)`, and when she is *not* the
 best-bang-per-buck seller she earns at most `ν·max(0, 1-p)`. -/
-theorem seller1_rev_le (h : Constraints α β ν) {p q' r1 r2 : ℝ} (hp : 0 ≤ p) (_hq' : 0 ≤ q')
+private theorem seller1_rev_le (h : Constraints α β ν) {p q' r1 r2 : ℝ} (hp : 0 ≤ p) (_hq' : 0 ≤ q')
     (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p q') :
     r2 ≤ ν * min q' 1 ∧ (p < α * q' → r2 ≤ ν * max 0 (1 - p)) := by
   have hν : 0 < ν := by linarith [h.c1_mid, h.c1_hi]
@@ -288,8 +277,8 @@ theorem seller1_rev_le (h : Constraints α β ν) {p q' r1 r2 : ℝ} (hp : 0 ≤
 
 /-- On the low side, when seller `1` prices strictly below `p/α` she earns exactly
 `ν·min(q', 1)`: both the `p + q' ≤ 1` and the `p > α·q'` branches give that value. -/
-theorem seller1_rev_of_gt (_h : Constraints α β ν) {p q' r1 r2 : ℝ} (hp : 0 ≤ p) (_hq' : 0 ≤ q')
-    (hgt : α * q' < p) (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p q') :
+private theorem seller1_rev_of_gt (_h : Constraints α β ν) {p q' r1 r2 : ℝ} (hp : 0 ≤ p)
+    (_hq' : 0 ≤ q') (hgt : α * q' < p) (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p q') :
     r2 = ν * min q' 1 := by
   simp only [DataMktOligo.MuOpt.V] at hr
   by_cases c1 : p + q' ≤ 1
@@ -303,8 +292,8 @@ theorem seller1_rev_of_gt (_h : Constraints α β ν) {p q' r1 r2 : ℝ} (hp : 0
 
 /-- On the high side, when seller `1` prices strictly above `p/α` she earns exactly
 `ν·max(0, 1-p)`, provided her price is large enough to absorb the poor buyer's leftovers. -/
-theorem seller1_rev_of_lt (_h : Constraints α β ν) {p q' r1 r2 : ℝ} (_hp : 0 ≤ p) (_hq' : 0 ≤ q')
-    (hlt : p < α * q') (hbig : max 0 (1 - p) ≤ q')
+private theorem seller1_rev_of_lt (_h : Constraints α β ν) {p q' r1 r2 : ℝ} (_hp : 0 ≤ p)
+    (_hq' : 0 ≤ q') (hlt : p < α * q') (hbig : max 0 (1 - p) ≤ q')
     (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p q') :
     r2 = ν * max 0 (1 - p) := by
   simp only [DataMktOligo.MuOpt.V] at hr
@@ -317,9 +306,8 @@ theorem seller1_rev_of_lt (_h : Constraints α β ν) {p q' r1 r2 : ℝ} (_hp : 
     rw [hr.2, min_eq_right hbig]
 
 
-
 /-- `min` moves by at most as much as its argument does. -/
-theorem min_le_min_add {a c b : ℝ} (hac : a ≤ c) : min c b ≤ min a b + (c - a) := by
+private theorem min_le_min_add {a c b : ℝ} (hac : a ≤ c) : min c b ≤ min a b + (c - a) := by
   rcases le_total a b with hab | hab
   · rw [min_eq_left hab]
     exact le_trans (min_le_left _ _) (by linarith)
@@ -328,8 +316,8 @@ theorem min_le_min_add {a c b : ℝ} (hac : a ≤ c) : min c b ≤ min a b + (c 
 
 /-! Seller `0`'s revenue at an arbitrary price, read off `MuOpt.V`. -/
 
-theorem seller0_rev_le (h : Constraints α β ν) {p' q r1 r2 : ℝ} (_hp' : 0 ≤ p') (hq : 0 ≤ q)
-    (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p' q) :
+private theorem seller0_rev_le (h : Constraints α β ν) {p' q r1 r2 : ℝ} (_hp' : 0 ≤ p')
+    (hq : 0 ≤ q) (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p' q) :
     r1 ≤ min p' β + ν * min p' 1 := by
   have hν : 0 < ν := by linarith [h.c1_mid, h.c1_hi]
   have hm : max 0 (1 - q) ≤ 1 := max_le (by norm_num) (by linarith)
@@ -348,8 +336,8 @@ theorem seller0_rev_le (h : Constraints α β ν) {p' q r1 r2 : ℝ} (_hp' : 0 �
     exact hr.2.1
 
 /-- Pricing strictly above `α·q` makes seller `0` second choice for the poor buyer. -/
-theorem seller0_rev_of_gt (_h : Constraints α β ν) {p' q r1 r2 : ℝ} (_hp' : 0 ≤ p') (_hq : 0 ≤ q)
-    (hgt : α * q < p') (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p' q) :
+private theorem seller0_rev_of_gt (_h : Constraints α β ν) {p' q r1 r2 : ℝ} (_hp' : 0 ≤ p')
+    (_hq : 0 ≤ q) (hgt : α * q < p') (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p' q) :
     r1 = min p' β + ν * min p' (max 0 (1 - q)) := by
   simp only [DataMktOligo.MuOpt.V] at hr
   by_cases c1 : p' + q ≤ 1
@@ -362,8 +350,8 @@ theorem seller0_rev_of_gt (_h : Constraints α β ν) {p' q r1 r2 : ℝ} (_hp' :
 
 /-- Pricing strictly below `α·q` makes seller `0` first choice, so she fills the poor
 buyer's budget first. -/
-theorem seller0_rev_of_lt (_h : Constraints α β ν) {p' q r1 r2 : ℝ} (_hp' : 0 ≤ p') (hq : 0 ≤ q)
-    (hlt : p' < α * q) (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p' q) :
+private theorem seller0_rev_of_lt (_h : Constraints α β ν) {p' q r1 r2 : ℝ} (_hp' : 0 ≤ p')
+    (hq : 0 ≤ q) (hlt : p' < α * q) (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p' q) :
     r1 = min p' β + ν * min p' 1 := by
   simp only [DataMktOligo.MuOpt.V] at hr
   by_cases c1 : p' + q ≤ 1
@@ -375,10 +363,10 @@ theorem seller0_rev_of_lt (_h : Constraints α β ν) {p' q r1 r2 : ℝ} (_hp' :
     simp only [Set.mem_singleton_iff, Prod.mk.injEq, DataMktOligo.MuOpt.r1hi] at hr
     exact hr.1
 
-/-- **The closed form for `r₁*` is correct**: seller `0`'s best-response revenue, given that
-seller `1` charges `q`, is `MuOpt.r1star`. Note it does not depend on seller `0`'s own
-current price `p`. -/
-theorem bestResponseRevenue_seller0 (h : Constraints α β ν) {p q : ℝ}
+/-- **The closed form for `r₁*` is correct**: seller `0`'s best-response revenue,
+given that seller `1` charges `q`, is `MuOpt.r1star`.
+Note it does not depend on seller `0`'s own current price `p`. -/
+public theorem bestResponseRevenue_seller0 (h : Constraints α β ν) {p q : ℝ}
     (hp : 0 ≤ p) (hq : 0 ≤ q) :
     LinDataMkt.bestResponseRevenue (inst h) ![p, q] 0 = r1star α β ν q := by
   have hν : 0 < ν := by linarith [h.c1_mid, h.c1_hi]
@@ -467,9 +455,9 @@ theorem bestResponseRevenue_seller0 (h : Constraints α β ν) {p q : ℝ}
     rw [hyeq, min_comm β (α * q), min_comm 1 (α * q)]
     linarith
 
-/-- **The closed form for `r₂*` is correct**: seller `1`'s best-response revenue, given that
-seller `0` charges `p`, is `MuOpt.r2star`. -/
-theorem bestResponseRevenue_seller1 (h : Constraints α β ν) {p q : ℝ}
+/-- **The closed form for `r₂*` is correct**: seller `1`'s best-response revenue,
+given that seller `0` charges `p`, is `MuOpt.r2star`. -/
+public theorem bestResponseRevenue_seller1 (h : Constraints α β ν) {p q : ℝ}
     (hp : 0 ≤ p) (hq : 0 ≤ q) :
     LinDataMkt.bestResponseRevenue (inst h) ![p, q] 1 = r2star α ν p := by
   have hν : 0 < ν := by linarith [h.c1_mid, h.c1_hi]
@@ -552,9 +540,10 @@ theorem bestResponseRevenue_seller1 (h : Constraints α β ν) {p q : ℝ}
 
 /-! ### `μ` bounds approximate equilibria -/
 
-/-- Both best-response revenues are strictly positive, so a seller earning `0` can always
-do better. -/
-theorem r1star_pos (h : Constraints α β ν) (q : ℝ) : 0 < r1star α β ν q := by
+/- Both best-response revenues are strictly positive, so a seller earning `0`
+can always do better. -/
+
+private theorem r1star_pos (h : Constraints α β ν) (q : ℝ) : 0 < r1star α β ν q := by
   have hβ : 0 < β := by linarith [h.c1_lo, h.c1_mid]
   have hν : 0 ≤ ν := nu_nonneg h
   have h1 : 0 ≤ ν * max 0 (1 - q) := mul_nonneg hν (le_max_left _ _)
@@ -562,7 +551,7 @@ theorem r1star_pos (h : Constraints α β ν) (q : ℝ) : 0 < r1star α β ν q 
     simp only [DataMktOligo.MuOpt.r1star]; exact le_max_left _ _
   linarith
 
-theorem r2star_pos (h : Constraints α β ν) {p : ℝ} (_hp : 0 ≤ p) : 0 < r2star α ν p := by
+private theorem r2star_pos (h : Constraints α β ν) {p : ℝ} (_hp : 0 ≤ p) : 0 < r2star α ν p := by
   have hα : 0 < α := by linarith [h.c1_lo]
   have hν : 0 < ν := by linarith [h.c1_mid, h.c1_hi]
   simp only [DataMktOligo.MuOpt.r2star]
@@ -572,14 +561,14 @@ theorem r2star_pos (h : Constraints α β ν) {p : ℝ} (_hp : 0 ≤ p) : 0 < r2
   · refine lt_of_lt_of_le ?_ (le_max_right _ _)
     exact lt_min zero_lt_one (by positivity)
 
-theorem cap_pos (h : Constraints α β ν) : 0 < cap α β ν := by
+private theorem cap_pos (h : Constraints α β ν) : 0 < cap α β ν := by
   have hν : 0 < ν := by linarith [h.c1_mid, h.c1_hi]
   simp only [DataMktOligo.MuOpt.cap]
   nlinarith [h.c1_lo, h.c1_mid]
 
 /-- Every element of `MuOpt.V` is a nonnegative revenue pair, transported from
 `LinDataMkt.nonneg_of_mem_V` through the bridge. -/
-theorem nonneg_of_mem_muOptV (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q)
+private theorem nonneg_of_mem_muOptV (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q)
     {r1 r2 : ℝ} (hr : (r1, r2) ∈ DataMktOligo.MuOpt.V α β ν p q) : 0 ≤ r1 ∧ 0 ≤ r2 := by
   have hmem : ![r1, r2] ∈ LinDataMkt.V (inst h) ![p, q] := by
     refine (mem_V_iff_mem_muOptV h hp hq).2 ?_
@@ -587,12 +576,11 @@ theorem nonneg_of_mem_muOptV (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ 
   exact ⟨LinDataMkt.nonneg_of_mem_V (inst h) ![p, q] (isNonnegVector_prices hp hq) hmem 0,
     LinDataMkt.nonneg_of_mem_V (inst h) ![p, q] (isNonnegVector_prices hp hq) hmem 1⟩
 
-/-- **The bridge to the optimization problem.** If the instability ratio at `(p,q)` exceeds
-`c`, then `(p,q)` is not a `c`-approximate Nash equilibrium.
+/-- **The bridge to the optimization problem.** If the instability ratio at `(p,q)` exceeds `c`,
+then `(p,q)` is not a `c`-approximate Nash equilibrium.
 
-Only this direction is needed, and only this direction is sound under the `cap` convention;
-see the module docstring. -/
-theorem not_isApproxNE_of_lt_μ (h : Constraints α β ν) {p q c : ℝ}
+Only this direction is needed, and only this direction is sound under the `cap` convention. -/
+public theorem not_isApproxNE_of_lt_μ (h : Constraints α β ν) {p q c : ℝ}
     (hp : 0 ≤ p) (hq : 0 ≤ q) (_hcap : c < cap α β ν) (hc : c < μ α β ν p q) :
     ¬ LinDataMkt.IsApproxNE (inst h) ![p, q] c := by
   intro hNE

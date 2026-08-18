@@ -17,11 +17,10 @@ The sellers are thereby engaged in a pricing game, whose approximate equilibria 
 
 * `DataMktOligo.LinDataMkt.revenue`: sellers' revenues from a profile of purchases.
 * `DataMktOligo.LinDataMkt.V`: the set of valid revenue vectors at given prices.
-* `DataMktOligo.LinDataMkt.feasibleRevenues`: the set of revenue vectors attainable at
-  *some* prices.
 * `DataMktOligo.LinDataMkt.bestResponseRevenue`: the best revenue a seller can get by
   unilaterally repricing.
-* `DataMktOligo.LinDataMkt.IsApproxNE`: approximate Nash equilibrium of the pricing game.
+* `DataMktOligo.LinDataMkt.IsApproxNE`: whether a price vector is an approximate Nash equilibrium
+  of the pricing game.
 -/
 
 @[expose] public section
@@ -38,13 +37,11 @@ def revenue (x : Fin n → Fin m → ℝ) : Fin m → ℝ :=
 def IsDemandProfile (x : Fin n → Fin m → ℝ) : Prop := ∀ i, IsDemand mkt p i (x i)
 
 /-- The set of *valid* revenue vectors at prices `p`: those arising from some profile of
-buyer demands. It is a set rather than a single vector precisely because of tie-breaking;
-it is a singleton whenever every buyer's demand is unique. -/
+buyer demands. It is a set rather than a single vector precisely because of tie-breaking -/
 def V : Set (Fin m → ℝ) :=
   {r | ∃ x : Fin n → Fin m → ℝ, IsDemandProfile mkt p x ∧ r = revenue mkt p x}
 
-/-- Redundant lemma to help with backward/forward compatibility
-if we change the definition of V. -/
+/-- Redundant lemma to help with backward/forward compatibility if we change the definition of V. -/
 theorem mem_V_iff {r : Fin m → ℝ} :
     r ∈ V mkt p ↔ ∃ x, IsDemandProfile mkt p x ∧ r = revenue mkt p x := Iff.rfl
 
@@ -58,16 +55,12 @@ def deviationRevenues : Set ℝ :=
   {rj | ∃ pj' : ℝ, 0 ≤ pj' ∧ ∃ r ∈ V mkt (Function.update p j pj'), rj = r j}
 
 /-- Seller `j`'s best achievable revenue when unilaterally deviating from `p`.
-
-Note this is a supremum, not a maximum: it need not be attained, since a seller may want to
+This is a supremum, not a maximum: it need not be attained, since a seller may want to
 undercut a rival by an infinitesimal amount. -/
 noncomputable def bestResponseRevenue : ℝ := sSup (deviationRevenues mkt p j)
 
 /-- The prices `p` form a `c`-approximate Nash equilibrium: no seller can unilaterally
-deviate to improve her revenue by more than a factor of `c`, no matter how buyers break ties.
-
-Stated multiplicatively, so that a seller earning `0` against a positive best response is
-never an equilibrium, without needing a `x / 0 = ∞` convention. -/
+deviate to improve her revenue by more than a factor of `c`, no matter how buyers break ties. -/
 def IsApproxNE (c : ℝ) : Prop :=
   IsNonnegVector p ∧ ∀ r ∈ V mkt p, ∀ j, bestResponseRevenue mkt p j ≤ c * r j
 
@@ -86,31 +79,34 @@ theorem nonneg_of_mem_V {r : Fin m → ℝ} (hp : IsNonnegVector p) (hr : r ∈ 
 /-! ### Revenue is bounded by the total budget
 
 No seller can extract more than the buyers collectively have to spend, whatever the prices.
-This is what makes `bestResponseRevenue` a genuine supremum rather than a junk value. -/
+These results are not required for the paper's main theorems; they exist just to certify that
+`bestResponseRevenue` is a genuine supremum rather than a junk value, so the lean theorem
+statements mean what we think they mean.
+-/
 
 /-- The total money in the market: `∑ i, w i * b i`. -/
 def totalBudget : ℝ := ∑ i, mkt.w i * mkt.b i
 
 /-- A buyer never spends more than her budget on any single dataset. -/
-theorem spend_le_budget (hp : IsNonnegVector p) {i : Fin n} {x : Fin m → ℝ}
+public theorem spend_le_budget (hp : IsNonnegVector p) {i : Fin n} {x : Fin m → ℝ}
     (hx : x ∈ affordableSet mkt p i) (j : Fin m) : p j * x j ≤ mkt.b i := by
   refine le_trans ?_ hx.2.1
   exact Finset.single_le_sum
     (f := fun k => p k * x k)
     (fun k _ => mul_nonneg (hp k) ((mem_unitCube_iff.1 hx.1) k).1) (Finset.mem_univ j)
 
-theorem revenue_le_totalBudget {x : Fin n → Fin m → ℝ} (hp : IsNonnegVector p)
+public theorem revenue_le_totalBudget {x : Fin n → Fin m → ℝ} (hp : IsNonnegVector p)
     (hx : IsDemandProfile mkt p x) (j : Fin m) : revenue mkt p x j ≤ totalBudget mkt := by
   refine Finset.sum_le_sum fun i _ => ?_
   exact mul_le_mul_of_nonneg_left (spend_le_budget mkt p hp (hx i).1 j) (mkt.w_nonneg i)
 
-theorem le_totalBudget_of_mem_V {r : Fin m → ℝ} (hp : IsNonnegVector p) (hr : r ∈ V mkt p)
+public theorem le_totalBudget_of_mem_V {r : Fin m → ℝ} (hp : IsNonnegVector p) (hr : r ∈ V mkt p)
     (j : Fin m) : r j ≤ totalBudget mkt := by
   obtain ⟨x, hx, rfl⟩ := hr
   exact revenue_le_totalBudget mkt p hp hx j
 
 /-- Replacing one price of a nonnegative vector by a nonnegative price keeps it nonnegative. -/
-theorem isNonnegVector_update (hp : IsNonnegVector p) {pj' : ℝ} (hpj' : 0 ≤ pj') :
+private theorem isNonnegVector_update (hp : IsNonnegVector p) {pj' : ℝ} (hpj' : 0 ≤ pj') :
     IsNonnegVector (Function.update p j pj') := by
   intro k
   rcases eq_or_ne k j with rfl | hkj
@@ -119,7 +115,7 @@ theorem isNonnegVector_update (hp : IsNonnegVector p) {pj' : ℝ} (hpj' : 0 ≤ 
 
 /-- The revenues available to a deviating seller are bounded above, so her
 `bestResponseRevenue` is a genuine supremum. -/
-theorem bddAbove_deviationRevenues (hp : IsNonnegVector p) :
+public theorem bddAbove_deviationRevenues (hp : IsNonnegVector p) :
     BddAbove (deviationRevenues mkt p j) := by
   refine ⟨totalBudget mkt, ?_⟩
   rintro _ ⟨pj', hpj', r, hr, rfl⟩
@@ -127,7 +123,7 @@ theorem bddAbove_deviationRevenues (hp : IsNonnegVector p) :
 
 /-- Seller `j` can always deviate to her current price, so her best response revenue is at
 least any revenue she currently earns. -/
-theorem le_bestResponseRevenue_of_mem_V {r : Fin m → ℝ} (hp : IsNonnegVector p)
+public theorem le_bestResponseRevenue_of_mem_V {r : Fin m → ℝ} (hp : IsNonnegVector p)
     (hr : r ∈ V mkt p) : r j ≤ bestResponseRevenue mkt p j := by
   refine le_csSup (bddAbove_deviationRevenues mkt p j hp) ⟨p j, hp j, r, ?_, rfl⟩
   simpa [Function.update_eq_self] using hr
