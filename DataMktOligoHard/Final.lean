@@ -11,14 +11,14 @@ public section
 
 namespace DataMktOligoHard
 
-variable (α β n : ℝ)
+variable (α β ν : ℝ)
 
 /-- **Main reduction** (thm:pq-redn, lower bound): under Constraints c1–c4, every
 nonnegative price pair has `μ(p,q) ≥ cStar := min_i μᵢ`, so no `(cStar - ε)`-NE exists.
 Together with the `μ_pᵢ_qᵢ` lemmas (which show the bound is attained), this gives
 `inf_{p,q} μ = cStar`. -/
-public theorem cStar_le_μ (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
-    cStar α β n ≤ μ α β n p q ∧ μ_at_special α β n := by
+public theorem cStar_le_μ (h : Constraints α β ν) {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
+    cStar α β ν ≤ μ α β ν p q ∧ μ_at_special α β ν := by
   refine ⟨?_, μ_p1_q1 h, μ_p2_q2 h, μ_p3_q3 h, μ_p4_q4 h⟩
   unfold cStar
   simp only [min_le_iff]
@@ -38,13 +38,13 @@ public theorem cStar_le_μ (h : Constraints α β n) {p q : ℝ} (hp : 0 ≤ p) 
       left ; assumption
 
 /-- **Headline instability bound** at a near-optimal parameter choice:
-for `n = 10` poor buyers and `(α, β) = (0.733157n, 0.860399n)`, Constraints c1–c4 hold
+for `ν = 10` poor buyers and `(α, β) = (0.733157ν, 0.860399ν)`, Constraints c1–c4 hold
 and `cStar > 1.363964`. Combined with `cStar_le_μ`, this witnesses that no
 `1.363964`-approximate Nash equilibrium exists. -/
-public theorem cStar_specific {α β n : ℝ} (hn : n = 10)
-  (hα : α = 0.733157 * n) (hβ : β = 0.860399 * n)
-  : Constraints α β n ∧ 1.363964 < cStar α β n := by
-  subst hn hα hβ
+public theorem cStar_specific {α β ν : ℝ} (hν : ν = 10)
+  (hα : α = 0.733157 * ν) (hβ : β = 0.860399 * ν)
+  : Constraints α β ν ∧ 1.363964 < cStar α β ν := by
+  subst hν hα hβ
   constructor
   · exact ⟨by norm_num, by norm_num, by norm_num, by norm_num, by norm_num, by norm_num⟩
   · unfold cStar
@@ -62,7 +62,7 @@ public theorem cStar_specific {α β n : ℝ} (hn : n = 10)
       rw [div_div_eq_mul_div, lt_div_iff₀ (by norm_num)]
       nlinarith [hs, hchat, Real.sqrt_nonneg
         (1 + 4 / ((0.733157 * 10) * chat1 (0.733157 * 10) (0.860399 * 10) 10))]
-    · -- μ₂ = 1/q₂ = (n+√L₂)/(n+β)
+    · -- μ₂ = 1/q₂ = (ν+√L₂)/(ν+β)
       have hpos : (0 : ℝ) < 10 + 0.860399 * 10 := by norm_num
       have key : (1.363964 * (10 + 0.860399 * 10) - 10 : ℝ) <
           Real.sqrt (L2 (0.733157 * 10) (0.860399 * 10) 10) := by
@@ -71,11 +71,11 @@ public theorem cStar_specific {α β n : ℝ} (hn : n = 10)
       unfold μ2 q2
       rw [one_div_div, lt_div_iff₀ hpos]
       linarith [key]
-    · -- μ₃ = (√D - L₁·n)/(2αβ)
+    · -- μ₃ = (√D - L₁·ν)/(2αβ)
       unfold μ3
       rw [lt_div_iff₀ (by norm_num), lt_sub_iff_add_lt, Real.lt_sqrt (by norm_num [L1])]
       norm_num [L1, L2]
-    · -- μ₄ = 1 + βn/L₂ (no square root)
+    · -- μ₄ = 1 + βν/L₂ (no square root)
       norm_num [μ4, L2]
 
 end DataMktOligoHard
